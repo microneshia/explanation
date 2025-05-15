@@ -138,6 +138,7 @@
       transition: transform 0.2s ease, box-shadow 0.2s ease; /* ホバー時のアニメーション。 */
       display: flex;             /* Flexboxレイアウト: カード内部の要素の配置のため。 */
       flex-direction: column;    /* Flexアイテムを縦方向に並べる。 */
+      cursor: pointer; /* カード全体がクリック可能であることを示すカーソル */
     }
 
     /* コンテンツカードのマウスオーバー時のスタイル */
@@ -291,7 +292,7 @@
 
             <!-- 記事カード: スカラーポテンシャルの導入 -->
             <div class="content-card">
-                <h3>スカラーポテンシャルの導入（電磁界理論）</h3> <!-- 記事タイトル -->
+                <h3>スカラーポテンシャルの導入（電磁気学）</h3> <!-- 記事タイトル -->
                 <p> <!-- 記事の短い概要 -->
                     電場や磁場をポテンシャルで表現する意義と、ファラデーの法則からのスカラーポテンシャル導入過程を解説。
                     $$ \mathbf{E} = -\nabla \phi - \frac{\partial \mathbf{A}}{\partial t} $$ <!-- MathJaxで表示される数式 -->
@@ -353,6 +354,94 @@
   <footer>
     <p>© 2025 総合解説プラットフォーム. All rights reserved.</p>
   </footer>
+
+  <script>
+    // DOMContentLoadedイベントは、HTMLのパースとDOMツリーの構築が完了した時点で発火します。
+    // これにより、スクリプトがDOM要素を確実に操作できるようになります。
+    document.addEventListener('DOMContentLoaded', () => {
+      // クラス名が "content-card" である全ての要素を取得します。
+      const cards = document.querySelectorAll('.content-card');
+
+      // 取得した各カードに対して処理を行います。
+      cards.forEach(card => {
+        // 各カードにクリックイベントリスナーを追加します。
+        card.addEventListener('click', () => {
+          // カード内部にある最初の 'a.learn-more' 要素（「詳しく読む」リンク）を探します。
+          const link = card.querySelector('a.learn-more');
+          // リンクが見つかり、かつそのリンクが href 属性を持っている場合
+          if (link && link.href) {
+            // リンクの href 属性値（URL）を取得します。
+            const url = link.href;
+            // onclick属性でJavaScriptが指定されている場合（例: alert）、それを実行します。
+            // それ以外の場合は、ページをそのURLに遷移させます。
+            if (link.getAttribute('onclick')) {
+              // onclick属性の内容を関数として実行（より安全な方法は new Function(link.getAttribute('onclick'))() ですが、
+              // 今回は単純な alert を想定しているため、直接 eval に近い形で実行します。
+              // ただし、セキュリティリスクを伴う可能性があるため、通常は推奨されません。
+              // 今回は onclick の中身が `alert(...); return false;` であることを前提としています。
+              // return false がある場合、ページ遷移を防ぐため、onclickの実行結果を確認します。
+              try {
+                // onclick の中身を直接実行するのはリスクがあるので、
+                // もし onclick 属性に 'return false' が含まれていたらページ遷移しない、という簡易的な判定をします。
+                // より堅牢にするなら、onclick の中身を安全に評価する方法が必要です。
+                const onclickScript = link.getAttribute('onclick');
+                if (onclickScript) {
+                  // onclickの中身を実行
+                  // 注意: これは簡易的な実装です。evalに近い挙動なのでセキュリティに注意。
+                  // return false を含む場合、ページ遷移をキャンセルすべき。
+                  // ここでは、onclickの内容が 'alert(...); return false;' であることを期待しています。
+                  // 本来は new Function(onclickScript)() のような形が少し安全です。
+                  let shouldPreventDefault = false;
+                  if (onclickScript.includes('return false')) {
+                    shouldPreventDefault = true;
+                  }
+                  // onclickの中身を安全に実行する良い方法が標準ではないため、
+                  // ここではonclickの内容を直接実行せず、hrefへの遷移を優先します。
+                  // もしonclickで遷移をキャンセルしたい場合は、別途そのロジックを組み込む必要があります。
+
+                  // onclickの処理が 'return false' を返す場合は、遷移しない
+                  // これは簡易的なチェックです。
+                  if (onclickScript.includes('return false')) {
+                    // onclick属性を実行（簡易的）
+                    (new Function(onclickScript))(); // これでもreturn falseはウィンドウコンテキストで評価される
+                    // window.event.returnValue = false のような効果は期待しにくい
+                    // ここでは、onclickを持つ場合はその処理に任せ、遷移しないようにする
+                    return; // これにより以降の window.location.href の処理を行わない
+                  }
+                }
+                // 上記のonclick処理が複雑なため、準備中のリンクはhref="#"かつonclickなので、
+                // href="#" への遷移は実質何もしないことになります。
+                // そのため、onclickを持つ場合はそちらを実行して遷移しない、という動作を優先します。
+                if (link.getAttribute('onclick')) {
+                  // onclickがある場合はそちらを実行し、この関数を抜ける
+                  // (new Function(link.getAttribute('onclick')))(); // これだとreturn falseが効かない
+                  // onclick属性を直接実行するよりは、
+                  // alertが主要なケースなので、ここではonclickがある場合は遷移しない、という方針にします。
+                  if (link.onclick) { // onclickプロパティに関数がセットされていれば実行
+                    link.onclick();
+                  } else { // そうでなければ属性値を評価 (非推奨だが例として)
+                    (new Function(link.getAttribute('onclick')))();
+                  }
+                  return; // ページ遷移をしない
+                }
+
+
+                // 通常のリンク先に遷移
+                window.location.href = url;
+              } catch (e) {
+                console.error("Error executing onclick or navigating:", e);
+                // エラーが発生した場合でも、フォールバックとしてURL遷移を試みる
+                window.location.href = url;
+              }
+            } else {
+              // onclick属性がない場合は、単純にURLに遷移します。
+              window.location.href = url;
+            }
+          }
+        });
+      });
+    });
+  </script>
 
 </body> <!-- HTML文書の本体終了 -->
 </html> <!-- HTML文書の終了 -->
