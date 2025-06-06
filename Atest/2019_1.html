@@ -1,0 +1,483 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>2019年度 電気数学 達成度確認テスト</title>
+    
+    <!-- MathJaxの読み込みと設定 -->
+    <script>
+        MathJax = {
+            tex: {
+                inlineMath: [['\\(', '\\)']],
+                displayMath: [['$$', '$$']]
+            },
+            chtml: { // chtml出力用の設定
+                linebreaks: { automatic: true } // 自動改行を有効化
+            }
+        };
+    </script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 15px;
+            background-color: #f4f4f9;
+            color: #333;
+        }
+        h1 {
+            font-size: 1.5em;
+            color: #4a4a4a;
+            border-bottom: 2px solid #007bff;
+            padding-bottom: 10px;
+            margin-bottom: 20px;
+        }
+        #quiz-container {
+            margin-bottom: 20px;
+        }
+        .question-block {
+            background-color: #fff;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+        .question-block p {
+            font-size: 1.1em;
+            margin-top: 0;
+        }
+        .options label {
+            display: block;
+            background-color: #f9f9f9;
+            border: 1px solid #eee;
+            border-radius: 5px;
+            padding: 10px;
+            margin-bottom: 8px;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+        .options label:hover {
+            background-color: #eef8ff;
+        }
+        .options input[type="radio"]:disabled + span {
+            color: #888;
+        }
+        .options label.selected.correct {
+            background-color: #d4edda;
+            border-color: #c3e6cb;
+        }
+        .options label.selected.incorrect {
+            background-color: #f8d7da;
+            border-color: #f5c6cb;
+        }
+        .options input[type="radio"] {
+            margin-right: 10px;
+        }
+        .result {
+            margin-top: 15px;
+            font-weight: bold;
+            padding: 10px;
+            border-radius: 5px;
+        }
+        .result.correct {
+            color: #155724;
+            background-color: #d4edda;
+            border: 1px solid #c3e6cb;
+        }
+        .result.incorrect {
+            color: #721c24;
+            background-color: #f8d7da;
+            border: 1px solid #f5c6cb;
+        }
+        .explanation {
+            margin-top: 10px;
+            padding: 15px;
+            background-color: #e9ecef;
+            border-left: 4px solid #007bff;
+            border-radius: 5px;
+            display: none;
+            overflow-x: auto; /* 数式がはみ出す場合のスクロールを許可 */
+        }
+    </style>
+</head>
+<body>
+
+    <h1>2019年度第1回達成度確認テスト 電気数学</h1>
+
+    <div id="quiz-container">
+        <!-- 問題 1 -->
+        <div class="question-block" id="q1a">
+            <p><strong>1. (a)</strong> 空欄(ア)を埋めよ。<br>\( \frac{d}{dt} x^2 t^3 = (\text{ア}) \)<br><small>※本問では、\(x\)は\(t\)の関数ではなく定数として扱います。</small></p>
+            <div class="options">
+                <label><input type="radio" name="q1a" value="1"><span> ① \( 2xt^3 \)</span></label>
+                <label><input type="radio" name="q1a" value="2"><span> ② \( 3x^2t^2 \)</span></label>
+                <label><input type="radio" name="q1a" value="3"><span> ③ \( 2xt^3 + 3x^2t^2 \)</span></label>
+                <label><input type="radio" name="q1a" value="4"><span> ④ \( x^2t^3/2 \)</span></label>
+            </div>
+            <div class="result" style="display:none;"></div>
+            <div class="explanation"></div>
+        </div>
+
+        <div class="question-block" id="q1b">
+            <p><strong>1. (b)</strong> 空欄(イ)を埋めよ。<br>\( \frac{d}{dt} \cos at = (\text{イ}) \)</p>
+            <div class="options">
+                <label><input type="radio" name="q1b" value="1"><span> ① \( \sin at \)</span></label>
+                <label><input type="radio" name="q1b" value="2"><span> ② \( -\sin at \)</span></label>
+                <label><input type="radio" name="q1b" value="3"><span> ③ \( a \sin at \)</span></label>
+                <label><input type="radio" name="q1b" value="4"><span> ④ \( -a \sin at \)</span></label>
+            </div>
+            <div class="result" style="display:none;"></div>
+            <div class="explanation"></div>
+        </div>
+
+        <div class="question-block" id="q1c">
+            <p><strong>1. (c)</strong> 空欄(ウ)を埋めよ。<br>\( \frac{d}{dt} \log t = (\text{ウ}) \)</p>
+            <div class="options">
+                <label><input type="radio" name="q1c" value="1"><span> ① \( t \)</span></label>
+                <label><input type="radio" name="q1c" value="2"><span> ② \( 1/t \)</span></label>
+                <label><input type="radio" name="q1c" value="3"><span> ③ \( -t \)</span></label>
+                <label><input type="radio" name="q1c" value="4"><span> ④ \( -1/t \)</span></label>
+            </div>
+            <div class="result" style="display:none;"></div>
+            <div class="explanation"></div>
+        </div>
+        
+        <div class="question-block" id="q1d">
+            <p><strong>1. (d)</strong> 空欄(エ)を埋めよ。<br>\( \frac{d}{dt} e^{at} \sin t = (\text{エ}) \)</p>
+            <div class="options">
+                <label><input type="radio" name="q1d" value="1"><span> ① \( e^{at} (a \sin t + \cos t) \)</span></label>
+                <label><input type="radio" name="q1d" value="2"><span> ② \( e^{at} (\sin t + a \cos t) \)</span></label>
+                <label><input type="radio" name="q1d" value="3"><span> ③ \( e^{at} (a \sin t - \cos t) \)</span></label>
+                <label><input type="radio" name="q1d" value="4"><span> ④ \( e^{at} (\sin t - a \cos t) \)</span></label>
+            </div>
+            <div class="result" style="display:none;"></div>
+            <div class="explanation"></div>
+        </div>
+
+        <div class="question-block" id="q1e">
+            <p><strong>1. (e)</strong> 空欄(オ)を埋めよ。<br>\( \frac{d}{dt} \tan t = (\text{オ}) \)</p>
+            <div class="options">
+                <label><input type="radio" name="q1e" value="1"><span> ① \( 1/\cos^2 t \)</span></label>
+                <label><input type="radio" name="q1e" value="2"><span> ② \( 1/\sin^2 t \)</span></label>
+                <label><input type="radio" name="q1e" value="3"><span> ③ \( -1/\cos^2 t \)</span></label>
+                <label><input type="radio" name="q1e" value="4"><span> ④ \( -1/\sin^2 t \)</span></label>
+            </div>
+            <div class="result" style="display:none;"></div>
+            <div class="explanation"></div>
+        </div>
+
+        <!-- 問題 2 -->
+        <div class="question-block" id="q2a">
+            <p><strong>2. (a)</strong> \(A \sin \omega t\) を \(t\) で積分すると (カ) である。</p>
+            <div class="options">
+                <label><input type="radio" name="q2a" value="1"><span> ① \( -A \cos \omega t \)</span></label>
+                <label><input type="radio" name="q2a" value="2"><span> ② \( A \omega \cos \omega t \)</span></label>
+                <label><input type="radio" name="q2a" value="3"><span> ③ \( -A \omega \cos \omega t \)</span></label>
+                <label><input type="radio" name="q2a" value="4"><span> ④ \( -\frac{A}{\omega} \cos \omega t \)</span></label>
+            </div>
+            <div class="result" style="display:none;"></div>
+            <div class="explanation"></div>
+        </div>
+        
+        <div class="question-block" id="q2b">
+            <p><strong>2. (b)</strong> \(u = x^2\) のとき \( \int u \, du \) は (キ) である。</p>
+            <div class="options">
+                <label><input type="radio" name="q2b" value="1"><span> ① \( \int x^2 \, dx \)</span></label>
+                <label><input type="radio" name="q2b" value="2"><span> ② \( \int 2x^2 \, dx \)</span></label>
+                <label><input type="radio" name="q2b" value="3"><span> ③ \( \int 2x^3 \, dx \)</span></label>
+                <label><input type="radio" name="q2b" value="4"><span> ④ \( \int x^3 \, dx \)</span></label>
+            </div>
+            <div class="result" style="display:none;"></div>
+            <div class="explanation"></div>
+        </div>
+
+        <div class="question-block" id="q2c">
+            <p><strong>2. (c)</strong> \( \int f' g \, dx \) は (ク) である。</p>
+            <div class="options">
+                <label><input type="radio" name="q2c" value="1"><span> ① \( fg - \int fg' \, dx \)</span></label>
+                <label><input type="radio" name="q2c" value="2"><span> ② \( fg - \int f'g \, dx \)</span></label>
+                <label><input type="radio" name="q2c" value="3"><span> ③ \( f'g - \int fg \, dx \)</span></label>
+                <label><input type="radio" name="q2c" value="4"><span> ④ \( fg - \int fg \, dx \)</span></label>
+            </div>
+            <div class="result" style="display:none;"></div>
+            <div class="explanation"></div>
+        </div>
+        
+        <div class="question-block" id="q2d">
+            <p><strong>2. (d)</strong> 実効値とは (ケ) である。</p>
+            <div class="options">
+                <label><input type="radio" name="q2d" value="1"><span> ① 平均</span></label>
+                <label><input type="radio" name="q2d" value="2"><span> ② 振幅</span></label>
+                <label><input type="radio" name="q2d" value="3"><span> ③ 二乗の平均の平方根</span></label>
+                <label><input type="radio" name="q2d" value="4"><span> ④ 平方根の平均の二乗</span></label>
+            </div>
+            <div class="result" style="display:none;"></div>
+            <div class="explanation"></div>
+        </div>
+
+        <div class="question-block" id="q2e">
+            <p><strong>2. (e)</strong> キャパシタに蓄えられた電荷量は (コ) の積分で与えられる。</p>
+            <div class="options">
+                <label><input type="radio" name="q2e" value="1"><span> ① 電圧</span></label>
+                <label><input type="radio" name="q2e" value="2"><span> ② 電流</span></label>
+                <label><input type="radio" name="q2e" value="3"><span> ③ 電力</span></label>
+                <label><input type="radio" name="q2e" value="4"><span> ④ 静電容量</span></label>
+            </div>
+            <div class="result" style="display:none;"></div>
+            <div class="explanation"></div>
+        </div>
+
+        <!-- 問題 3 -->
+        <div class="question-block" id="q3a">
+            <p><strong>3. (a)</strong> \( \frac{dx(t)}{dt} + 2x(t) = 0 \) を満たす \(x(t)\) は (サ) である。</p>
+            <div class="options">
+                <label><input type="radio" name="q3a" value="1"><span> ① \( e^{-0.5t} \)</span></label>
+                <label><input type="radio" name="q3a" value="2"><span> ② \( e^{2t} \)</span></label>
+                <label><input type="radio" name="q3a" value="3"><span> ③ \( e^{-2t} \)</span></label>
+                <label><input type="radio" name="q3a" value="4"><span> ④ \( e^{0.5t} \)</span></label>
+            </div>
+            <div class="result" style="display:none;"></div>
+            <div class="explanation"></div>
+        </div>
+        
+        <div class="question-block" id="q3b">
+            <p><strong>3. (b)</strong> \( \frac{dx(t)}{dt} + 2x(t) = 1 \) を満たす \(x(t)\) は (シ) である。</p>
+            <div class="options">
+                <label><input type="radio" name="q3b" value="1"><span> ① \( t \)</span></label>
+                <label><input type="radio" name="q3b" value="2"><span> ② \( e^{-t} \)</span></label>
+                <label><input type="radio" name="q3b" value="3"><span> ③ \( 0.5 \)</span></label>
+                <label><input type="radio" name="q3b" value="4"><span> ④ \( e^{-2t} \)</span></label>
+            </div>
+            <div class="result" style="display:none;"></div>
+            <div class="explanation"></div>
+        </div>
+
+        <div class="question-block" id="q3c">
+            <p><strong>3. (c)</strong> \( \frac{d^2x(t)}{dt^2} + x(t) = 0 \) を満たす \(x(t)\) は (ス) である。</p>
+            <div class="options">
+                <label><input type="radio" name="q3c" value="1"><span> ① \( \sin t \)</span></label>
+                <label><input type="radio" name="q3c" value="2"><span> ② \( \sin 2t \)</span></label>
+                <label><input type="radio" name="q3c" value="3"><span> ③ \( \tan t \)</span></label>
+                <label><input type="radio" name="q3c" value="4"><span> ④ \( \sinh t \)</span></label>
+            </div>
+            <div class="result" style="display:none;"></div>
+            <div class="explanation"></div>
+        </div>
+        
+        <div class="question-block" id="q3d">
+            <p><strong>3. (d)</strong> \( \frac{dx(t)}{dt} = x(t)\{1-x(t)\} \) を満たす \(x(t)\) は (セ) である。</p>
+            <div class="options">
+                <label><input type="radio" name="q3d" value="1"><span> ① \( \frac{e^t}{1-e^t} \)</span></label>
+                <label><input type="radio" name="q3d" value="2"><span> ② \( \frac{e^t}{1+e^t} \)</span></label>
+                <label><input type="radio" name="q3d" value="3"><span> ③ \( \frac{-e^t}{1+e^t} \)</span></label>
+                <label><input type="radio" name="q3d" value="4"><span> ④ \( \frac{-e^t}{1-e^t} \)</span></label>
+            </div>
+            <div class="result" style="display:none;"></div>
+            <div class="explanation"></div>
+        </div>
+
+        <div class="question-block" id="q3e">
+            <p><strong>3. (e)</strong> \( \frac{dx(t)}{dt} + \{x(t)\}^2 = 0 \) を満たす \(x(t)\) は (ソ) である。</p>
+            <div class="options">
+                <label><input type="radio" name="q3e" value="1"><span> ① \( \sin 2t \)</span></label>
+                <label><input type="radio" name="q3e" value="2"><span> ② \( \sin \sqrt{t} \)</span></label>
+                <label><input type="radio" name="q3e" value="3"><span> ③ \( 1/t^2 \)</span></label>
+                <label><input type="radio" name="q3e" value="4"><span> ④ \( 1/t \)</span></label>
+            </div>
+            <div class="result" style="display:none;"></div>
+            <div class="explanation"></div>
+        </div>
+
+        <!-- 問題 4 -->
+        <div class="question-block" id="q4a">
+            <p><strong>4. (a)</strong> \(\mathbf{A} = -3\mathbf{i} + 4\mathbf{j} + 2\mathbf{k}\) の大きさ \(|\mathbf{A}|\) は (タ) である。</p>
+            <div class="options">
+                <label><input type="radio" name="q4a" value="1"><span> ① \( \sqrt{3} \)</span></label>
+                <label><input type="radio" name="q4a" value="2"><span> ② \( \sqrt{29} \)</span></label>
+                <label><input type="radio" name="q4a" value="3"><span> ③ \( 29 \)</span></label>
+                <label><input type="radio" name="q4a" value="4"><span> ④ \( 3 \)</span></label>
+            </div>
+            <div class="result" style="display:none;"></div>
+            <div class="explanation"></div>
+        </div>
+
+        <div class="question-block" id="q4b">
+            <p><strong>4. (b)</strong> \(\mathbf{A} = -3\mathbf{i} + 4\mathbf{j} + 2\mathbf{k}\), \(\mathbf{B} = -2\mathbf{i} + 3\mathbf{k}\) の内積 \(\mathbf{A} \cdot \mathbf{B}\) は (チ) である。</p>
+            <div class="options">
+                <label><input type="radio" name="q4b" value="1"><span> ① \( 12 \)</span></label>
+                <label><input type="radio" name="q4b" value="2"><span> ② \( -2 \)</span></label>
+                <label><input type="radio" name="q4b" value="3"><span> ③ \( 6\mathbf{i} + 6\mathbf{k} \)</span></label>
+                <label><input type="radio" name="q4b" value="4"><span> ④ \( -5\mathbf{i} + 4\mathbf{j} + 5\mathbf{k} \)</span></label>
+            </div>
+            <div class="result" style="display:none;"></div>
+            <div class="explanation"></div>
+        </div>
+
+        <div class="question-block" id="q4c">
+            <p><strong>4. (c)</strong> \(\mathbf{A} = -3\mathbf{i} + 4\mathbf{j} + 2\mathbf{k}\), \(\mathbf{B} = -2\mathbf{i} + 3\mathbf{k}\) の外積 \(\mathbf{A} \times \mathbf{B}\) は (ツ) である。</p>
+            <div class="options">
+                <label><input type="radio" name="q4c" value="1"><span> ① \( 14 \)</span></label>
+                <label><input type="radio" name="q4c" value="2"><span> ② \( -5\mathbf{i} + 4\mathbf{j} + 5\mathbf{k} \)</span></label>
+                <label><input type="radio" name="q4c" value="3"><span> ③ \( 25 \)</span></label>
+                <label><input type="radio" name="q4c" value="4"><span> ④ \( 12\mathbf{i} + 5\mathbf{j} + 8\mathbf{k} \)</span></label>
+            </div>
+            <div class="result" style="display:none;"></div>
+            <div class="explanation"></div>
+        </div>
+        
+        <div class="question-block" id="q4d">
+            <p><strong>4. (d)</strong> \(\mathbf{C} = 5xy\mathbf{i} + 2yz\mathbf{j} + 3xz\mathbf{k}\) の発散 \( \text{div} \, \mathbf{C} \) は (テ) である。</p>
+            <div class="options">
+                <label><input type="radio" name="q4d" value="1"><span> ① \( 3x + 5y + 2z \)</span></label>
+                <label><input type="radio" name="q4d" value="2"><span> ② \( 5x + 2y + 3z \)</span></label>
+                <label><input type="radio" name="q4d" value="3"><span> ③ \( 5y\mathbf{i} + 2z\mathbf{j} + 3x\mathbf{k} \)</span></label>
+                <label><input type="radio" name="q4d" value="4"><span> ④ \( 5x\mathbf{i} + 2y\mathbf{j} + 3z\mathbf{k} \)</span></label>
+            </div>
+            <div class="result" style="display:none;"></div>
+            <div class="explanation"></div>
+        </div>
+
+        <div class="question-block" id="q4e">
+            <p><strong>4. (e)</strong> \(\mathbf{C} = 5xy\mathbf{i} + 2yz\mathbf{j} + 3xz\mathbf{k}\) の回転 \( \text{rot} \, \mathbf{C} \) は (ト) である。</p>
+            <div class="options">
+                <label><input type="radio" name="q4e" value="1"><span> ① \( -2y - 3z - 5x \)</span></label>
+                <label><input type="radio" name="q4e" value="2"><span> ② \( -2y\mathbf{i} - 3z\mathbf{j} - 5x\mathbf{k} \)</span></label>
+                <label><input type="radio" name="q4e" value="3"><span> ③ \( -5x - 2y - 3z \)</span></label>
+                <label><input type="radio" name="q4e" value="4"><span> ④ \( -5x\mathbf{i} - 2y\mathbf{j} - 3z\mathbf{k} \)</span></label>
+            </div>
+            <div class="result" style="display:none;"></div>
+            <div class="explanation"></div>
+        </div>
+        
+        <!-- 問題 5 -->
+        <div class="question-block" id="q5a">
+            <p><strong>5. (a)</strong> ベクトル \( [a \ b] \) に直交するベクトルは (ナ) である。</p>
+            <div class="options">
+                <label><input type="radio" name="q5a" value="1"><span> ① \( [b \ a] \)</span></label>
+                <label><input type="radio" name="q5a" value="2"><span> ② \( [-b \ a] \)</span></label>
+                <label><input type="radio" name="q5a" value="3"><span> ③ \( -[b \ a] \)</span></label>
+                <label><input type="radio" name="q5a" value="4"><span> ④ \( [1 \ -1] \)</span></label>
+            </div>
+            <div class="result" style="display:none;"></div>
+            <div class="explanation"></div>
+        </div>
+        
+        <div class="question-block" id="q5b">
+            <p><strong>5. (b)</strong> \( \mathbf{A} = \begin{pmatrix} a & b \\ c & d \end{pmatrix} \) とする。\( \mathbf{A}\mathbf{x} = \mathbf{0} \) を満たすような列ベクトル \( \mathbf{x} \neq \mathbf{0} \) が存在する条件は (ニ) である。</p>
+            <div class="options">
+                <label><input type="radio" name="q5b" value="1"><span> ① \( ab+cd=0 \)</span></label>
+                <label><input type="radio" name="q5b" value="2"><span> ② \( ab-cd=0 \)</span></label>
+                <label><input type="radio" name="q5b" value="3"><span> ③ \( ad+bc=0 \)</span></label>
+                <label><input type="radio" name="q5b" value="4"><span> ④ \( ad-bc=0 \)</span></label>
+            </div>
+            <div class="result" style="display:none;"></div>
+            <div class="explanation"></div>
+        </div>
+
+        <div class="question-block" id="q5c">
+            <p><strong>5. (c)</strong> 行列 \( \mathbf{B} = \begin{pmatrix} e & f \\ g & h \end{pmatrix} \) について、固有値方程式 \( \mathbf{B}\mathbf{y} = \lambda \mathbf{y} \) を変形した \( (\lambda \mathbf{I} - \mathbf{B})\mathbf{y} = \mathbf{0} \) における行列 \( \lambda \mathbf{I} - \mathbf{B} \) は (ヌ) である。</p>
+            <div class="options">
+                <label><input type="radio" name="q5c" value="1"><span> ① \( \begin{pmatrix} \lambda+e & f \\ g & \lambda+h \end{pmatrix} \)</span></label>
+                <label><input type="radio" name="q5c" value="2"><span> ② \( \begin{pmatrix} \lambda+e & -f \\ -g & \lambda+h \end{pmatrix} \)</span></label>
+                <label><input type="radio" name="q5c" value="3"><span> ③ \( \begin{pmatrix} \lambda-e & f \\ g & \lambda-h \end{pmatrix} \)</span></label>
+                <label><input type="radio" name="q5c" value="4"><span> ④ \( \begin{pmatrix} \lambda-e & -f \\ -g & \lambda-h \end{pmatrix} \)</span></label>
+            </div>
+            <div class="result" style="display:none;"></div>
+            <div class="explanation"></div>
+        </div>
+
+        <div class="question-block" id="q5d">
+            <p><strong>5. (d)</strong> 上記の (c) で、ゼロベクトルでない解 \( \mathbf{y} \) が存在するための \( \lambda \) の条件は (ネ) である。</p>
+            <div class="options">
+                <label><input type="radio" name="q5d" value="1"><span> ① \( \lambda^2+(e+h)\lambda+(eh+fg)=0 \)</span></label>
+                <label><input type="radio" name="q5d" value="2"><span> ② \( \lambda^2-(e+h)\lambda+(eh+fg)=0 \)</span></label>
+                <label><input type="radio" name="q5d" value="3"><span> ③ \( \lambda^2+(e+h)\lambda+(eh-fg)=0 \)</span></label>
+                <label><input type="radio" name="q5d" value="4"><span> ④ \( \lambda^2-(e+h)\lambda+(eh-fg)=0 \)</span></label>
+            </div>
+            <div class="result" style="display:none;"></div>
+            <div class="explanation"></div>
+        </div>
+    </div>
+
+    <script>
+        const quizData = {
+            'q1a': { answer: '2', explanation: '<h3>解説 (1-a)</h3><p>\\(t\\)に関する微分なので、\\(x^2\\)は定数として扱います。べき乗の微分公式 \\( \\frac{d}{dt} t^n = nt^{n-1} \\) を用いて、<br>$$ \\frac{d}{dt} (x^2 t^3) = x^2 \\cdot (3t^2) = 3x^2t^2 $$ となります。よって、正解は②です。</p>' },
+            'q1b': { answer: '4', explanation: '<h3>解説 (1-b)</h3><p>合成関数の微分を用います。\\( u = at \\) とおくと、\\( \\frac{d}{dt} \\cos(at) = \\frac{d}{du}(\\cos u) \\cdot \\frac{du}{dt} \\) となります。<br>$$ (-\\sin u) \\cdot a = -a \\sin(at) $$ よって、正解は④です。</p>' },
+            'q1c': { answer: '2', explanation: '<h3>解説 (1-c)</h3><p>自然対数 \\(\\log t\\) (または \\(\\ln t\\)) の微分は基本的な公式です。<br>$$ \\frac{d}{dt} \\log t = \\frac{1}{t} $$ よって、正解は②です。</p>' },
+            'q1d': { answer: '1', explanation: '<h3>解説 (1-d)</h3><p>積の微分公式 \\( (fg)\' = f\'g + fg\' \\) を用います。\\( f(t)=e^{at}, g(t)=\\sin t \\) とすると、$$ \\begin{align} \\frac{d}{dt} (e^{at} \\sin t) &= (ae^{at}) (\\sin t) + (e^{at}) (\\cos t) \\\\ &= e^{at} (a \\sin t + \\cos t) \\end{align} $$ よって、正解は①です。</p>' },
+            'q1e': { answer: '1', explanation: '<h3>解説 (1-e)</h3><p>\\(\\tan t\\) の微分は基本的な公式です。<br>$$ \\frac{d}{dt} \\tan t = \\frac{1}{\\cos^2 t} $$ これは \\( \\tan t = \\frac{\\sin t}{\\cos t} \\) として商の微分公式を使っても導出できます。よって、正解は①です。</p>' },
+            
+            'q2a': { answer: '4', explanation: '<h3>解説 (2-a)</h3><p>\\(\\sin\\) の積分公式と、合成関数の積分を考えます。$$ \\begin{align} \\int A \\sin (\\omega t) \\, dt &= A \\int \\sin (\\omega t) \\, dt \\\\ &= A \\left( -\\frac{1}{\\omega} \\cos (\\omega t) \\right) + C \\\\ &= -\\frac{A}{\\omega} \\cos (\\omega t) + C \\end{align} $$ 積分定数を除くと、正解は④です。</p>' },
+            'q2b': { answer: '3', explanation: '<h3>解説 (2-b)</h3><p>問題は「\\(u=x^2\\)のとき、\\(\\int u \\, du\\)を\\(x\\)の積分で表すとどうなるか」と解釈します。<br>まず、\\(u=x^2\\) の両辺を\\(x\\)で微分すると、\\( \\frac{du}{dx} = 2x \\)、つまり \\( du = 2x \\, dx \\) となります。<br>これを \\(\\int u \\, du\\) に代入すると、<br>$$ \\int u \\, du = \\int (x^2) (2x \\, dx) = \\int 2x^3 \\, dx $$ よって、正解は③です。</p>' },
+            'q2c': { answer: '1', explanation: '<h3>解説 (2-c)</h3><p>これは部分積分の公式そのものです。<br>$$ \\int f\'(x) g(x) \\, dx = f(x)g(x) - \\int f(x)g\'(x) \\, dx $$ 問題の表記に合わせると、正解は①です。</p>' },
+            'q2d': { answer: '3', explanation: '<h3>解説 (2-d)</h3><p>実効値（RMS: Root Mean Square）は、その名の通り、信号（瞬時値）の「二乗 (Square)」の「平均 (Mean)」の「平方根 (Root)」を取ったものです。交流電圧や電流の大きさを表すのによく用いられます。よって、正解は③です。</p>' },
+            'q2e': { answer: '2', explanation: '<h3>解説 (2-e)</h3><p>電流 \\(i(t)\\) は、電荷量 \\(Q(t)\\) の時間変化率として定義されます (\\( i = dQ/dt \\))。したがって、ある時間までに蓄えられた電荷量 \\(Q\\) は、電流 \\(i(t)\\) を時間で積分することで求められます。<br>$$ Q = \\int i(t) \\, dt $$ よって、電荷量は電流の積分で与えられます。正解は②です。</p>' },
+
+            'q3a': { answer: '3', explanation: '<h3>解説 (3-a)</h3><p>これは変数分離形の1階線形微分方程式です。<br>$$ \\frac{dx}{dt} = -2x \\implies \\frac{1}{x} dx = -2 dt $$ 両辺を積分して、\\( \\ln|x| = -2t + C_1 \\)。<br>よって、\\( x(t) = e^{-2t+C_1} = C e^{-2t} \\)。この形の関数は③です。</p>' },
+            'q3b': { answer: '3', explanation: '<h3>解説 (3-b)</h3><p>これは非斉次の1階線形微分方程式です。解は斉次解と特殊解の和になります。特殊解を定数 \\(x(t)=A\\) と仮定して代入すると、<br>$$ \\frac{d(A)}{dt} + 2A = 1 \\implies 0 + 2A = 1 \\implies A = 0.5 $$ よって、特殊解の一つが \\(x(t) = 0.5\\) です。選択肢にこれがあるので、正解は③です。</p>' },
+            'q3c': { answer: '1', explanation: '<h3>解説 (3-c)</h3><p>これは単振動を表す2階線形微分方程式です。特性方程式は \\( \\lambda^2 + 1 = 0 \\)、解は \\( \\lambda = \\pm i \\) となります。<br>一般解は \\( x(t) = C_1 \\cos t + C_2 \\sin t \\) と表せます。この解の成分である \\( \\sin t \\) が選択肢にあるため、正解は①です。</p>' },
+            'q3d': { answer: '2', explanation: '<h3>解説 (3-d)</h3><p>これはロジスティック方程式と呼ばれる変数分離形の微分方程式です。$$ \\begin{align} \\frac{dx}{x(1-x)} &= dt \\\\ \\left(\\frac{1}{x} + \\frac{1}{1-x}\\right)dx &= dt \\\\ \\ln|x| - \\ln|1-x| &= t + C_1 \\\\ \\ln\\left|\\frac{x}{1-x}\\right| &= t+C_1 \\\\ \\frac{x}{1-x} &= C e^t \\\\ x &= \\frac{Ce^t}{1+Ce^t} \\end{align} $$ 任意定数 \\(C=1\\) とすれば、\\( x = \\frac{e^t}{1+e^t} \\)。よって、正解は②です。</p>' },
+            'q3e': { answer: '4', explanation: '<h3>解説 (3-e)</h3><p>これも変数分離形の微分方程式です。<br>$$ \\frac{dx}{dt} = -x^2 \\implies \\frac{dx}{x^2} = -dt $$ 両辺を積分すると、\\( -\\frac{1}{x} = -t + C_1 \\implies \\frac{1}{x} = t - C_1 \\)。<br>$$ x(t) = \\frac{1}{t - C_1} $$ 積分定数を \\(C_1=0\\) とすれば \\( x(t) = 1/t \\)。よって、正解は④です。</p>' },
+            
+            'q4a': { answer: '2', explanation: '<h3>解説 (4-a)</h3><p>ベクトルの大きさは、各成分の二乗和の平方根で計算します。$$ \\begin{align} |\\mathbf{A}| &= \\sqrt{(-3)^2 + 4^2 + 2^2} \\\\ &= \\sqrt{9 + 16 + 4} = \\sqrt{29} \\end{align} $$ よって、正解は②です。</p>' },
+            'q4b': { answer: '1', explanation: '<h3>解説 (4-b)</h3><p>内積は、対応する成分同士の積の和で計算します。$$ \\begin{align} \\mathbf{A} \\cdot \\mathbf{B} &= (-3)(-2) + (4)(0) + (2)(3) \\\\ &= 6 + 0 + 6 = 12 \\end{align} $$ よって、正解は①です。</p>' },
+            'q4c': { answer: '4', explanation: '<h3>解説 (4-c)</h3><p>外積は、行列式を用いて計算するのが便利です。$$ \\begin{align} \\mathbf{A} \\times \\mathbf{B} &= \\begin{vmatrix} \\mathbf{i} & \\mathbf{j} & \\mathbf{k} \\\\ -3 & 4 & 2 \\\\ -2 & 0 & 3 \\end{vmatrix} \\\\ &= \\mathbf{i}(12 - 0) - \\mathbf{j}(-9 - (-4)) + \\mathbf{k}(0 - (-8)) \\\\ &= 12\\mathbf{i} - \\mathbf{j}(-5) + \\mathbf{k}(8) \\\\ &= 12\\mathbf{i} + 5\\mathbf{j} + 8\\mathbf{k} \\end{align} $$ よって、正解は④です。</p>' },
+            'q4d': { answer: '1', explanation: '<h3>解説 (4-d)</h3><p>ベクトルの発散 (\\(\\text{div}\\)) は、ナブラ演算子 \\(\\nabla\\) との内積で計算されます。$$ \\begin{align} \\text{div} \\, \\mathbf{C} &= \\nabla \\cdot \\mathbf{C} \\\\ &= \\frac{\\partial}{\\partial x}(5xy) + \\frac{\\partial}{\\partial y}(2yz) + \\frac{\\partial}{\\partial z}(3xz) \\\\ &= 5y + 2z + 3x \\end{align} $$ 項を整理すると \\( 3x+5y+2z \\)。よって、正解は①です。</p>' },
+            'q4e': { answer: '2', explanation: '<h3>解説 (4-e)</h3><p>ベクトルの回転 (\\(\\text{rot}\\)) は、ナブラ演算子 \\(\\nabla\\) との外積で計算されます。$$ \\begin{align} \\text{rot} \\, \\mathbf{C} &= \\nabla \\times \\mathbf{C} = \\begin{vmatrix} \\mathbf{i} & \\mathbf{j} & \\mathbf{k} \\\\ \\frac{\\partial}{\\partial x} & \\frac{\\partial}{\\partial y} & \\frac{\\partial}{\\partial z} \\\\ 5xy & 2yz & 3xz \\end{vmatrix} \\\\ &= \\mathbf{i}(\\tfrac{\\partial}{\\partial y}(3xz) - \\tfrac{\\partial}{\\partial z}(2yz)) \\\\ &\\quad - \\mathbf{j}(\\tfrac{\\partial}{\\partial x}(3xz) - \\tfrac{\\partial}{\\partial z}(5xy)) \\\\ &\\quad + \\mathbf{k}(\\tfrac{\\partial}{\\partial x}(2yz) - \\tfrac{\\partial}{\\partial y}(5xy)) \\\\ &= \\mathbf{i}(0 - 2y) - \\mathbf{j}(3z - 0) + \\mathbf{k}(0 - 5x) \\\\ &= -2y\\mathbf{i} - 3z\\mathbf{j} - 5x\\mathbf{k} \\end{align} $$ よって、正解は②です。</p>' },
+            
+            'q5a': { answer: '2', explanation: '<h3>解説 (5-a)</h3><p>2つのベクトルが直交する条件は、それらの内積が0になることです。ベクトル \\( [a \\ b] \\) と各選択肢の内積を計算します。<br>② \\( [-b \\ a] \\): 内積は \\( a \\cdot (-b) + b \\cdot a = -ab + ab = 0 \\)。<br>したがって、直交するのは②です。</p>' },
+            'q5b': { answer: '4', explanation: '<h3>解説 (5-b)</h3><p>同次連立一次方程式 \\( \\mathbf{A}\\mathbf{x} = \\mathbf{0} \\) が、自明な解 (\\(\\mathbf{x} = \\mathbf{0}\\)) 以外の解を持つための条件は、係数行列 \\(\\mathbf{A}\\) が正則でない、すなわち行列式が0になることです。<br>$$ \\det(\\mathbf{A}) = ad - bc = 0 $$ よって、正解は④です。</p>' },
+            'q5c': { answer: '4', explanation: '<h3>解説 (5-c)</h3><p>固有値方程式 \\( \\mathbf{B}\\mathbf{y} = \\lambda \\mathbf{y} \\) を変形します。$$ \\begin{align} \\lambda \\mathbf{y} - \\mathbf{B}\\mathbf{y} &= \\mathbf{0} \\\\ (\\lambda \\mathbf{I} - \\mathbf{B})\\mathbf{y} &= \\mathbf{0} \\end{align} $$ ここで行列 \\( \\lambda \\mathbf{I} - \\mathbf{B} \\) を計算します。$$ \\begin{align} \\lambda \\mathbf{I} - \\mathbf{B} &= \\lambda \\begin{pmatrix} 1 & 0 \\\\ 0 & 1 \\end{pmatrix} - \\begin{pmatrix} e & f \\\\ g & h \\end{pmatrix} \\\\ &= \\begin{pmatrix} \\lambda-e & -f \\\\ -g & \\lambda-h \\end{pmatrix} \\end{align} $$ よって、正解は④です。</p>' },
+            'q5d': { answer: '4', explanation: '<h3>解説 (5-d)</h3><p>前問(c)の方程式がゼロベクトルでない解 \\( \\mathbf{y} \\) を持つための条件は、係数行列 \\( (\\lambda \\mathbf{I} - \\mathbf{B}) \\) の行列式が0になることです。$$ \\begin{align} \\det(\\lambda \\mathbf{I} - \\mathbf{B}) &= 0 \\\\ \\begin{vmatrix} \\lambda-e & -f \\\\ -g & \\lambda-h \\end{vmatrix} &= 0 \\\\ (\\lambda-e)(\\lambda-h) - (-f)(-g) &= 0 \\\\ \\lambda^2 - (e+h)\\lambda + eh - fg &= 0 \\end{align} $$ よって、正解は④です。</p>' },
+        };
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const radioButtons = document.querySelectorAll('.options input[type="radio"]');
+
+            radioButtons.forEach(radio => {
+                radio.addEventListener('change', (event) => {
+                    const selectedRadio = event.target;
+                    const questionBlock = selectedRadio.closest('.question-block');
+                    const qId = questionBlock.id;
+                    const resultDiv = questionBlock.querySelector('.result');
+                    const explanationDiv = questionBlock.querySelector('.explanation');
+                    const optionsInBlock = questionBlock.querySelectorAll('input[type="radio"]');
+                    const selectedLabel = selectedRadio.closest('label');
+
+                    optionsInBlock.forEach(opt => {
+                        opt.disabled = true;
+                    });
+
+                    const userAnswer = selectedRadio.value;
+                    const quizInfo = quizData[qId];
+                    const correctAnswer = quizInfo.answer;
+
+                    explanationDiv.innerHTML = quizInfo.explanation;
+                    explanationDiv.style.display = 'block';
+                    
+                    resultDiv.style.display = 'block';
+
+                    if (userAnswer === correctAnswer) {
+                        resultDiv.textContent = '正解！';
+                        resultDiv.className = 'result correct';
+                        selectedLabel.classList.add('selected', 'correct');
+                    } else {
+                        resultDiv.textContent = '不正解';
+                        resultDiv.className = 'result incorrect';
+                        selectedLabel.classList.add('selected', 'incorrect');
+                    }
+                    
+                    if (window.MathJax) {
+                        MathJax.typesetPromise([explanationDiv]).catch((err) => console.log('MathJax typeset failed: ', err));
+                    }
+                });
+            });
+        });
+    </script>
+
+</body>
+</html>
