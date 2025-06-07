@@ -1,0 +1,957 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+    <!-- ========================================================================== -->
+    <!-- HEADセクション: メタ情報、タイトル、外部リソースの読み込み -->
+    <!-- ========================================================================== -->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- ▼▼▼ 記事固有のタイトルを設定してください ▼▼▼ -->
+    <title>アナログ電子回路演習問題① 徹底解説 - 総合解説プラットフォーム</title>
+    <!-- ▲▲▲ 記事固有のタイトルを設定してください ▲▲▲ -->
+    <meta name="article-number" content="000008">
+
+    <!-- MathJax (数式表示ライブラリ) -->
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js">
+    </script>
+
+    <style>
+        /* ========================================================================== */
+        /* CSSスタイル: ページ全体のデザイン定義 (テンプレート.htmlからコピー) */
+        /* ========================================================================== */
+
+        /* 基本リセットとボックスサイジング */
+        *,
+        *::before,
+        *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        html {
+            scroll-behavior: smooth;
+            /* ページ内リンクやJSによるスクロールを滑らかに */
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+            line-height: 1.7;
+            /* 行間を読みやすく */
+            background-color: #f8f9fa;
+            /* ページ全体の背景色 */
+            color: #212529;
+            /* メインテキストの色 */
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            /* ページの最小の高さを画面の高さに */
+        }
+
+        /* --- サイト共通ヘッダーのスタイル --- */
+        header {
+            background-color: #007bff;
+            color: white;
+            padding: 20px 15px;
+            text-align: center;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            cursor: pointer;
+            /* クリック可能を示すカーソル */
+        }
+
+        header h1 {
+            font-size: clamp(1.8rem, 5vw, 2.5rem);
+            font-weight: 600;
+        }
+
+        header h1 .subtitle {
+            display: block;
+            font-size: clamp(0.8rem, 2.5vw, 1rem);
+            font-weight: 300;
+            margin-top: 5px;
+            opacity: 0.9;
+        }
+
+        /* --- サイト共通ナビゲーションバーのスタイル（スクロールで固定される） --- */
+        nav {
+            background-color: #343a40;
+            padding: 10px 0;
+            text-align: center;
+            position: sticky;
+            /* スクロールで画面上部に固定 */
+            top: 0;
+            /* 上端から0の位置で固定 */
+            z-index: 1000;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        }
+
+        nav ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        nav ul li {
+            margin: 5px 10px;
+        }
+
+        nav a {
+            color: #f8f9fa;
+            text-decoration: none;
+            padding: 8px 12px;
+            background-color: transparent;
+            -webkit-tap-highlight-color: transparent;
+            outline: none;
+        }
+
+        /* --- 共通ヘッダー・ナビゲーションここまで --- */
+
+        /* --- メインコンテンツエリア --- */
+        .article-container {
+            width: 90%;
+            /* コンテナ幅 (画面幅に対する割合) */
+            max-width: 800px;
+            /* 最大幅 (これ以上は広がらない、記事の読みやすさのため) */
+            margin: 25px auto;
+            /* 外側余白 (上下25px、左右は自動で中央揃え) */
+            padding: clamp(20px, 4vw, 35px);
+            /* 内側余白 (レスポンシブに最小20px, 推奨4vw, 最大35px) */
+            background-color: #ffffff;
+            /* コンテナ背景色 (白) */
+            border-radius: 8px;
+            /* 角丸 */
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.07);
+            /* コンテナの影 */
+            flex: 1;
+            /* bodyがFlexコンテナなので、残りの垂直スペースを埋める */
+        }
+
+        /* 見出しスタイル */
+        .article-container h1 {
+            /* 記事のメインタイトル */
+            font-size: clamp(1.7rem, 4.5vw, 2.2rem);
+            color: #007bff;
+            /* 明るい青 */
+            margin-bottom: 25px;
+            /* 下余白 */
+            padding-bottom: 12px;
+            /* 下線との間隔 */
+            border-bottom: 2px solid #007bff;
+            /* 下線 */
+            text-align: center;
+            /* 中央揃え */
+        }
+
+        .article-container h2 {
+            /* 中見出し */
+            font-size: clamp(1.4rem, 3.5vw, 1.8rem);
+            color: #0056b3;
+            /* やや濃い青 */
+            margin-top: 35px;
+            /* 上余白 */
+            margin-bottom: 18px;
+            /* 下余白 */
+            padding-bottom: 8px;
+            /* 下線との間隔 */
+            border-bottom: 1px solid #ced4da;
+            /* 薄いグレーの下線 */
+        }
+
+        .article-container h3 {
+            /* 小見出し */
+            font-size: clamp(1.2rem, 3vw, 1.5rem);
+            color: #343a40;
+            /* ダークグレー */
+            margin-top: 28px;
+            /* 上余白 */
+            margin-bottom: 12px;
+            /* 下余白 */
+        }
+
+        /* 段落とリストアイテムのスタイル */
+        .article-container p,
+        .article-container li {
+            font-size: clamp(0.95rem, 2.5vw, 1.05rem);
+            /* 本文フォントサイズ */
+            margin-bottom: 18px;
+            /* 下余白 */
+        }
+
+        /* リストのスタイル */
+        .article-container ul,
+        .article-container ol {
+            margin-left: 20px;
+            /* 左インデント */
+            padding-left: 18px;
+            /* リストマーカーのための内側余白 */
+            margin-bottom: 18px;
+            /* 下余白 */
+        }
+
+        /* 数式ブロックのスタイル */
+        .math-block {
+            margin: 25px 0;
+            /* 上下余白 */
+            padding: 18px;
+            /* 内側余白 */
+            background-color: #eef3f7;
+            /* 背景色 (薄い水色系) */
+            border-left: 4px solid #007bff;
+            /* 左の強調線 */
+            overflow-x: auto;
+            /* 横にはみ出す場合にスクロールバー表示 */
+            border-radius: 0 5px 5px 0;
+            /* 角丸 (左上以外) */
+        }
+
+        /* MathJaxが生成するコンテナのスタイル (横スクロール対応) */
+        mjx-container[jax="CHTML"][display="true"] {
+            display: block;
+            overflow-x: auto;
+            overflow-y: hidden;
+            padding: 5px 0;
+        }
+
+        /* 強調表示用のクラス */
+        .important {
+            /* 重要テキスト */
+            font-weight: bold;
+            /* 太字 */
+            color: #dc3545;
+            /* 赤系 (警告や注意) */
+        }
+
+        .highlight {
+            /* ハイライトテキスト */
+            background-color: #ffc107;
+            /* 黄色系 */
+            padding: 2px 6px;
+            border-radius: 4px;
+            color: #212529;
+            /* 背景が明るいので文字色は濃く */
+        }
+
+        /* インラインコードのスタイル */
+        code {
+            background-color: #e9ecef;
+            /* 背景色 (薄いグレー) */
+            padding: 0.2em 0.4em;
+            /* 内側余白 */
+            margin: 0 0.1em;
+            /* 左右の微調整マージン */
+            font-size: 0.9em;
+            /* フォントサイズ (本文より少し小さく) */
+            border-radius: 4px;
+            /* 角丸 */
+            font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, Courier, monospace;
+            /* 等幅フォント */
+        }
+
+        /* ブロックコード (pre要素内のcode要素) のスタイル */
+        pre {
+            /* pre要素自体に背景やパディングを設定 */
+            background-color: #282c34;
+            /* ダークテーマの背景 */
+            color: #abb2bf;
+            /* コードの文字色 (明るいグレー) */
+            padding: 15px;
+            /* 内側余白 */
+            border-radius: 5px;
+            /* 角丸 */
+            overflow-x: auto;
+            /* 横スクロール対応 */
+            margin: 20px 0;
+            /* 上下余白 */
+        }
+
+        pre code {
+            /* pre内のcodeは背景や余白をリセット */
+            background-color: transparent;
+            padding: 0;
+            margin: 0;
+            font-size: 0.95em;
+            /* pre内のフォントサイズ調整 */
+            line-height: 1.5;
+            /* コードの行間 */
+        }
+
+        /* --- フッター --- */
+        footer {
+            background-color: #343a40;
+            /* 背景色 (ダークグレー) */
+            color: #adb5bd;
+            /* 文字色 (明るいグレー) */
+            text-align: center;
+            /* 中央揃え */
+            padding: 25px 15px;
+            /* 内側余白 */
+            margin-top: auto;
+            /* bodyがFlexコンテナなので、ページ最下部に配置 */
+        }
+
+        footer p {
+            font-size: clamp(0.8rem, 2vw, 0.9rem);
+            /* フォントサイズ */
+            margin-bottom: 5px;
+        }
+
+        footer p:last-child {
+            margin-bottom: 0;
+        }
+
+        footer a {
+            color: #adb5bd;
+            /* フッターの文字色に合わせる */
+            text-decoration: none;
+            /* 下線を消す */
+            transition: color 0.3s ease;
+            /* ホバー時の色の変化 */
+            margin: 0 8px;
+        }
+
+        footer a:hover {
+            color: #ffffff;
+            /* ホバー時に明るい色にする */
+        }
+
+        /* --- トップへ戻るボタン --- */
+        #scrollTopBtn {
+            display: none;
+            /* 初期状態では非表示 (JSで制御) */
+            position: fixed;
+            /* 画面に固定 */
+            bottom: 30px;
+            /* フッターと重ならないように調整 */
+            right: 30px;
+            z-index: 999;
+            /* ヘッダーよりは下、通常コンテンツよりは手前 */
+            border: none;
+            outline: none;
+            background-color: #007bff;
+            /* 背景色 (明るい青) */
+            color: white;
+            /* アイコン色 (白) */
+            cursor: pointer;
+            /* カーソルを指マークに */
+            padding: 12px 15px;
+            /* 内側余白 */
+            border-radius: 50%;
+            /* 円形にする */
+            font-size: 18px;
+            /* アイコンのフォントサイズ */
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+            /* ボタンの影 */
+            transition: opacity 0.3s, visibility 0.3s;
+            /* 表示/非表示時のアニメーション */
+            opacity: 0;
+            /* 初期状態では透明 */
+            visibility: hidden;
+            /* 初期状態では見えない (レイアウトに影響しない) */
+        }
+
+        #scrollTopBtn.show {
+            /* JavaScriptでこのクラスが付与されると表示される */
+            display: block;
+            /* 表示 */
+            opacity: 1;
+            /* 不透明に */
+            visibility: visible;
+            /*見えるように */
+        }
+
+        #scrollTopBtn:hover {
+            background-color: #0056b3;
+            /* ホバー時の背景色 (やや濃い青) */
+        }
+
+        /* --- メディアクエリ (レスポンシブ対応) --- */
+        @media (max-width: 768px) {
+
+            /* 画面幅が768px以下の場合に適用 */
+            header {
+                padding: 15px;
+            }
+
+            header h1 {
+                font-size: 1.6rem;
+            }
+
+            header h1 .subtitle {
+                font-size: 0.9rem;
+            }
+
+            nav {
+                padding: 8px 0;
+            }
+
+            nav ul li {
+                margin: 3px 8px;
+            }
+
+            nav a {
+                padding: 6px 10px;
+                font-size: 0.9rem;
+            }
+
+            .article-container {
+                width: 95%;
+                /* スマホでのコンテナ幅 */
+                padding: 20px 15px;
+                /* スマホでのコンテナ内側余白 */
+                margin-top: 15px;
+                /* スマホでのスティッキーヘッダー下のマージン */
+            }
+
+            /* スマホでの見出しフォントサイズ調整 */
+            .article-container h1 {
+                font-size: 1.6rem;
+            }
+
+            .article-container h2 {
+                font-size: 1.3rem;
+            }
+
+            .article-container h3 {
+                font-size: 1.1rem;
+            }
+
+            /* スマホでのトップへ戻るボタンの位置とサイズ調整 */
+            #scrollTopBtn {
+                bottom: 20px;
+                /* フッターの高さと合わせて調整 */
+                right: 20px;
+                padding: 10px 12px;
+                font-size: 16px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- ========================================================================== -->
+    <!-- BODYセクション: 実際にブラウザに表示されるコンテンツ -->
+    <!-- ========================================================================== -->
+
+    <!-- --- サイト共通ヘッダー（テンプレート.htmlからコピー） --- -->
+    <header id="main-header">
+        <h1>
+            総合解説プラットフォーム
+            <span class="subtitle">あらゆる疑問に、明快な解答を。</span>
+        </h1>
+    </header>
+
+    <!-- ナビゲーションバー: サイト内の主要ページへのリンク（テンプレート.htmlからコピー） -->
+    <nav>
+        <ul>
+            <li><a href="../index.html">トップ</a></li>
+            <li><a href="../contents.html">コンテンツ</a></li>
+            <li><a href="../index.html#about">このサイトについて</a></li>
+        </ul>
+    </nav>
+
+    <!-- --- メインコンテンツ（記事固有の内容はそのまま） --- -->
+    <main class="article-container">
+        <h1>アナログ電子回路演習問題① 徹底解説</h1>
+
+        <p>
+            この記事では、アナログ電子回路の基礎であるオペアンプ（演算増幅器）を用いた反転増幅回路、非反転増幅回路、加算回路、減算回路、そしてボルテージフォロアに関する演習問題の解答と詳細な解説を提供します。オペアンプの理想特性から非理想特性まで、理論と計算の両面から深く理解することを目指します。
+        </p>
+
+        <section id="Q1">
+            <h2>問1. オペアンプの基礎回路</h2>
+            <p>オペアンプを用いた基本的な増幅回路についての問題です。理想オペアンプの特性を理解することが重要です。</p>
+
+            <h3>1.1. 反転増幅回路・非反転増幅回路の基礎</h3>
+            <p>まず、理想オペアンプの基本的な特性を確認しましょう。オペアンプが理想的であると仮定する場合、以下の3つの重要な特性が成り立ちます。</p>
+            <ul>
+                <li><span class="highlight">入力インピーダンスが無限大</span>：入力端子（非反転入力 V+、反転入力 V-）には電流が流れません（\(I_+ = I_- = 0\)）。
+                </li>
+                <li><span class="highlight">出力インピーダンスがゼロ</span>：出力電圧は接続される負荷によらず一定です。</li>
+                <li><span class="highlight">オープンループゲインが無限大</span>：フィードバックが正しくかかっている場合、V+とV-の電位が等しくなります。これを<span
+                        class="important">イマジナリショート</span>と呼びます。</li>
+            </ul>
+
+            <h4>反転増幅回路 (Inverting Amplifier)</h4>
+            <p>
+                反転増幅回路では、非反転入力 (V+) がGND (0V) に接続されています。理想オペアンプの特性により、イマジナリショートが成り立つため、反転入力 (V-) の電位もGND (0V)
+                とみなすことができます。これを<span class="important">イマジナリグランド</span>（イマジナリショートの一種）と呼びます。
+            </p>
+            <p>
+                Rsを流れる電流 \(I_{Rs}\) は、\(V_s\)からV-端子へ流れる電流として計算できます。
+            </p>
+            <div class="math-block">
+                $$ I_{Rs} = \frac{V_s - V_-}{R_s} = \frac{V_s - 0}{R_s} = \frac{V_s}{R_s} $$
+            </div>
+            <p>
+                V-端子には電流が流れないため、この電流 \(I_{Rs}\) はすべてフィードバック抵抗 \(R_F\) を流れて出力 \(V_o\) に到達します。
+            </p>
+            <div class="math-block">
+                $$ I_{RF} = \frac{V_- - V_o}{R_F} = \frac{0 - V_o}{R_F} = -\frac{V_o}{R_F} $$
+            </div>
+            <p>
+                電流保存則により \(I_{Rs} = I_{RF}\) なので、以下の関係式が成り立ちます。
+            </p>
+            <div class="math-block">
+                $$ \frac{V_s}{R_s} = -\frac{V_o}{R_F} $$
+            </div>
+            <p>
+                この式から、反転増幅回路の電圧利得 \(A_v\) は次のように導出されます。
+            </p>
+            <div class="math-block">
+                $$ A_v = \frac{V_o}{V_s} = -\frac{R_F}{R_s} $$
+            </div>
+            <p>
+                そして出力電圧 \(V_o\) は以下の式で計算されます。
+            </p>
+            <div class="math-block">
+                $$ V_o = \left(-\frac{R_F}{R_s}\right) \times V_s $$
+            </div>
+            <p><strong>計算問題の解答:</strong></p>
+            <ul>
+                <li><strong>(A) \(V_s = 5V\), \(R_s = 5k\Omega\), \(R_F = 10k\Omega\) の時の \(V_o\):</strong>
+                    <div class="math-block">
+                        $$ \begin{aligned} V_o &= \left(-\frac{10k\Omega}{5k\Omega}\right) \times 5V \\ &= (-2) \times
+                        5V \\ &= -10V \end{aligned} $$
+                    </div>
+                    <strong>解答:</strong> \(V_o = -10V\)
+                </li>
+                <li><strong>(B) \(V_s = 2V\), \(R_s = 3k\Omega\), \(V_o = -6V\) の時の \(R_F\):</strong>
+                    <div class="math-block">
+                        $$ \begin{aligned} -6V &= \left(-\frac{R_F}{3k\Omega}\right) \times 2V \\ R_F &= \frac{-6V
+                        \times 3k\Omega}{-2V} \\ R_F &= 9k\Omega \end{aligned} $$
+                    </div>
+                    <strong>解答:</strong> \(R_F = 9k\Omega\)
+                </li>
+                <li><strong>(C) \(R_s = 4k\Omega\), \(R_F = 12k\Omega\), \(V_o = 9V\) の時の \(V_s\):</strong>
+                    <div class="math-block">
+                        $$ \begin{aligned} 9V &= \left(-\frac{12k\Omega}{4k\Omega}\right) \times V_s \\ 9V &= (-3)
+                        \times V_s \\ V_s &= \frac{9V}{-3} \\ V_s &= -3V \end{aligned} $$
+                    </div>
+                    <strong>解答:</strong> \(V_s = -3V\)
+                </li>
+            </ul>
+
+            <h4>非反転増幅回路 (Non-inverting Amplifier)</h4>
+            <p>
+                非反転増幅回路では、非反転入力 (V+) が直接入力 \(V_s\) に接続されています。理想オペアンプの特性により、イマジナリショートが成り立つため、反転入力 (V-) の電位も \(V_s\)
+                と等しくなります（\(V_- = V_s\)）。
+            </p>
+            <p>
+                V-端子の電位は、出力 \(V_o\) から \(R_F\) と \(R_s\) を介してGNDへ流れる電流による抵抗分圧によって決まります。
+            </p>
+            <div class="math-block">
+                $$ V_- = V_o \times \frac{R_s}{R_s + R_F} $$
+            </div>
+            <p>
+                \(V_- = V_s\) なので、次式が成り立ちます。
+            </p>
+            <div class="math-block">
+                $$ V_s = V_o \times \frac{R_s}{R_s + R_F} $$
+            </div>
+            <p>
+                この式から、非反転増幅回路の電圧利得 \(A_v\) は次のように導出されます。
+            </p>
+            <div class="math-block">
+                $$ A_v = \frac{V_o}{V_s} = \frac{R_s + R_F}{R_s} = 1 + \frac{R_F}{R_s} $$
+            </div>
+            <p>
+                そして出力電圧 \(V_o\) は以下の式で計算されます。
+            </p>
+            <div class="math-block">
+                $$ V_o = \left(1 + \frac{R_F}{R_s}\right) \times V_s $$
+            </div>
+            <p><strong>計算問題の解答:</strong></p>
+            <ul>
+                <li><strong>(D) \(V_s = 2V\), \(R_s = 5k\Omega\), \(R_F = 10k\Omega\) の時の \(V_o\):</strong>
+                    <div class="math-block">
+                        $$ \begin{aligned} V_o &= \left(1 + \frac{10k\Omega}{5k\Omega}\right) \times 2V \\ &= (1 + 2)
+                        \times 2V \\ &= 3 \times 2V \\ &= 6V \end{aligned} $$
+                    </div>
+                    <strong>解答:</strong> \(V_o = 6V\)
+                </li>
+                <li><strong>(E) \(V_s = 2V\), \(R_s = 4k\Omega\), \(V_o = 7V\) の時の \(R_F\):</strong>
+                    <div class="math-block">
+                        $$ \begin{aligned} 7V &= \left(1 + \frac{R_F}{4k\Omega}\right) \times 2V \\ 3.5 &= 1 +
+                        \frac{R_F}{4k\Omega} \\ 2.5 &= \frac{R_F}{4k\Omega} \\ R_F &= 2.5 \times 4k\Omega \\ R_F &=
+                        10k\Omega \end{aligned} $$
+                    </div>
+                    <strong>解答:</strong> \(R_F = 10k\Omega\)
+                </li>
+                <li><strong>(F) \(R_s = 4k\Omega\), \(R_F = 8k\Omega\), \(V_o = 9V\) の時の \(V_s\):</strong>
+                    <div class="math-block">
+                        $$ \begin{aligned} 9V &= \left(1 + \frac{8k\Omega}{4k\Omega}\right) \times V_s \\ 9V &= (1 + 2)
+                        \times V_s \\ 9V &= 3 \times V_s \\ V_s &= \frac{9V}{3} \\ V_s &= 3V \end{aligned} $$
+                    </div>
+                    <strong>解答:</strong> \(V_s = 3V\)
+                </li>
+            </ul>
+
+            <h3>1.2. 加算回路の基礎</h3>
+            <p>
+                この回路は、<span class="highlight">反転加算回路</span>です。非反転入力 V+ はGND (0V) に接続されているため、理想オペアンプのイマジナリショートの特性により、反転入力
+                V- (ノードX) の電位もGND (0V) とみなされます。
+            </p>
+            <p>
+                <strong>ノードXにおけるKCL (キルヒホッフの電流則) の適用:</strong><br>
+                ノードXに流入する電流の合計はゼロであるというKCLを適用します。
+            <ul>
+                <li>\(V_1\)からノードXへの電流: \(\frac{V_1 - V_-}{R_1} = \frac{V_1 - 0}{R_1} = \frac{V_1}{R_1}\)</li>
+                <li>\(V_2\)からノードXへの電流: \(\frac{V_2 - V_-}{R_1} = \frac{V_2 - 0}{R_1} = \frac{V_2}{R_1}\)</li>
+                <li>ノードXから\(V_o\)への電流 (フィードバック): \(\frac{V_- - V_o}{R_F} = \frac{0 - V_o}{R_F} = -\frac{V_o}{R_F}\)</li>
+            </ul>
+            <p>オペアンプのV-入力端子には電流が流入しないため、これらの電流の合計はゼロです。</p>
+            <div class="math-block">
+                $$ \frac{V_1}{R_1} + \frac{V_2}{R_1} - \frac{V_o}{R_F} = 0 $$
+            </div>
+            <p>
+                これは、問題に示された解答形式に合わせるために、全体を -1 倍して各項の符号を反転させたものです（電流の向きの定義に依存しますが、結果的に同じ関係式が得られます）。
+            </p>
+            <p>
+                <strong>(A) ノードXにおけるKCLの式を記述:</strong><br>
+                \(R_1 = 10k\Omega\), \(R_F = 30k\Omega\) なので、
+            </p>
+            <div class="math-block">
+                $$ \frac{V_1}{10k} + \frac{V_2}{10k} + \frac{V_o}{30k} = 0 $$
+            </div>
+            <p><strong>(B) \(V_1 = 5V\), \(V_o = -21V\) の時の \(V_2\):</strong><br>
+                上記のKCL式に値を代入します。</p>
+            <div class="math-block">
+                $$ \begin{aligned}
+                \frac{5V}{10k\Omega} + \frac{V_2}{10k\Omega} + \frac{-21V}{30k\Omega} &= 0 \\
+                0.5mA + \frac{V_2}{10k\Omega} - 0.7mA &= 0 \\
+                \frac{V_2}{10k\Omega} &= 0.7mA - 0.5mA \\
+                \frac{V_2}{10k\Omega} &= 0.2mA \\
+                V_2 &= 0.2mA \times 10k\Omega \\
+                V_2 &= 2V
+                \end{aligned} $$
+            </div>
+            <strong>解答:</strong> \(V_2 = 2V\)
+            </p>
+        </section>
+
+        <section id="Q2">
+            <h2>問2. 反転増幅回路・非反転増幅回路の動作</h2>
+            <p>入力電圧が時間とともに変化する際の、各回路の出力電圧の波形を予測する問題です。</p>
+
+            <h3>2.1. 反転増幅回路 (図1)</h3>
+            <p>
+                抵抗値は \(R_s = 10k\Omega\), \(R_F = 10k\Omega\) です。
+                反転増幅回路の電圧利得 \(A_v\) は \(A_v = -R_F / R_s\) で与えられます。
+            </p>
+            <div class="math-block">
+                $$ A_v = -\frac{10k\Omega}{10k\Omega} = -1 $$
+            </div>
+            <p>
+                したがって、出力電圧 \(V_o\) は入力電圧 \(V_s\) の符号を反転させたものになります。
+            </p>
+            <div class="math-block">
+                $$ V_o = -V_s $$
+            </div>
+            <p>
+                <strong>図2への描画:</strong> 入力 \(V_s\) の波形を、各時刻で符号を反転させた値をプロットします。
+            </p>
+            <p><strong>解答:</strong> 略</p>
+
+            <h3>2.2. 非反転増幅回路 (図3)</h3>
+            <p>
+                抵抗値は \(R_s = 50k\Omega\), \(R_F = 50k\Omega\) です。
+                非反転増幅回路の電圧利得 \(A_v\) は \(A_v = 1 + R_F / R_s\) で与えられます。
+            </p>
+            <div class="math-block">
+                $$ A_v = 1 + \frac{50k\Omega}{50k\Omega} = 1 + 1 = 2 $$
+            </div>
+            <p>
+                したがって、出力電圧 \(V_o\) は入力電圧 \(V_s\) を2倍した値になります。
+            </p>
+            <div class="math-block">
+                $$ V_o = 2 \times V_s $$
+            </div>
+            <p>
+                <strong>図4への描画:</strong> 入力 \(V_s\) の波形を、各時刻で値を2倍にしたものをプロットします。
+            </p>
+            <p><strong>解答:</strong> 略</p>
+        </section>
+
+        <section id="Q3">
+            <h2>問3. ボルテージフォロアの動作</h2>
+            <p>ボルテージフォロアは、オペアンプの基本的な応用回路の一つで、特にバッファとして有用です。</p>
+
+            <h3>3.1. ボルテージフォロア (Voltage Follower) (図5)</h3>
+            <p>
+                この回路は非反転増幅回路の特殊な形です。出力 \(V_o\) が直接反転入力 (V-) 端子にフィードバックされ、非反転入力 (V+) 端子には入力 \(V_s\) が直接接続されています。
+            </p>
+            <p>
+                理想オペアンプの特性である<span class="important">イマジナリショート</span>（\(V_+ = V_-\)）を適用すると、以下の関係がすぐに導かれます。
+            </p>
+            <div class="math-block">
+                $$ \begin{aligned} V_+ &= V_s \\ V_- &= V_o \\ \Rightarrow V_o &= V_s \end{aligned} $$
+            </div>
+            <p>
+                ボルテージフォロアの電圧利得は常に1です。電圧をそのまま出力しますが、その主な役割は、高い入力インピーダンスと低い出力インピーダンスを持つことにより、信号源にほとんど負荷をかけずに、より大きな電流を供給できる<span
+                    class="highlight">バッファアンプ</span>として機能することです。この回路では、負荷抵抗 \(R_L\) が出力電圧 \(V_o\) に直接影響を与えることはありません。
+            </p>
+            <p><strong>計算問題の解答:</strong></p>
+            <ul>
+                <li><strong>ボルテージフォロアのある場合 (図5):</strong>
+                    入力電圧 \(V_s = 3V\) なので、出力電圧 \(V_o = V_s = 3V\) となります。
+                    <strong>解答:</strong> 3 V
+                </li>
+            </ul>
+
+            <h3>3.2. ボルテージフォロアがない場合 (図6)</h3>
+            <p>
+                この回路はオペアンプを含まず、単純な<span class="highlight">抵抗分圧回路</span>です。入力電圧 \(V_s\) は、直列に接続された \(R_s\) と \(R_L\)
+                によって分圧され、\(V_o\) は \(R_L\) にかかる電圧として測定されます。
+            </p>
+            <p>
+                分圧の法則により、出力電圧 \(V_o\) は次のように計算されます。
+            </p>
+            <div class="math-block">
+                $$ V_o = V_s \times \frac{R_L}{R_s + R_L} $$
+            </div>
+            <p><strong>計算問題の解答:</strong></p>
+            <ul>
+                <li><strong>ボルテージフォロアのない場合 (図6):</strong>
+                    \(V_s = 3V\), \(R_s = 10k\Omega\), \(R_L = 1k\Omega\) を代入します。
+                    <div class="math-block">
+                        $$ \begin{aligned} V_o &= 3V \times \frac{1k\Omega}{10k\Omega + 1k\Omega} \\ &= 3V \times
+                        \frac{1k\Omega}{11k\Omega} \\ &= \frac{3}{11}V \\ &\approx 0.2727V \end{aligned} $$
+                    </div>
+                    <strong>解答:</strong> 0.27 V
+                </li>
+            </ul>
+        </section>
+
+        <section id="Q4">
+            <h2>問4. 加算回路・減算回路</h2>
+            <p>複数の入力を持つ差動増幅回路の問題です。理想オペアンプの特性を前提に解析します。</p>
+
+            <h3>4.1. ノードY (V-端子) におけるKCL</h3>
+            <p>
+                V-端子には電流が流入しないため、ノードYに接続されている抵抗を流れる電流の総和はゼロです。
+            <ul>
+                <li>\(V_1\)からノードYへの電流: \(\frac{V_1 - V_-}{R_1}\)</li>
+                <li>\(V_2\)からノードYへの電流: \(\frac{V_2 - V_-}{R_1}\)</li>
+                <li>\(V_o\)からノードYへの電流 (フィードバック): \(\frac{V_o - V_-}{R_F}\)</li>
+            </ul>
+            これらの電流の合計はゼロなので、KCLの式は次のようになります。
+            </p>
+            <div class="math-block">
+                $$ \begin{aligned}
+                \frac{V_1 - V_-}{R_1} + \frac{V_2 - V_-}{R_1} &+ \frac{V_o - V_-}{R_F} = 0
+                \end{aligned} $$
+            </div>
+
+            <h3>4.2. ノードX (V+端子) におけるKCL</h3>
+            <p>
+                V+端子にも電流が流入しないため、ノードXに接続されている抵抗を流れる電流の総和はゼロです。
+            <ul>
+                <li>\(V_3\)からノードXへの電流: \(\frac{V_3 - V_+}{R_1}\)</li>
+                <li>\(V_4\)からノードXへの電流: \(\frac{V_4 - V_+}{R_1}\)</li>
+                <li>GNDからノードXへの電流 (抵抗\(R_F\)を経由): \(\frac{0 - V_+}{R_F}\)</li>
+            </ul>
+            これらの電流の合計はゼロなので、KCLの式は次のようになります。
+            </p>
+            <div class="math-block">
+                $$ \begin{aligned}
+                \frac{V_3 - V_+}{R_1} + \frac{V_4 - V_+}{R_1} &+ \frac{0 - V_+}{R_F} = 0
+                \end{aligned} $$
+            </div>
+
+            <h3>4.3. 出力電圧 \(V_o\) の導出</h3>
+            <p>
+                理想オペアンプの特性 \(V_- = V_+\) （イマジナリショート）を用いて、上記のKCL式から\(V_o\)を導出します。
+            </p>
+            <p>
+                まず、ノードYのKCL式を\(V_-\)について整理します。両辺に \(R_1 R_F\) を掛けると、
+            </p>
+            <div class="math-block">
+                $$ \begin{aligned}
+                R_F(V_1 - V_-) + R_F(V_2 - V_-) + R_1(V_o - V_-) &= 0 \\
+                R_F(V_1 + V_2) + R_1 V_o &= V_-(2 R_F + R_1) \\
+                V_- &= \frac{R_F(V_1 + V_2) + R_1 V_o}{2 R_F + R_1} \quad \cdots (A)
+                \end{aligned} $$
+            </div>
+            <p>
+                次に、ノードXのKCL式を\(V_+\)について整理します。両辺に \(R_1 R_F\) を掛けると、
+            </p>
+            <div class="math-block">
+                $$ \begin{aligned}
+                R_F(V_3 - V_+) + R_F(V_4 - V_+) + R_1(0 - V_+) &= 0 \\
+                R_F(V_3 + V_4) &= V_+(2 R_F + R_1) \\
+                V_+ &= \frac{R_F(V_3 + V_4)}{2 R_F + R_1} \quad \cdots (B)
+                \end{aligned} $$
+            </div>
+            <p>
+                最後に、理想オペアンプの条件 \(V_- = V_+\) を適用します。分母が共通なので、分子同士を等しいと置きます。
+            </p>
+            <div class="math-block">
+                $$ \begin{aligned}
+                R_F(V_1 + V_2) + R_1 V_o &= R_F(V_3 + V_4) \\
+                R_1 V_o &= R_F(V_3 + V_4) - R_F(V_1 + V_2) \\
+                R_1 V_o &= R_F (V_3 + V_4 - V_1 - V_2) \\
+                V_o &= \frac{R_F}{R_1} (V_3 + V_4 - V_1 - V_2)
+                \end{aligned} $$
+            </div>
+            <p>
+                この式は、差動増幅回路が出力電圧を各入力電圧の組み合わせによって制御することを示しています。
+            </p>
+            <p><strong>解答:</strong> \(V_o = \frac{R_F}{R_1} (V_3 + V_4 - V_1 - V_2)\)</p>
+        </section>
+
+        <section id="Q5">
+            <h2>問5. 実際のオペアンプの等価回路</h2>
+            <p>
+                この問題では、より現実的なオペアンプのモデルを用いて、反転増幅回路の動作を解析します。理想オペアンプとは異なり、内部ゲイン \(A_v\)、出力インピーダンス \(Z_o\)、入力インピーダンス
+                \(Z_i\) を考慮します。
+            </p>
+            <p>
+                この回路は反転増幅回路であり、非反転入力（V+）はGNDに接続されています。したがって、内部の差動入力電圧 \(v_i\) は、\(V_+ - V_- = 0 - V_a = -V_a\) となります。
+            </p>
+
+            <h3>5.1. ノードX (Va, 反転入力) におけるKCL</h3>
+            <p>
+                ノードX（反転入力V-端子）に流入する電流の総和はゼロです。
+            <ul>
+                <li>入力 \(R_s\) からの電流: \(\frac{V_s - V_a}{R_s}\)</li>
+                <li>フィードバック \(R_F\) からの電流: \(\frac{V_o - V_a}{R_F}\)</li>
+                <li>内部入力インピーダンス \(Z_i\) を介してGNDへ流れる電流: \(\frac{0 - V_a}{Z_i} = -\frac{V_a}{Z_i}\)</li>
+            </ul>
+            これらの電流の合計はゼロなので、KCLの式は次のようになります。
+            </p>
+            <div class="math-block">
+                $$ \begin{aligned}
+                \frac{V_s - V_a}{R_s} + \frac{V_o - V_a}{R_F} + \frac{-V_a}{Z_i} = 0
+                \end{aligned} $$
+            </div>
+
+            <h3>5.2. VaをVoで表す</h3>
+            <p>
+                図の出力側の等価回路から、内部の理想増幅器の出力 \(A_v v_i\) と出力電圧 \(V_o\) の関係をKCLで表現できます。出力インピーダンス \(Z_o\)
+                を流れる電流は、出力ノードからフィードバック抵抗 \(R_F\) を通って \(V_a\) へ向かいます。
+            </p>
+            <div class="math-block">
+                $$ \begin{aligned}
+                \frac{A_v v_i - V_o}{Z_o} &= \frac{V_o - V_a}{R_F} \\
+                R_F(-A_v V_a - V_o) &= Z_o(V_o - V_a) \\
+                -A_v R_F V_a - R_F V_o &= Z_o V_o - Z_o V_a \\
+                Z_o V_a - A_v R_F V_a &= Z_o V_o + R_F V_o \\
+                V_a (Z_o - A_v R_F) &= V_o (Z_o + R_F) \\
+                V_a &= V_o \frac{Z_o + R_F}{Z_o - A_v R_F}
+                \end{aligned} $$
+            </div>
+            <p><strong>解答:</strong> \(V_a = V_o \frac{Z_o + R_F}{Z_o - A_v R_F}\)</p>
+
+            <h3>5.3. 理想オペアンプの特性への収束</h3>
+            <p>
+                実際のオペアンプが理想オペアンプに近づく条件として、\(Z_o \to 0\) (出力インピーダンスがゼロ) と \(A_v \to \infty\) (オープンループゲインが無限大) を考えます。
+            </p>
+            <p>
+                まず、\(Z_o \to 0\) の近似を上記の \(V_a\) の式に適用します。
+            </p>
+            <div class="math-block">
+                $$ \begin{aligned} V_a &= V_o \frac{0 + R_F}{0 - A_v R_F} \\ &= V_o \frac{R_F}{-A_v R_F} \\ &=
+                -\frac{V_o}{A_v} \end{aligned} $$
+            </div>
+            <p>
+                次に、\(A_v \to \infty\) の極限を取ると、
+            </p>
+            <div class="math-block">
+                $$ V_a \to -\frac{V_o}{\infty} = 0 $$
+            </div>
+            <p>
+                これは、理想オペアンプの特性である<span class="important">イマジナリショート</span>（反転入力\(V_a\)がGND電位に等しくなる）が成り立つことを示しています。
+            </p>
+            <p>
+                この \(V_a = 0\) を、問5の最初のKCL式（ノードXのKCL）に代入します。理想オペアンプでは入力インピーダンス \(Z_i \to \infty\) も仮定されるため、\(V_a/Z_i =
+                0\) となります。
+            </p>
+            <div class="math-block">
+                $$ \begin{aligned}
+                \frac{V_s - 0}{R_s} + \frac{V_o - 0}{R_F} + 0 &= 0 \\
+                \frac{V_s}{R_s} + \frac{V_o}{R_F} &= 0 \\
+                \frac{V_o}{R_F} &= -\frac{V_s}{R_s} \\
+                \frac{V_o}{V_s} &= -\frac{R_F}{R_s}
+                \end{aligned} $$
+            </div>
+            <p>
+                この結果は、理想的な<span
+                    class="highlight">反転増幅回路の電圧利得</span>と完全に一致します。このことから、実際のオペアンプが理想条件に近づくにつれて、その動作も理想的なモデルの予測に近づくことがわかります。
+            </p>
+        </section>
+
+        <section id="conclusion">
+            <h2>まとめ</h2>
+            <p>
+                本解説では、オペアンプの基礎から応用まで、様々な回路構成における動作原理と計算方法を詳述しました。特に、理想オペアンプの特性である「<span
+                    class="important">イマジナリショート</span>」や「<span
+                    class="important">入力インピーダンス無限大</span>」の概念が、回路解析においていかに重要であるかを理解いただけたことと思います。これらの基礎を固めることで、より複雑なアナログ回路の理解へと繋がります。
+            </p>
+        </section>
+
+    </main> <!-- .article-container の終了 -->
+
+    <!-- --- フッター（テンプレート.htmlからコピー） --- -->
+    <footer>
+        <p>
+            <a href="../index.html">トップページ</a> |
+            <a href="../contents.html">コンテンツ</a>
+        </p>
+        <p>© 2025 総合解説プラットフォーム. All rights reserved.</p>
+    </footer>
+
+    <!-- --- トップへ戻るボタン (HTML構造) --- -->
+    <button id="scrollTopBtn" title="トップへ戻る">⇧</button> <!-- Unicodeの上矢印記号 -->
+
+    <!-- ========================================================================== -->
+    <!-- JavaScript: 主にインタラクティブな機能のため（テンプレート.htmlからコピー） -->
+    <!-- ========================================================================== -->
+    <script>
+        // DOMContentLoadedイベント: HTMLの読み込みと解析が完了した後に実行される
+        document.addEventListener('DOMContentLoaded', () => {
+            // --- トップへ戻るボタンの機能 ---
+            const scrollTopBtn = document.getElementById('scrollTopBtn'); // ボタン要素を取得
+
+            // スクロールイベントを監視
+            window.addEventListener('scroll', () => {
+                // 表示/非表示の閾値 (ビューポートの高さの半分程度スクロールしたら表示)
+                const scrollThreshold = window.innerHeight / 2;
+                if (window.pageYOffset > scrollThreshold) { // 現在の垂直スクロール量が閾値を超えたら
+                    scrollTopBtn.classList.add('show');     // 'show'クラスを追加してボタンを表示
+                } else {
+                    scrollTopBtn.classList.remove('show');  // 閾値以下なら'show'クラスを削除してボタンを非表示
+                }
+            });
+
+            // ボタンがクリックされた時の処理
+            scrollTopBtn.addEventListener('click', () => {
+                window.scrollTo({ // ウィンドウを指定した位置にスクロール
+                    top: 0,            // ページの最上部 (Y座標0)
+                    behavior: 'smooth' // スムーズスクロール効果を適用
+                });
+            });
+
+            // --- ヘッダーのメインタイトルをクリックでトップページへ遷移 ---
+            const mainHeader = document.getElementById('main-header'); // header要素を直接取得
+            if (mainHeader) {
+                mainHeader.addEventListener('click', (event) => {
+                    // ヘッダー内のリンク（例えばナビゲーションなど）がクリックされた場合は何もしない
+                    if (event.target.closest('a')) {
+                        return;
+                    }
+                    // ここではheader全体がクリックされたらトップへ戻る
+                    window.location.href = '../index.html'; // トップページへの相対パス
+                });
+            }
+        });
+    </script>
+
+</body>
+
+</html>

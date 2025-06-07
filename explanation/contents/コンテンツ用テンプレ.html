@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ナビゲーションメニュー テンプレート</title>
+    <style>
+        /* ================================================================== */
+        /* ページの基本的なスタイル（デモ用）                                 */
+        /* ================================================================== */
+        body {
+            font-family: sans-serif;
+            background-color: #e0e0e0;
+            color: #333;
+            margin: 0;
+            height: 200vh;
+            /* スクロールできるように長さを確保 */
+        }
+
+        .content-placeholder {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            height: 100vh;
+            text-align: center;
+        }
+
+        /* ================================================================== */
+        /* ナビゲーションメニューのスタイル (ここからコピー)                   */
+        /* ================================================================== */
+
+        /* メニューを開閉するアイコンボタンのスタイル */
+        #menu-toggle-icon {
+            position: fixed;
+            /* 画面に固定表示 */
+            top: 15px;
+            /* 画面上から15pxの位置 */
+            right: 20px;
+            /* 画面右から20pxの位置 */
+            font-size: 28px;
+            /* アイコンの文字サイズ */
+            font-weight: bold;
+            /* 太字にする */
+            color: #333;
+            /* アイコンの色 (濃いグレー) */
+            background-color: rgba(255, 255, 255, 0.8);
+            /* 背景色 (半透明の白) */
+            width: 45px;
+            /* ボタンの幅 */
+            height: 45px;
+            /* ボタンの高さ */
+            border-radius: 50%;
+            /* 円形にする */
+            text-align: center;
+            /* 文字を中央揃え */
+            line-height: 45px;
+            /* 文字を垂直方向に中央揃え */
+            cursor: pointer;
+            /* カーソルを指マークに */
+            z-index: 1002;
+            /* 他の要素より手前に表示 */
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+            /* 影をつけて立体感を出す */
+            transition: transform 0.2s, background-color 0.2s;
+            /* アニメーション効果 */
+        }
+
+        /* アイコンにマウスを乗せたときのスタイル */
+        #menu-toggle-icon:hover {
+            transform: scale(1.1);
+            /* 少し大きくする */
+            background-color: rgba(255, 255, 255, 1);
+            /* 背景を不透明の白に */
+        }
+
+        /* フローティングメニュー本体のスタイル */
+        #floating-menu {
+            position: fixed;
+            /* 画面に固定表示 */
+            top: 70px;
+            /* アイコンの下に配置 */
+            right: 20px;
+            /* アイコンと同じ右からの位置 */
+            background-color: rgba(255, 255, 255, 0.98);
+            /* 背景色 (ほぼ不透明の白) */
+            padding: 15px 20px;
+            /* 内側の余白 */
+            border-radius: 8px;
+            /* 角を丸くする */
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+            /* 影をつける */
+            display: flex;
+            /* 内部のリンクをFlexboxで配置 */
+            flex-direction: column;
+            /* リンクを縦に並べる */
+            gap: 10px;
+            /* リンク間の隙間 */
+            z-index: 1001;
+
+            /* アニメーションのための初期設定 */
+            transform-origin: top right;
+            /* 右上を基点にアニメーション */
+            transform: scale(0.95);
+            opacity: 0;
+            visibility: hidden;
+            /* 表示されていないときは操作不可に */
+            transition: transform 0.2s ease-out, opacity 0.2s ease-out, visibility 0.2s;
+        }
+
+        /* メニューが表示されるときのスタイル（showクラスが付与されたとき） */
+        #floating-menu.show {
+            transform: scale(1);
+            opacity: 1;
+            visibility: visible;
+        }
+
+        /* メニュー内のリンクのスタイル */
+        #floating-menu a {
+            color: #007bff;
+            /* リンクの文字色 */
+            text-decoration: none;
+            font-size: 1.1rem;
+            font-weight: bold;
+            padding: 10px;
+            transition: background-color 0.2s;
+            border-radius: 5px;
+        }
+
+        #floating-menu a:hover {
+            background-color: #f0f0f0;
+            /* ホバー時の背景色 */
+        }
+
+        /* ================================================================== */
+        /* ナビゲーションメニューのスタイル (ここまでコピー)                   */
+        /* ================================================================== */
+    </style>
+</head>
+
+<body>
+
+    <!-- ================================================================== -->
+    <!-- ナビゲーションメニュー ここから (ここからコピー)                  -->
+    <!-- ================================================================== -->
+
+    <!-- 画面右上に表示されるメニュー開閉ボタン -->
+    <div id="menu-toggle-icon">≡</div>
+
+    <!-- クリック時に表示されるフローティングメニュー -->
+    <div id="floating-menu">
+        <!-- 各ページへのリンク。パスは適宜調整してください -->
+        <a href="../index.html">トップページへ</a>
+        <a href="../contents.html">コンテンツ一覧へ</a>
+    </div>
+
+    <!-- ================================================================== -->
+    <!-- ナビゲーションメニュー ここまで (ここまでコピー)                  -->
+    <!-- ================================================================== -->
+
+    <!-- 以下はデモ用のコンテンツです -->
+    <div class="content-placeholder">
+        <h1>コンテンツのデモページ</h1>
+        <p>右上のメニューボタンをクリックして、ナビゲーションメニューの動作を確認してください。</p>
+        <p>↓</p>
+    </div>
+
+
+    <script>
+        /* ================================================================== */
+        /* ナビゲーションメニューの制御スクリプト (ここからコピー)             */
+        /* ================================================================== */
+        document.addEventListener('DOMContentLoaded', () => {
+            // HTML要素を取得
+            const menuToggleIcon = document.getElementById('menu-toggle-icon');
+            const floatingMenu = document.getElementById('floating-menu');
+
+            // アイコンとメニュー要素が存在する場合のみイベントリスナーを設定
+            if (menuToggleIcon && floatingMenu) {
+
+                // メニューアイコンをクリックしたらメニューの表示/非表示を切り替える
+                menuToggleIcon.addEventListener('click', (event) => {
+                    // イベントの伝播を停止し、下のdocumentのクリックイベントがすぐに発火するのを防ぐ
+                    event.stopPropagation();
+                    floatingMenu.classList.toggle('show');
+                });
+
+                // メニューの外側をクリックしたときにメニューを閉じる
+                document.addEventListener('click', (event) => {
+                    // メニューが表示されている状態か確認
+                    if (floatingMenu.classList.contains('show')) {
+                        // クリックされたのがメニューアイコンでも、メニュー自身でもない場合
+                        if (!menuToggleIcon.contains(event.target) && !floatingMenu.contains(event.target)) {
+                            floatingMenu.classList.remove('show');
+                        }
+                    }
+                });
+            }
+        });
+        /* ================================================================== */
+        /* ナビゲーションメニューの制御スクリプト (ここまでコピー)             */
+        /* ================================================================== */
+    </script>
+</body>
+
+</html>
