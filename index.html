@@ -1,352 +1,229 @@
-<!DOCTYPE html> <!-- HTML5文書型宣言。すべてのHTML文書の最初に記述します。 -->
-<html lang="ja"> <!-- HTML文書のルート要素。lang="ja"は主要言語が日本語であることを示します。 -->
+<!DOCTYPE html>
+<html lang="ja">
 
 <head>
-    <!-- headセクション: ブラウザや検索エンジン向けのメタ情報、文書のタイトル、外部リソースの読み込みなどを記述します。 -->
-    <meta charset="UTF-8"> <!-- 文字エンコーディングをUTF-8に指定。国際的な文字セットに対応。 -->
+    <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <!-- viewport設定: レスポンシブウェブデザインの基本。
-       width=device-widthはページの幅をデバイスの画面幅に合わせる。
-       initial-scale=1.0は初期ズームレベルを100%にする。 -->
-    <title>総合解説プラットフォーム - 解答への道しるべ</title> <!-- ブラウザのタブやブックマーク、検索結果に表示される文書のタイトル。 -->
+    <title>総合解説プラットフォーム - 解答への道しるべ</title>
 
-    <!-- MathJaxのスクリプト読み込み: LaTeXのような数式をウェブページに美しく表示するためのライブラリ。 -->
-    <!-- Polyfill.io: 古いブラウザで不足しているJavaScript機能を補うためのサービス。MathJaxが必要とするES6機能などを提供。 -->
     <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
-    <!-- MathJax本体のスクリプト。
-       id="MathJax-script" はスクリプトタグを識別するため。
-       async属性はHTMLのパースをブロックせずに非同期でスクリプトを読み込む。 -->
     <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js">
     </script>
 
     <style>
-        /* CSS (カスケーディングスタイルシート): HTML要素の見た目を定義します。 */
-
         /* 基本リセットとボックスサイジングモデルの指定 */
         *,
         *::before,
         *::after {
-            /* 全ての要素、及びその前後の疑似要素に適用 */
             box-sizing: border-box;
-            /* widthとheightにpaddingとborderを含める計算方法。レイアウトが直感的に。 */
             margin: 0;
-            /* 全要素のデフォルトマージンを0に。 */
             padding: 0;
-            /* 全要素のデフォルトパディングを0に。 */
         }
 
-        /* html要素のスタイル */
         html {
             scroll-behavior: smooth;
-            /* ページ内リンクでのスクロールを滑らかにする。 */
         }
 
-        /* body要素のスタイル: ページ全体の基本的な見た目を設定。 */
         body {
-            /* フォントファミリー: モダンで読みやすいフォントを優先順位をつけて指定。OS標準フォントを活用。 */
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
             line-height: 1.7;
-            /* 行間: 文字の高さの1.7倍。読みやすさのため。 */
             background-color: #f8f9fa;
-            /* 背景色: 薄いグレー。目に優しい。 */
             color: #212529;
-            /* 文字色: ダークグレー。コントラストを確保。 */
             display: flex;
-            /* Flexboxレイアウトを有効化。 */
             flex-direction: column;
-            /* Flexアイテム（子要素）を縦方向に並べる。 */
             min-height: 100vh;
-            /* 最小の高さをビューポートの高さと同じにする。コンテンツが少なくてもフッターが最下部にくるように。 */
         }
 
         /* ヘッダー (サイト上部のタイトル部分) のスタイル */
         header {
             background-color: #007bff;
-            /* 背景色: 明るい青 (Bootstrapのプライマリーカラー) */
             color: white;
-            /* 文字色: 白 */
             padding: 20px 15px;
-            /* 内側余白: 上下20px、左右15px */
             text-align: center;
-            /* テキストを中央揃え */
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-            /* 影: 要素に奥行き感を出す。 (水平オフセット0, 垂直オフセット2px, ぼかし4px, 色は黒の10%透明度) */
+            cursor: pointer;
         }
 
         /* ヘッダー内のh1要素 (サイトのメインタイトル) のスタイル */
         header h1 {
-            /* フォントサイズ: clamp()でレスポンシブに。最小1.8rem, ビューポート幅の5%を基準, 最大2.5rem。
-         remはルート要素(html)のフォントサイズに対する相対単位。 */
             font-size: clamp(1.8rem, 5vw, 2.5rem);
             font-weight: 600;
-            /* フォントの太さ: 600はセミボールド相当。 */
         }
 
         /* ヘッダー内のh1要素内のspan要素でclass="subtitle"を持つもの (サブタイトル) のスタイル */
         header h1 .subtitle {
             display: block;
-            /* ブロック要素として扱い、改行させる。 */
             font-size: clamp(0.8rem, 2.5vw, 1rem);
-            /* フォントサイズ調整 */
             font-weight: 300;
-            /* フォントの太さ: 300はライト相当。 */
             margin-top: 5px;
-            /* 上側の余白 */
             opacity: 0.9;
-            /* 透明度: 少し薄くしてメインタイトルと区別。 */
         }
-
 
         /* ナビゲーションバーのスタイル */
         nav {
             background-color: #343a40;
-            /* 背景色: ダークグレー */
             padding: 10px 0;
-            /* 内側余白: 上下10px、左右0 */
             text-align: center;
-            /* テキストを中央揃え */
             position: sticky;
-            /* スティッキーポジション: スクロールしても画面上部に固定される。 */
             top: 0;
-            /* 上端からの位置を0に。 */
             z-index: 1000;
-            /* 重なり順序: 他の要素より手前に表示するための大きな値。 */
             box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-            /* 影 */
         }
 
         /* ナビゲーション内のul要素 (リンクのリスト) のスタイル */
         nav ul {
             list-style: none;
-            /* リストの先頭マーカー（点など）を非表示に。 */
             padding: 0;
-            /* デフォルトのパディングを削除。 */
             margin: 0;
-            /* デフォルトのマージンを削除。 */
             display: flex;
-            /* Flexboxレイアウトを有効化。 */
             justify-content: center;
-            /* Flexアイテム（li要素）を中央揃え。 */
             flex-wrap: wrap;
-            /* 画面幅が足りない場合にFlexアイテムを折り返す。 */
         }
 
         /* ナビゲーション内のli要素 (各リンク項目) のスタイル */
         nav ul li {
             margin: 5px 10px;
-            /* 外側余白: 各リンク間のスペース。 */
         }
 
         /* ナビゲーション内のa要素 (リンク) のスタイル - 意図しない色の変化を完全に防ぐ */
         nav a {
             color: #f8f9fa;
-            /* 通常時の文字色 */
             text-decoration: none;
-            /* テキストの下線を非表示に */
             padding: 8px 12px;
-            /* 内側余白 */
             background-color: transparent;
-            /* 通常時の背景は透明に明示 */
             -webkit-tap-highlight-color: transparent;
-            /* モバイルでのタップ時のデフォルトハイライトを無効化 */
             outline: none;
-            /* フォーカス時のブラウザデフォルトのアウトラインを無効化 (注意点あり) */
         }
 
         /* メインコンテンツエリアを囲むコンテナのスタイル */
         .main-container {
             flex: 1;
-            /* bodyがFlexコンテナなので、この要素が残りの垂直スペースを埋める。フッターを最下部に固定するため。 */
             width: 95%;
-            /* 幅: 親要素(body)の95%。画面両端に少し余白。 */
             max-width: 1100px;
-            /* 最大幅: これ以上は広がらない。PCでの可読性のため。 */
             margin: 20px auto;
-            /* 外側余白: 上下20px、左右はautoで中央配置。 */
             padding: 20px;
-            /* 内側余白: コンテンツと境界線の間のスペース。 */
             background-color: #ffffff;
-            /* 背景色: 白。コンテンツエリアを際立たせる。 */
             border-radius: 8px;
-            /* 角丸。 */
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.07);
-            /* 影。 */
         }
 
         /* コンテンツカードを並べるためのグリッドコンテナのスタイル */
         .content-grid {
             display: grid;
-            /* CSS Gridレイアウトを有効化。 */
             grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
             gap: 20px;
-            /* グリッドアイテム間の隙間。 */
             margin-top: 20px;
-            /* 上側の余白。 */
         }
 
         /* 個々の記事や情報を表示するカードのスタイル */
         .content-card {
             background-color: #ffffff;
-            /* 背景色: 白。 */
             border: 1px solid #dee2e6;
-            /* 境界線: 薄いグレー。 */
             border-radius: 6px;
-            /* 角丸。 */
             padding: 20px;
-            /* 内側余白。 */
             box-shadow: 0 2px 6px rgba(0, 0, 0, 0.06);
-            /* 影。 */
             transition: transform 0.2s ease, box-shadow 0.2s ease;
-            /* ホバー時のアニメーション。 */
             display: flex;
-            /* Flexboxレイアウト: カード内部の要素の配置のため。 */
             flex-direction: column;
-            /* Flexアイテムを縦方向に並べる。 */
             cursor: pointer;
-            /* カード全体がクリック可能であることを示すカーソル */
         }
 
         /* コンテンツカードのマウスオーバー時のスタイル */
         .content-card:hover {
             transform: translateY(-3px);
-            /* Y軸方向に-3px移動 (少し浮き上がる効果)。 */
             box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
-            /* 影を少し濃くする。 */
         }
 
         /* コンテンツカード内のh3 (記事タイトルなど) のスタイル */
         .content-card h3 {
             color: #0056b3;
-            /* 文字色: やや濃いブルー。 */
             font-size: clamp(1.2rem, 3vw, 1.4rem);
-            /* フォントサイズ。 */
             border-bottom: 1px solid #007bff;
-            /* 下線。 */
             padding-bottom: 8px;
-            /* 下線とテキストの間隔。 */
             margin-bottom: 15px;
-            /* 下側の余白。 */
         }
 
         /* コンテンツカード内のp (記事の概要など) のスタイル */
         .content-card p {
             font-size: clamp(0.9rem, 2.2vw, 1rem);
-            /* フォントサイズ。 */
             margin-bottom: 15px;
-            /* 下側の余白。 */
             color: #495057;
-            /* 文字色。 */
-            flex-grow: 1;
-            /* Flexアイテム: 残りの垂直スペースを埋める。これにより同じ行のカードの高さが揃いやすくなる。 */
+            display: -webkit-box;
+            -webkit-line-clamp: 3;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            /* 互換性のための標準プロパティ */
+            line-clamp: 3;
         }
 
         /* コンテンツカード内の「詳しく読む」などのリンクのスタイル */
         .content-card a.learn-more {
             display: inline-block;
-            /* インラインブロック要素。 */
             color: #007bff;
-            /* 文字色: プライマリーブルー。 */
             text-decoration: none;
-            /* 下線を非表示。 */
             font-weight: bold;
-            /* フォント太字。 */
             padding: 8px 0;
-            /* 内側余白: 上下のみ。 */
             margin-top: auto;
-            /* Flexアイテム: カードの下端に配置する。 */
             align-self: flex-start;
-            /* Flexアイテム: カード内で左寄せにする。 */
             border-bottom: 2px solid transparent;
-            /* 透明な下線 (ホバーエフェクト用)。 */
             transition: border-bottom-color 0.3s ease;
-            /* 下線色の変化を滑らかに。 */
         }
 
         /* 「詳しく読む」リンクのマウスオーバー時のスタイル */
         .content-card a.learn-more:hover {
             border-bottom-color: #007bff;
-            /* 下線を表示 (色をつける)。 */
         }
 
         /* セクションタイトル (例:「解説記事一覧」) の共通スタイル */
         section h2.section-title {
             text-align: center;
-            /* 中央揃え。 */
             margin-bottom: 25px;
-            /* 下側の余白。 */
             font-size: clamp(1.5rem, 3.5vw, 1.8rem);
-            /* フォントサイズ。 */
             color: #343a40;
-            /* 文字色。 */
             position: relative;
-            /* 疑似要素による装飾下線の基準位置とするため。 */
             padding-bottom: 10px;
-            /* 装飾下線とテキストの間隔。 */
         }
 
         /* セクションタイトルの疑似要素 (:after) を使った装飾下線 */
         section h2.section-title::after {
             content: '';
-            /* 疑似要素には必須。内容は空。 */
             display: block;
-            /* ブロック要素として表示。 */
             width: 60px;
-            /* 下線の幅。 */
             height: 3px;
-            /* 下線の高さ（太さ）。 */
             background-color: #007bff;
-            /* 下線の色。 */
             margin: 8px auto 0;
-            /* 外側余白: 上8px、左右はautoで中央配置、下0。 */
         }
-
 
         /* 「このサイトについて」セクション内の段落のスタイル */
         #about p {
-            /* IDセレクタで特定のセクションの段落にスタイルを適用 */
             text-align: center;
-            /* 中央揃え。 */
             max-width: 750px;
-            /* 最大幅。 */
             margin-left: auto;
-            /* 左右中央揃え。 */
             margin-right: auto;
             font-size: clamp(0.95rem, 2.3vw, 1.05rem);
-            /* フォントサイズ。 */
         }
-
 
         /* フッター (ページ最下部) のスタイル */
         footer {
             background-color: #343a40;
-            /* 背景色: ダークグレー。 */
             color: #adb5bd;
-            /* 文字色: 少し明るいグレー。 */
             text-align: center;
-            /* 中央揃え。 */
             padding: 25px 15px;
-            /* 内側余白。 */
             margin-top: auto;
-            /* bodyがFlexコンテナなので、この要素が残りの垂直スペースを埋めた後、最下部に配置される。 */
         }
 
         /* フッター内の段落のスタイル */
         footer p {
             font-size: clamp(0.8rem, 2vw, 0.9rem);
-            /* フォントサイズ。 */
         }
 
         /* MathJaxで表示される数式が横にはみ出す場合のスタイル調整 */
         mjx-container[jax="CHTML"][display="true"] {
-            /* MathJaxが生成する数式コンテナの特定の属性を持つものに適用 */
             display: block;
-            /* ブロック要素として表示。 */
             overflow-x: auto;
-            /* 横方向にはみ出す場合にスクロールバーを表示。 */
             overflow-y: hidden;
-            /* 縦方向のスクロールバーは非表示。 */
             padding: 5px 0;
-            /* 内側余白: 上下少し。 */
         }
 
         /* メディアクエリ: 画面幅が768px以下の場合 (主にスマートフォン) に適用されるスタイル */
@@ -355,142 +232,60 @@
             /* メインコンテナの調整 */
             .main-container {
                 width: 100%;
-                /* 幅を画面いっぱいに。 */
                 margin: 10px auto;
-                /* 上下マージンを少し減らす。 */
                 border-radius: 0;
-                /* 角丸をなくす (画面端にフィットさせるため)。 */
                 padding: 15px;
-                /* 内側余白を少し減らす。 */
             }
 
             /* ヘッダータイトルの調整 */
             header h1 {
                 font-size: 1.6rem;
-                /* フォントサイズを小さく。 */
             }
 
             /* ナビゲーションリストの調整 */
             nav ul {
                 justify-content: space-around;
-                /* リンクを均等に配置。 */
             }
 
             /* ナビゲーションリストアイテムの調整 */
             nav ul li {
                 margin: 5px;
-                /* マージンを詰める。 */
             }
 
             /* コンテンツグリッドの調整 */
             .content-grid {
                 grid-template-columns: 1fr;
-                /* 1カラム表示にする。 */
             }
         }
-
-        /* CSSスタイルシートの終了 */
     </style>
 </head>
 
-<body> <!-- HTML文書の本体開始 -->
-
-    <!-- ヘッダーセクション: サイトのタイトルやロゴなどを配置 -->
-    <header>
-        <h1> <!-- SEO的にも重要なメインタイトル -->
+<body>
+    <header id="main-header">
+        <h1>
             総合解説プラットフォーム
-            <span class="subtitle">あらゆる疑問に、明快な解答を。</span> <!-- サブタイトル -->
+            <span class="subtitle">あらゆる疑問に、明快な解答を。</span>
         </h1>
     </header>
 
-    <!-- ナビゲーションバー: サイト内の主要ページへのリンクを配置 -->
     <nav>
-        <ul> <!-- 順序なしリストでリンクをグループ化 -->
-            <li><a href="#">トップ</a></li> <!-- href="#" はページ最上部へのリンク。 -->
-            <li><a href="#articles-list">記事一覧</a></li>
+        <ul>
+            <li><a href="#">トップ</a></li>
+            <li><a href="contents.html">コンテンツ</a></li>
             <li><a href="#about">このサイトについて</a></li>
         </ul>
     </nav>
 
-    <!-- メインコンテンツエリア -->
     <div class="main-container">
-
-        <!-- 記事一覧セクション -->
-        <section id="articles-list"> <!-- idはナビゲーションのリンク先として使用 -->
-            <h2 class="section-title">解説記事一覧</h2> <!-- セクションタイトル -->
-            <div class="content-grid"> <!-- 記事カードをグリッド表示するためのコンテナ -->
-
-                <!-- 記事カード: 【制御工学Ⅰ】課題6：ラプラス変換における時間推移定理の導出 -->
-                <div class="content-card">
-                    <h3>【制御工学Ⅰ】課題6：ラプラス変換における時間推移定理の導出</h3>
-                    <p>
-                        \(\mathcal{L}\{f(t-a)\}\) と
-                        \(\mathcal{L}\{f(t+a)\}\) を導出します。これらの結果は、制御工学や信号処理の分野で非常に重要です。
-                    </p>
-                    <!-- onclick属性で簡単なJavaScriptアラートを表示。本格的なサイトではイベントリスナーを使う方が望ましい。 -->
-                    <a href="Control_Engineering_1_06.html" class="learn-more">詳しく読む →</a> <!-- 記事詳細ページへのリンク -->
-                </div>
-
-                <!-- 記事カード: 【電磁界理論】演習問題(6)：重ね合わせの原理とポテンシャルの導入 解答解説 -->
-                <div class="content-card">
-                    <h3>【電磁界理論】演習問題(6)：重ね合わせの原理とポテンシャルの導入 解答解説</h3>
-                    <p>
-                        この演習問題は、講義で学んだ「重ね合わせの原理」と「ポテンシャルの導入」に関する理解度を測るものです。
-                    </p>
-                    <!-- onclick属性で簡単なJavaScriptアラートを表示。本格的なサイトではイベントリスナーを使う方が望ましい。 -->
-                    <a href="Electromagnetic_Theory_06.html" class="learn-more">詳しく読む →</a> <!-- 記事詳細ページへのリンク -->
-                </div>
-
-                <!-- 記事カード: 【応用数学Ⅰ】課題6 ラプラス変換を用いた微分方程式の解法 -->
-                <div class="content-card">
-                    <h3>【応用数学Ⅰ】課題6 ラプラス変換を用いた微分方程式の解法</h3>
-                    <p>
-                        ラプラス変換を用いて線形常微分方程式を解く具体的な手順を解説します。
-                    </p>
-                    <!-- onclick属性で簡単なJavaScriptアラートを表示。本格的なサイトではイベントリスナーを使う方が望ましい。 -->
-                    <a href="Applied_Mathematics_1_06.html" class="learn-more">詳しく読む →</a> <!-- 記事詳細ページへのリンク -->
-                </div>
-
-                <!-- 記事カード: 【電磁界理論】スカラーポテンシャルの導入 -->
-                <div class="content-card">
-                    <h3>【電磁界理論】スカラーポテンシャルの導入</h3> <!-- 記事タイトル -->
-                    <p> <!-- 記事の短い概要 -->
-                        電場や磁場をポテンシャルで表現する意義と、ファラデーの法則からのスカラーポテンシャル導入過程を解説。
-                        $$ \mathbf{E} = -\nabla \phi - \frac{\partial \mathbf{A}}{\partial t} $$
-                        <!-- MathJaxで表示される数式 -->
-                    </p>
-                    <a href="scalar_potential_explanation.html" class="learn-more">詳しく読む →</a> <!-- 記事詳細ページへのリンク -->
-                </div>
-
-                <!--
-            ====================================================================
-            新しい解説記事へのリンクカード テンプレート
-            ====================================================================
-            以下の <div class="content-card">...</div> をコピーして、
-            この「記事一覧」セクションの <div class="content-grid"> の中に
-            追加してください。
-            【】で囲まれた部分を実際の情報に置き換えてください。
-            ====================================================================
-
-            <div class="content-card">
-                <h3>【記事のタイトル】 【(任意)記事の分野やキーワード】</h3>
-                <p>
-                    【記事の短い概要。読者が何について学べるかを簡潔に説明します。】
-                    【(任意)記事に関連する代表的な数式など: $$ y = f(x) $$ 】
-                </p>
-                <a href="【記事のHTMLファイル名 例: new_article.html】" class="learn-more">詳しく読む →</a>
+        <section id="articles-list">
+            <h2 class="section-title">解説記事一覧</h2>
+            <div class="content-grid">
+                <!-- 記事カードはJavaScriptによってここに動的に生成されます -->
+                <p id="loading-message">記事を読み込み中...</p>
             </div>
+        </section>
 
-            ====================================================================
-            テンプレートここまで
-            ====================================================================
-            -->
-
-            </div> <!-- .content-grid の終了 -->
-        </section> <!-- #articles-list の終了 -->
-
-        <!-- このサイトについてセクション -->
-        <section id="about" style="margin-top: 40px;"> <!-- インラインスタイルは最終的にはCSSファイルにまとめるのが望ましい -->
+        <section id="about" style="margin-top: 40px;">
             <h2 class="section-title">このサイトについて</h2>
             <p>
                 「総合解説プラットフォーム」は、学習者、研究者、そして知的好奇心を持つすべての人々に向けて、
@@ -498,103 +293,147 @@
                 複雑な概念も、基本から丁寧に解きほぐし、理解への最短経路を示します。
                 皆様の学習の一助となれば幸いです。
             </p>
-        </section> <!-- #about の終了 -->
+        </section>
+    </div>
 
-    </div> <!-- .main-container の終了 -->
-
-    <!-- フッターセクション: コピーライト情報などを配置 -->
     <footer>
         <p>© 2025 総合解説プラットフォーム. All rights reserved.</p>
     </footer>
 
     <script>
-        // DOMContentLoadedイベントは、HTMLのパースとDOMツリーの構築が完了した時点で発火します。
-        // これにより、スクリプトがDOM要素を確実に操作できるようになります。
-        document.addEventListener('DOMContentLoaded', () => {
-            // クラス名が "content-card" である全ての要素を取得します。
-            const cards = document.querySelectorAll('.content-card');
-
-            // 取得した各カードに対して処理を行います。
-            cards.forEach(card => {
-                // 各カードにクリックイベントリスナーを追加します。
-                card.addEventListener('click', () => {
-                    // カード内部にある最初の 'a.learn-more' 要素（「詳しく読む」リンク）を探します。
-                    const link = card.querySelector('a.learn-more');
-                    // リンクが見つかり、かつそのリンクが href 属性を持っている場合
-                    if (link && link.href) {
-                        // リンクの href 属性値（URL）を取得します。
-                        const url = link.href;
-                        // onclick属性でJavaScriptが指定されている場合（例: alert）、それを実行します。
-                        // それ以外の場合は、ページをそのURLに遷移させます。
-                        if (link.getAttribute('onclick')) {
-                            // onclick属性の内容を関数として実行（より安全な方法は new Function(link.getAttribute('onclick'))() ですが、
-                            // 今回は単純な alert を想定しているため、直接 eval に近い形で実行します。
-                            // ただし、セキュリティリスクを伴う可能性があるため、通常は推奨されません。
-                            // 今回は onclick の中身が `alert(...); return false;` であることを前提としています。
-                            // return false がある場合、ページ遷移を防ぐため、onclickの実行結果を確認します。
-                            try {
-                                // onclick の中身を直接実行するのはリスクがあるので、
-                                // もし onclick 属性に 'return false' が含まれていたらページ遷移しない、という簡易的な判定をします。
-                                // より堅牢にするなら、onclick の中身を安全に評価する方法が必要です。
-                                const onclickScript = link.getAttribute('onclick');
-                                if (onclickScript) {
-                                    // onclickの中身を実行
-                                    // 注意: これは簡易的な実装です。evalに近い挙動なのでセキュリティに注意。
-                                    // return false を含む場合、ページ遷移をキャンセルすべき。
-                                    // ここでは、onclickの内容が 'alert(...); return false;' であることを期待しています。
-                                    // 本来は new Function(onclickScript)() のような形が少し安全です。
-                                    let shouldPreventDefault = false;
-                                    if (onclickScript.includes('return false')) {
-                                        shouldPreventDefault = true;
-                                    }
-                                    // onclickの中身を安全に実行する良い方法が標準ではないため、
-                                    // ここではonclickの内容を直接実行せず、hrefへの遷移を優先します。
-                                    // もしonclickで遷移をキャンセルしたい場合は、別途そのロジックを組み込む必要があります。
-
-                                    // onclickの処理が 'return false' を返す場合は、遷移しない
-                                    // これは簡易的なチェックです。
-                                    if (onclickScript.includes('return false')) {
-                                        // onclick属性を実行（簡易的）
-                                        (new Function(onclickScript))(); // これでもreturn falseはウィンドウコンテキストで評価される
-                                        // window.event.returnValue = false のような効果は期待しにくい
-                                        // ここでは、onclickを持つ場合はその処理に任せ、遷移しないようにする
-                                        return; // これにより以降の window.location.href の処理を行わない
-                                    }
-                                }
-                                // 上記のonclick処理が複雑なため、準備中のリンクはhref="#"かつonclickなので、
-                                // href="#" への遷移は実質何もしないことになります。
-                                // そのため、onclickを持つ場合はそちらを実行して遷移しない、という動作を優先します。
-                                if (link.getAttribute('onclick')) {
-                                    // onclickがある場合はそちらを実行し、この関数を抜ける
-                                    // (new Function(link.getAttribute('onclick')))(); // これだとreturn falseが効かない
-                                    // onclick属性を直接実行するよりは、
-                                    // alertが主要なケースなので、ここではonclickがある場合は遷移しない、という方針にします。
-                                    if (link.onclick) { // onclickプロパティに関数がセットされていれば実行
-                                        link.onclick();
-                                    } else { // そうでなければ属性値を評価 (非推奨だが例として)
-                                        (new Function(link.getAttribute('onclick')))();
-                                    }
-                                    return; // ページ遷移をしない
-                                }
-
-
-                                // 通常のリンク先に遷移
-                                window.location.href = url;
-                            } catch (e) {
-                                console.error("Error executing onclick or navigating:", e);
-                                // エラーが発生した場合でも、フォールバックとしてURL遷移を試みる
-                                window.location.href = url;
-                            }
-                        } else {
-                            // onclick属性がない場合は、単純にURLに遷移します。
-                            window.location.href = url;
-                        }
+        document.addEventListener('DOMContentLoaded', async () => {
+            // --- ヘッダーをクリックでトップページへ遷移 ---
+            const mainHeader = document.getElementById('main-header');
+            if (mainHeader) {
+                mainHeader.addEventListener('click', (event) => {
+                    // ヘッダー内のリンクがクリックされた場合は、そちらを優先する
+                    if (event.target.closest('a')) {
+                        return;
                     }
+                    window.location.href = 'index.html'; // トップページへ遷移
                 });
+            }
+            const contentGrid = document.querySelector('.content-grid');
+            const loadingMessage = document.getElementById('loading-message');
+
+            // 読み込む記事のファイル名をリストアップします
+            // explanationフォルダ内のファイル名に合わせて、この配列を更新してください
+            const articleFileNames = [ // 変数名を articleFileNames に変更
+            'Applied_Mathematics_1_09.html',  // 9
+            'analogEC_e1.html',  // 8
+            'Applied_Mathematics_1_08.html',  // 7
+            'EMsystemII_07.html',  // 6
+            'Applied_Mathematics_1_07.html',  // 5
+            'Control_Engineering_1_06.html',  // 4
+            'Electromagnetic_Theory_06.html',  // 3
+            'Applied_Mathematics_1_06.html',  // 2
+            'scalar_potential_explanation.html'  // 1
+            ];
+
+            /**
+             * 新しい記事を追加する方法:
+             * 
+             * 1. 「テンプレート.html」ファイルをコピーして、新しいHTMLファイルを作成します。
+             *    例: 「explanation/新記事のファイル名.html」
+             * 
+             * 2. 新しく作成したHTMLファイルを開き、以下の内容を更新します:
+             *    - `<title>` タグ: 記事のタイトルを設定します。
+             *    - `<meta name="article-number" content="00000X">` タグ:
+             *      現在の記事の中で最も大きな連番（例: 000006）より大きい、
+             *      新しい6桁の連番を設定します（例: 000007）。
+             *      この連番の数値が高いほど、記事一覧で上位に表示されます。
+             *    - `<h1>` タグ: 記事のメインタイトルを設定します。
+             *    - 最初の `<p>` タグ: 記事の簡単な概要（ディスクリプション）を設定します。
+             *      この内容は、index.htmlのカードに表示されます。
+             *    - その他のセクション: 記事の本文を記述します。
+             * 
+             * 3. この `index.html` ファイルの `articleFileNames` 配列に、
+             *    新しく追加した記事のファイル名（例: `'新記事のファイル名.html'`）を追加します。
+             * 
+             * これらの手順を完了すると、ページをリロードした際に新しい記事が記事一覧に自動的に表示されます。
+             */
+
+            // 各記事のデータを取得する非同期関数
+            // pathではなくfileNameを受け取るように変更し、フォルダ名を結合
+            async function fetchArticleData(fileName, folder = 'explanation') {
+                const path = `${folder}/${fileName}`; // フォルダ名を結合してパスを作成
+                try {
+                    const response = await fetch(path);
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! status: ${response.status} for ${path}`);
+                    }
+                    const text = await response.text();
+                    const parser = new DOMParser();
+                    const doc = parser.parseFromString(text, 'text/html');
+
+                    // 記事のタイトル（.article-container h1タグから取得）
+                    const titleElement = doc.querySelector('.article-container h1');
+                    const title = titleElement ? titleElement.textContent.trim() : 'タイトルなし';
+
+                    // 記事の概要（.article-container内の最初の<p>タグから取得）
+                    const descriptionElement = doc.querySelector('.article-container p');
+                    // MathJaxの数式部分はMathJaxによって後で変換されるため、ここではHTMLとして取得
+                    const description = descriptionElement ? descriptionElement.innerHTML : '概要なし';
+
+                    // 記事の連番（<meta name="article-number">から取得）
+                    const articleNumberMeta = doc.querySelector('meta[name="article-number"]');
+                    // 連番を数値に変換。取得できない場合は0をデフォルト値とする。
+                    const articleNumber = articleNumberMeta ? parseInt(articleNumberMeta.content, 10) : 0;
+
+                    return { title, description, path, articleNumber };
+                } catch (error) {
+                    console.error(`記事の読み込み中にエラーが発生しました (${path}):`, error);
+                    return null; // エラーが発生した場合はnullを返す
+                }
+            }
+
+            // 全ての記事データを並行して取得
+            // mapの引数を articleFileNames に変更し、fetchArticleDataにファイル名とフォルダ名を渡す
+            const articlePromises = articleFileNames.map(fileName => fetchArticleData(fileName, 'explanation'));
+            const articles = (await Promise.all(articlePromises)).filter(article => article !== null); // nullを除外
+
+            // 連番の降順にソート (数値の高いものが先頭に来るように)
+            articles.sort((a, b) => b.articleNumber - a.articleNumber);
+
+            // 読み込みメッセージを削除
+            if (loadingMessage) {
+                loadingMessage.remove();
+            }
+
+            // 取得したデータに基づいてカードを生成し、グリッドに追加
+            articles.forEach(article => {
+                const card = document.createElement('div');
+                card.classList.add('content-card');
+
+                // MathJaxの数式を含む可能性があるので、innerHTMLを使用
+                card.innerHTML = `
+                    <h3>${article.title}</h3>
+                    <p>${article.description}</p>
+                    <a href="${article.path}" class="learn-more">詳しく読む →</a>
+                `;
+
+                // カード全体をクリック可能にするイベントリスナー
+                card.addEventListener('click', (event) => {
+                    // 「詳しく読む」リンク自体がクリックされた場合は、デフォルトのリンク動作を優先
+                    if (event.target.closest('.learn-more')) {
+                        return;
+                    }
+                    // カードの他の部分がクリックされた場合は、リンク先に遷移
+                    window.location.href = article.path;
+                });
+
+                contentGrid.appendChild(card);
             });
+
+            // MathJaxが動的に追加されたコンテンツを認識して数式をレンダリングするように指示
+            // MathJax v3はMutationObserverを使用するため、通常は自動的にレンダリングされますが、
+            // 明示的に再レンダリングをトリガーすることも可能です。
+            if (window.MathJax) {
+                MathJax.typesetPromise();
+            }
         });
     </script>
 
-</body> <!-- HTML文書の本体終了 -->
+</body>
 
-</html> <!-- HTML文書の終了 -->
+</html>
