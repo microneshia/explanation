@@ -1,0 +1,622 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>オセロゲーム</title>
+    <meta name="article-number" content="000001">
+    <meta name="description" content="CPUとオセロで遊ぶことができます。">
+    <style>
+        body {
+            touch-action: pan-x pan-y;
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+            margin: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            background-color: #f0f0f0;
+            color: #333;
+        }
+
+        #game-container {
+            position: relative;
+            background-color: #4CAF50;
+            padding: 20px;
+            border-radius: 10px;
+        }
+
+        #turn-display,
+        #result {
+            font-size: 24px;
+            color: #000000;
+            text-align: center;
+            position: absolute;
+            top: 420px;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+
+        table {
+            border-collapse: collapse;
+            width: 360px;
+        }
+
+        td {
+            width: 45px;
+            height: 45px;
+            padding: 0;
+            border: 1.5px solid #333;
+            position: relative;
+            cursor: pointer;
+        }
+
+        td:hover {
+            background-color: rgba(255, 255, 255, 0.2);
+        }
+
+        .piece {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 1;
+        }
+
+        .black {
+            background-color: #000;
+        }
+
+        .white {
+            background-color: #fff;
+        }
+
+        .valid-move-indicator {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background-color: #333;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            display: none;
+            z-index: 0;
+        }
+
+        #piece-count {
+            font-size: 16px;
+            position: absolute;
+            top: 10px;
+            background-color: #fff;
+            padding: 5px;
+            border-radius: 5px;
+            pointer-events: none;
+        }
+
+        #piece-count table {
+            margin: 0 auto;
+        }
+
+        #piece-count td {
+            border: 2px solid #ccc;
+            text-align: center;
+        }
+
+        #play-button {
+            position: absolute;
+            bottom: 20px;
+            left: 10px;
+            display: block;
+            margin: 20px;
+            padding: 10px 20px;
+            font-size: 18px;
+            background-color: #fff;
+            border: 2px solid #333;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        /* --- ナビゲーションメニューのスタイル --- */
+        #menu-toggle-icon {
+            position: fixed;
+            top: 15px;
+            right: 20px;
+            font-size: 28px;
+            font-weight: bold;
+            color: #333;
+            background-color: rgba(255, 255, 255, 0.8);
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            text-align: center;
+            line-height: 45px;
+            cursor: pointer;
+            z-index: 1002;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+            transition: transform 0.2s, background-color 0.2s;
+        }
+
+        #menu-toggle-icon:hover {
+            transform: scale(1.1);
+            background-color: rgba(255, 255, 255, 1);
+        }
+
+        #floating-menu {
+            position: fixed;
+            top: 70px;
+            right: 20px;
+            background-color: rgba(255, 255, 255, 0.98);
+            padding: 15px 20px;
+            border-radius: 8px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            z-index: 1001;
+            transform-origin: top right;
+            transform: scale(0.95);
+            opacity: 0;
+            visibility: hidden;
+            transition: transform 0.2s ease-out, opacity 0.2s ease-out, visibility 0.2s;
+        }
+
+        #floating-menu.show {
+            transform: scale(1);
+            opacity: 1;
+            visibility: visible;
+        }
+
+        #floating-menu a {
+            color: #007bff;
+            text-decoration: none;
+            font-size: 1.1rem;
+            font-weight: bold;
+            padding: 10px;
+            transition: background-color 0.2s;
+            border-radius: 5px;
+        }
+
+        #floating-menu a:hover {
+            background-color: #f0f0f0;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="menu-toggle-icon">≡</div>
+
+    <div id="floating-menu">
+        <a href="../index.html">トップページへ</a>
+        <a href="../contents.html">コンテンツ一覧へ</a>
+    </div>
+
+    <button onclick="retryGame()" id="play-button">リトライ</button>
+    <div id="piece-count"></div>
+    <div id="game-container">
+        <div id="turn-display">ターン: <span id="player-turn">黒</span></div>
+        <table id="board"></table>
+        <div id="result"></div>
+    </div>
+
+    <script>
+        /**
+         * ===================================================================
+         * Othello Game Logic
+         *
+         * このスクリプトは、ブラウザ上で動作するシンプルなオセロゲームの
+         * ロジックとUI制御を実装します。
+         * プレイヤーは黒、CPUは白を担当します。
+         * ===================================================================
+         */
+
+        // ==========================================================================
+        // グローバル変数
+        // ==========================================================================
+        let board = []; // 8x8のゲーム盤の状態を保持する2次元配列。例: board[row][col] = 'black' or 'white' or ''
+        let currentPlayer = 'black'; // 現在のターンプレイヤー ('black' or 'white')
+
+        // ==========================================================================
+        // ゲームの初期化とリトライ
+        // ==========================================================================
+
+        /**
+         * ゲームボードを初期状態に設定し、変数をリセットする
+         */
+        function initializeBoard() {
+            for (let i = 0; i < 8; i++) {
+                board[i] = [];
+                for (let j = 0; j < 8; j++) {
+                    board[i][j] = '';
+                }
+            }
+            // オセロの初期配置
+            board[3][3] = 'white';
+            board[3][4] = 'black';
+            board[4][3] = 'black';
+            board[4][4] = 'white';
+
+            currentPlayer = 'black'; // 最初は黒のターン
+        }
+
+        /**
+         * 「リトライ」ボタンが押されたときにゲームを最初からやり直す
+         */
+        function retryGame() {
+            initializeBoard();
+            renderBoard();
+            updateTurnDisplay();
+
+            // 結果表示をクリアし、ターン表示を再表示する
+            const resultDisplay = document.getElementById('result');
+            const playerTurnDisplay = document.getElementById('turn-display');
+            resultDisplay.textContent = '';
+            playerTurnDisplay.style.display = 'block';
+        }
+
+        // ==========================================================================
+        // ゲームの進行処理
+        // ==========================================================================
+
+        /**
+         * プレイヤーがセルをクリックしたときのメイン処理
+         * @param {number} row - クリックされた行のインデックス (0-7)
+         * @param {number} col - クリックされた列のインデックス (0-7)
+         */
+        function handleCellClick(row, col) {
+            // 有効な手でなければ何もしない
+            if (board[row][col] !== '' || !isValidMove(row, col)) {
+                return;
+            }
+
+            // 石を置いてひっくり返す
+            flipTiles(row, col);
+            board[row][col] = currentPlayer;
+
+            // ターンを交代し、UIを更新
+            switchPlayer();
+            renderBoard();
+            updateTurnDisplay();
+
+            // CPU（白）のターンなら自動で手を打つ
+            if (currentPlayer === 'white') {
+                // プレイヤーの操作との間に少し間を置き、CPUが考えているように見せる
+                setTimeout(() => {
+                    makeRandomMove();
+                }, 500); // 0.5秒遅延
+            }
+        }
+
+        /**
+         * CPU（白）がランダムな有効手に石を置く
+         */
+        function makeRandomMove() {
+            const emptyCells = [];
+            // 全てのマスをチェックし、有効な手をリストアップする
+            for (let i = 0; i < 8; i++) {
+                for (let j = 0; j < 8; j++) {
+                    if (isValidMove(i, j)) {
+                        emptyCells.push({ row: i, col: j });
+                    }
+                }
+            }
+            // 有効な手があれば、その中からランダムに一つ選んでクリック処理を呼び出す
+            if (emptyCells.length > 0) {
+                const randomIndex = Math.floor(Math.random() * emptyCells.length);
+                const { row, col } = emptyCells[randomIndex];
+                handleCellClick(row, col);
+            }
+        }
+
+        /**
+         * プレイヤーのターンを交代する
+         */
+        function switchPlayer() {
+            currentPlayer = (currentPlayer === 'black') ? 'white' : 'black';
+        }
+
+        // ==========================================================================
+        // ルール判定ロジック
+        // ==========================================================================
+
+        /**
+         * 指定した位置が現在のプレイヤーにとって有効な手かどうかを判定する
+         * @param {number} row - 判定する行
+         * @param {number} col - 判定する列
+         * @returns {boolean} 有効な手であれば true、そうでなければ false
+         */
+        function isValidMove(row, col) {
+            // 既に石が置かれている場所には置けない
+            if (board[row][col] !== '') {
+                return false;
+            }
+            // canFlipTilesは内部でcurrentPlayerを参照するため、そのまま呼び出す
+            return canFlipTiles(board, row, col);
+        }
+
+        /**
+         * 指定された色のプレイヤーが指定した位置に石を置けるかを判定する
+         * (主にパス判定やゲーム終了判定のために、特定の色の視点でチェックする)
+         * @param {number} row - 判定する行
+         * @param {number} col - 判定する列
+         * @param {string} color - 判定するプレイヤーの色 ('black' or 'white')
+         * @returns {boolean} 有効な手であれば true
+         */
+        function isValidMoveForColor(row, col, color) {
+            if (board[row][col] !== '') {
+                return false;
+            }
+            // canFlipTilesがcurrentPlayerに依存するため、一時的にプレイヤーを切り替えて判定
+            const originalPlayer = currentPlayer;
+            currentPlayer = color;
+            const result = canFlipTiles(board, row, col);
+            currentPlayer = originalPlayer; // 判定後にプレイヤーを元に戻す
+            return result;
+        }
+
+        /**
+         * 指定された位置に石を置いた場合に、相手の石をひっくり返せるか判定する
+         * @param {Array<Array<string>>} currentBoard - 判定対象のボード
+         * @param {number} row - 石を置いた行
+         * @param {number} col - 石を置いた列
+         * @returns {boolean} 1つでもひっくり返せる石があれば true
+         */
+        function canFlipTiles(currentBoard, row, col) {
+            // 8方向のベクトルを定義
+            const directions = [{ row: -1, col: 0 }, { row: 1, col: 0 }, { row: 0, col: -1 }, { row: 0, col: 1 }, { row: -1, col: -1 }, { row: -1, col: 1 }, { row: 1, col: -1 }, { row: 1, col: 1 }];
+            const opponent = (currentPlayer === 'black') ? 'white' : 'black';
+
+            for (const dir of directions) {
+                let r = row + dir.row;
+                let c = col + dir.col;
+                // 盤面内で、隣が相手の石である場合のみチェックを続ける
+                if (r >= 0 && r < 8 && c >= 0 && c < 8 && currentBoard[r][c] === opponent) {
+                    // その方向に進んで自分の石で挟めるかチェック
+                    while (r >= 0 && r < 8 && c >= 0 && c < 8) {
+                        r += dir.row;
+                        c += dir.col;
+                        if (r < 0 || r >= 8 || c < 0 || c >= 8 || currentBoard[r][c] === '') {
+                            break; // 盤外に出るか、空マスならこの方向は無効
+                        }
+                        if (currentBoard[r][c] === currentPlayer) {
+                            return true; // 自分の石で挟めたので有効な手
+                        }
+                    }
+                }
+            }
+            return false; // どの方向にもひっくり返せる石がなかった
+        }
+
+        /**
+         * 実際に石をひっくり返す
+         * @param {number} row - 石を置いた行
+         * @param {number} col - 石を置いた列
+         */
+        function flipTiles(row, col) {
+            const directions = [{ row: -1, col: 0 }, { row: 1, col: 0 }, { row: 0, col: -1 }, { row: 0, col: 1 }, { row: -1, col: -1 }, { row: -1, col: 1 }, { row: 1, col: -1 }, { row: 1, col: 1 }];
+            const opponent = (currentPlayer === 'black') ? 'white' : 'black';
+
+            for (const dir of directions) {
+                let r = row + dir.row;
+                let c = col + dir.col;
+                let tilesToFlip = [];
+                // 相手の石が続く限りリストに追加
+                while (r >= 0 && r < 8 && c >= 0 && c < 8 && board[r][c] === opponent) {
+                    tilesToFlip.push({ row: r, col: c });
+                    r += dir.row;
+                    c += dir.col;
+                }
+                // 自分の石で挟めている場合のみ、リストの石をひっくり返す
+                if (r >= 0 && r < 8 && c >= 0 && c < 8 && board[r][c] === currentPlayer) {
+                    for (const tile of tilesToFlip) {
+                        board[tile.row][tile.col] = currentPlayer;
+                    }
+                }
+            }
+        }
+
+        /**
+         * 現在のプレイヤーに有効な手があるかをチェック
+         * @param {string} color - チェックするプレイヤーの色
+         * @returns {boolean} 有効な手があれば true
+         */
+        function hasValidMoves(color) {
+            for (let i = 0; i < 8; i++) {
+                for (let j = 0; j < 8; j++) {
+                    if (isValidMoveForColor(i, j, color)) {
+                        return true;
+                    }
+                }
+            }
+            return false;
+        }
+
+        /**
+         * ゲーム終了条件（両者とも打つ手がない）を満たしているかチェック
+         * @returns {boolean} ゲーム終了なら true
+         */
+        function checkEndGame() {
+            if (!hasValidMoves('black') && !hasValidMoves('white')) {
+                endGame();
+                return true;
+            }
+            return false;
+        }
+
+        /**
+         * ゲームを終了し、結果を表示する
+         */
+        function endGame() {
+            displayResult();
+        }
+
+        // ==========================================================================
+        // UI更新処理
+        // ==========================================================================
+
+        /**
+         * ゲームボードのHTMLを現在のboard配列の状態に合わせて再描画する
+         */
+        function renderBoard() {
+            const table = document.getElementById('board');
+            table.innerHTML = '';
+            renderPieceCount(); // 石の数を更新
+
+            for (let i = 0; i < 8; i++) {
+                const row = document.createElement('tr');
+                for (let j = 0; j < 8; j++) {
+                    const cell = document.createElement('td');
+                    const piece = document.createElement('div');
+                    const validMoveIndicator = document.createElement('div');
+
+                    piece.className = board[i][j] === 'black' ? 'piece black' : board[i][j] === 'white' ? 'piece white' : '';
+                    validMoveIndicator.className = 'valid-move-indicator';
+
+                    cell.appendChild(piece);
+                    cell.appendChild(validMoveIndicator);
+                    cell.addEventListener('click', () => handleCellClick(i, j));
+                    row.appendChild(cell);
+                }
+                table.appendChild(row);
+            }
+            // プレイヤーの時だけヒントを表示
+            if (currentPlayer === 'black') {
+                updateValidMoveIndicators();
+            }
+        }
+
+        /**
+         * ターン表示を更新し、パスが必要な場合は処理を行う
+         */
+        function updateTurnDisplay() {
+            const playerTurnDisplay = document.getElementById('player-turn');
+            playerTurnDisplay.textContent = (currentPlayer === 'black') ? '黒' : '白';
+
+            // ゲームが終了していたら何もしない
+            if (checkEndGame()) return;
+
+            // 現在のプレイヤーに手がない場合
+            if (!hasValidMoves(currentPlayer)) {
+                playerTurnDisplay.textContent += ' (パス)';
+                switchPlayer();
+                // 相手のターン表示とCPUの自動操作を少し遅らせて実行
+                setTimeout(() => {
+                    updateTurnDisplay();
+                    if (currentPlayer === 'white') {
+                        setTimeout(() => makeRandomMove(), 500);
+                    }
+                }, 1000); // 1秒遅延
+            }
+        }
+
+        /**
+         * 置ける場所のヒント（インジケーター）の表示を更新する
+         */
+        function updateValidMoveIndicators() {
+            for (let i = 0; i < 8; i++) {
+                for (let j = 0; j < 8; j++) {
+                    const cell = document.querySelector(`#board tr:nth-child(${i + 1}) td:nth-child(${j + 1})`);
+                    const validMoveIndicator = cell.querySelector('.valid-move-indicator');
+                    validMoveIndicator.style.display = isValidMove(i, j) ? 'block' : 'none';
+                }
+            }
+        }
+
+        /**
+         * 石の数をUIに表示する
+         */
+        function renderPieceCount() {
+            const pieceCountContainer = document.getElementById('piece-count');
+            const blackCount = countPieces('black');
+            const whiteCount = countPieces('white');
+            const table = document.createElement('table');
+            const tr1 = document.createElement('tr');
+            const td1_1 = document.createElement('td');
+            td1_1.textContent = '黒：' + blackCount;
+            const td1_2 = document.createElement('td');
+            td1_2.textContent = '白：' + whiteCount;
+            tr1.appendChild(td1_1);
+            tr1.appendChild(td1_2);
+            table.appendChild(tr1);
+            pieceCountContainer.innerHTML = '';
+            pieceCountContainer.appendChild(table);
+        }
+
+        /**
+         * ゲーム結果（勝敗）をUIに表示する
+         */
+        function displayResult() {
+            const resultDisplay = document.getElementById('result');
+            const playerTurnDisplay = document.getElementById('turn-display');
+            const blackCount = countPieces('black');
+            const whiteCount = countPieces('white');
+
+            if (blackCount > whiteCount) {
+                resultDisplay.textContent = '黒の勝利！';
+            } else if (whiteCount > blackCount) {
+                resultDisplay.textContent = '白の勝利！';
+            } else {
+                resultDisplay.textContent = '引き分けです！';
+            }
+            playerTurnDisplay.style.display = 'none'; // ターン表示を隠す
+        }
+
+        /**
+         * 指定された色の石の数を数える
+         * @param {string} color - 数える石の色
+         * @returns {number} 石の数
+         */
+        function countPieces(color) {
+            let count = 0;
+            for (let i = 0; i < 8; i++) {
+                for (let j = 0; j < 8; j++) {
+                    if (board[i][j] === color) {
+                        count++;
+                    }
+                }
+            }
+            return count;
+        }
+
+        // ==========================================================================
+        // イベントリスナーと初期化
+        // ==========================================================================
+
+        const menuToggleIcon = document.getElementById('menu-toggle-icon');
+        const floatingMenu = document.getElementById('floating-menu');
+
+        /**
+         * メニューアイコンをクリックしたらメニューの表示/非表示を切り替える
+         */
+        menuToggleIcon.addEventListener('click', (event) => {
+            // イベントの伝播を停止し、bodyのクリックイベントが発火しないようにする
+            event.stopPropagation();
+            floatingMenu.classList.toggle('show');
+        });
+
+        /**
+         * メニューの外側をクリックしたときにメニューを閉じる
+         */
+        document.addEventListener('click', (event) => {
+            // メニューが表示されていて、かつクリックされたのがメニュー自身やアイコンでない場合
+            if (floatingMenu.classList.contains('show') && !floatingMenu.contains(event.target)) {
+                floatingMenu.classList.remove('show');
+            }
+        });
+
+        // ゲームの初期化と開始
+        initializeBoard();
+        renderBoard();
+        updateTurnDisplay();
+    </script>
+
+</body>
+
+</html>

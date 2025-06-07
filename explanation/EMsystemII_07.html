@@ -1,0 +1,1093 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+    <!-- ========================================================================== -->
+    <!-- HEADセクション: メタ情報、タイトル、外部リソースの読み込み -->
+    <!-- ========================================================================== -->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>電機システムII 宿題7 詳細解説 - 総合解説プラットフォーム</title>
+    <meta name="article-number" content="000006">
+
+    <!-- MathJax (数式表示ライブラリ) -->
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js">
+    </script>
+
+    <style>
+        /* ========================================================================== */
+        /* CSSスタイル: ページ全体のデザイン定義 (テンプレート.htmlからコピー) */
+        /* ========================================================================== */
+
+        /* 基本リセットとボックスサイジング */
+        *,
+        *::before,
+        *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        html {
+            scroll-behavior: smooth;
+            /* ページ内リンクやJSによるスクロールを滑らかに */
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+            line-height: 1.7;
+            /* 行間を読みやすく */
+            background-color: #f8f9fa;
+            /* ページ全体の背景色 */
+            color: #212529;
+            /* メインテキストの色 */
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            /* ページの最小の高さを画面の高さに */
+        }
+
+        /* --- サイト共通ヘッダーのスタイル --- */
+        header {
+            background-color: #007bff;
+            color: white;
+            padding: 20px 15px;
+            text-align: center;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            cursor: pointer;
+            /* クリック可能を示すカーソル */
+        }
+
+        header h1 {
+            font-size: clamp(1.8rem, 5vw, 2.5rem);
+            font-weight: 600;
+        }
+
+        header h1 .subtitle {
+            display: block;
+            font-size: clamp(0.8rem, 2.5vw, 1rem);
+            font-weight: 300;
+            margin-top: 5px;
+            opacity: 0.9;
+        }
+
+        /* --- サイト共通ナビゲーションバーのスタイル（スクロールで固定される） --- */
+        nav {
+            background-color: #343a40;
+            padding: 10px 0;
+            text-align: center;
+            position: sticky;
+            /* スクロールで画面上部に固定 */
+            top: 0;
+            /* 上端から0の位置で固定 */
+            z-index: 1000;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        }
+
+        nav ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        nav ul li {
+            margin: 5px 10px;
+        }
+
+        nav a {
+            color: #f8f9fa;
+            text-decoration: none;
+            padding: 8px 12px;
+            background-color: transparent;
+            -webkit-tap-highlight-color: transparent;
+            outline: none;
+        }
+
+        /* --- 共通ヘッダー・ナビゲーションここまで --- */
+
+        /* --- メインコンテンツエリア --- */
+        .article-container {
+            width: 90%;
+            /* コンテナ幅 (画面幅に対する割合) */
+            max-width: 800px;
+            /* 最大幅 (これ以上は広がらない、記事の読みやすさのため) */
+            margin: 25px auto;
+            /* 外側余白 (上下25px、左右は自動で中央揃え) */
+            padding: clamp(20px, 4vw, 35px);
+            /* 内側余白 (レスポンシブに最小20px, 推奨4vw, 最大35px) */
+            background-color: #ffffff;
+            /* コンテナ背景色 (白) */
+            border-radius: 8px;
+            /* 角丸 */
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.07);
+            /* コンテナの影 */
+            flex: 1;
+            /* bodyがFlexコンテナなので、残りの垂直スペースを埋める */
+        }
+
+        /* 見出しスタイル */
+        .article-container h1 {
+            /* 記事のメインタイトル */
+            font-size: clamp(1.7rem, 4.5vw, 2.2rem);
+            color: #007bff;
+            /* 明るい青 */
+            margin-bottom: 25px;
+            /* 下余白 */
+            padding-bottom: 12px;
+            /* 下線との間隔 */
+            border-bottom: 2px solid #007bff;
+            /* 下線 */
+            text-align: center;
+            /* 中央揃え */
+        }
+
+        .article-container h2 {
+            /* 中見出し */
+            font-size: clamp(1.4rem, 3.5vw, 1.8rem);
+            color: #0056b3;
+            /* やや濃い青 */
+            margin-top: 35px;
+            /* 上余白 */
+            margin-bottom: 18px;
+            /* 下余白 */
+            padding-bottom: 8px;
+            /* 下線との間隔 */
+            border-bottom: 1px solid #ced4da;
+            /* 薄いグレーの下線 */
+        }
+
+        .article-container h3 {
+            /* 小見出し */
+            font-size: clamp(1.2rem, 3vw, 1.5rem);
+            color: #343a40;
+            /* ダークグレー */
+            margin-top: 28px;
+            /* 上余白 */
+            margin-bottom: 12px;
+            /* 下余白 */
+        }
+
+        /* 段落とリストアイテムのスタイル */
+        .article-container p,
+        .article-container li {
+            font-size: clamp(0.95rem, 2.5vw, 1.05rem);
+            /* 本文フォントサイズ */
+            margin-bottom: 18px;
+            /* 下余白 */
+        }
+
+        /* リストのスタイル */
+        .article-container ul,
+        .article-container ol {
+            margin-left: 20px;
+            /* 左インデント */
+            padding-left: 18px;
+            /* リストマーカーのための内側余白 */
+            margin-bottom: 18px;
+            /* 下余白 */
+        }
+
+        /* 数式ブロックのスタイル */
+        .math-block {
+            margin: 25px 0;
+            /* 上下余白 */
+            padding: 18px;
+            /* 内側余白 */
+            background-color: #eef3f7;
+            /* 背景色 (薄い水色系) */
+            border-left: 4px solid #007bff;
+            /* 左の強調線 */
+            overflow-x: auto;
+            /* 横にはみ出す場合にスクロールバー表示 */
+            border-radius: 0 5px 5px 0;
+            /* 角丸 (左上以外) */
+        }
+
+        /* MathJaxが生成するコンテナのスタイル (横スクロール対応) */
+        mjx-container[jax="CHTML"][display="true"] {
+            display: block;
+            overflow-x: auto;
+            overflow-y: hidden;
+            padding: 5px 0;
+        }
+
+        /* 強調表示用のクラス */
+        .important {
+            /* 重要テキスト */
+            font-weight: bold;
+            /* 太字 */
+            color: #dc3545;
+            /* 赤系 (警告や注意) */
+        }
+
+        .highlight {
+            /* ハイライトテキスト */
+            background-color: #ffc107;
+            /* 黄色系 */
+            padding: 2px 6px;
+            border-radius: 4px;
+            color: #212529;
+            /* 背景が明るいので文字色は濃く */
+        }
+
+        /* インラインコードのスタイル */
+        code {
+            background-color: #e9ecef;
+            /* 背景色 (薄いグレー) */
+            padding: 0.2em 0.4em;
+            /* 内側余白 */
+            margin: 0 0.1em;
+            /* 左右の微調整マージン */
+            font-size: 0.9em;
+            /* フォントサイズ (本文より少し小さく) */
+            border-radius: 4px;
+            /* 角丸 */
+            font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, Courier, monospace;
+            /* 等幅フォント */
+        }
+
+        /* ブロックコード (pre要素内のcode要素) のスタイル */
+        pre {
+            /* pre要素自体に背景やパディングを設定 */
+            background-color: #282c34;
+            /* ダークテーマの背景 */
+            color: #abb2bf;
+            /* コードの文字色 (明るいグレー) */
+            padding: 15px;
+            /* 内側余白 */
+            border-radius: 5px;
+            /* 角丸 */
+            overflow-x: auto;
+            /* 横スクロール対応 */
+            margin: 20px 0;
+            /* 上下余白 */
+        }
+
+        pre code {
+            /* pre内のcodeは背景や余白をリセット */
+            background-color: transparent;
+            padding: 0;
+            margin: 0;
+            font-size: 0.95em;
+            /* pre内のフォントサイズ調整 */
+            line-height: 1.5;
+            /* コードの行間 */
+        }
+
+        /* --- フッター --- */
+        footer {
+            background-color: #343a40;
+            /* 背景色 (ダークグレー) */
+            color: #adb5bd;
+            /* 文字色 (明るいグレー) */
+            text-align: center;
+            /* 中央揃え */
+            padding: 25px 15px;
+            /* 内側余白 */
+            margin-top: auto;
+            /* bodyがFlexコンテナなので、ページ最下部に配置 */
+        }
+
+        footer p {
+            font-size: clamp(0.8rem, 2vw, 0.9rem);
+            /* フォントサイズ */
+            margin-bottom: 5px;
+        }
+
+        footer p:last-child {
+            margin-bottom: 0;
+        }
+
+        footer a {
+            color: #adb5bd;
+            /* フッターの文字色に合わせる */
+            text-decoration: none;
+            /* 下線を消す */
+            transition: color 0.3s ease;
+            /* ホバー時の色の変化 */
+            margin: 0 8px;
+        }
+
+        footer a:hover {
+            color: #ffffff;
+            /* ホバー時に明るい色にする */
+        }
+
+        /* --- トップへ戻るボタン --- */
+        #scrollTopBtn {
+            display: none;
+            /* 初期状態では非表示 (JSで制御) */
+            position: fixed;
+            /* 画面に固定 */
+            bottom: 30px;
+            /* フッターと重ならないように調整 */
+            right: 30px;
+            z-index: 999;
+            /* ヘッダーよりは下、通常コンテンツよりは手前 */
+            border: none;
+            outline: none;
+            background-color: #007bff;
+            /* 背景色 (明るい青) */
+            color: white;
+            /* アイコン色 (白) */
+            cursor: pointer;
+            /* カーソルを指マークに */
+            padding: 12px 15px;
+            /* 内側余白 */
+            border-radius: 50%;
+            /* 円形にする */
+            font-size: 18px;
+            /* アイコンのフォントサイズ */
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+            /* ボタンの影 */
+            transition: opacity 0.3s, visibility 0.3s;
+            /* 表示/非表示時のアニメーション */
+            opacity: 0;
+            /* 初期状態では透明 */
+            visibility: hidden;
+            /* 初期状態では見えない (レイアウトに影響しない) */
+        }
+
+        #scrollTopBtn.show {
+            /* JavaScriptでこのクラスが付与されると表示される */
+            display: block;
+            /* 表示 */
+            opacity: 1;
+            /* 不透明に */
+            visibility: visible;
+            /*見えるように */
+        }
+
+        #scrollTopBtn:hover {
+            background-color: #0056b3;
+            /* ホバー時の背景色 (やや濃い青) */
+        }
+
+        /* --- メディアクエリ (レスポンシブ対応) --- */
+        @media (max-width: 768px) {
+
+            /* 画面幅が768px以下の場合に適用 */
+            header {
+                padding: 15px;
+            }
+
+            header h1 {
+                font-size: 1.6rem;
+            }
+
+            header h1 .subtitle {
+                font-size: 0.9rem;
+            }
+
+            nav {
+                padding: 8px 0;
+            }
+
+            nav ul li {
+                margin: 3px 8px;
+            }
+
+            nav a {
+                padding: 6px 10px;
+                font-size: 0.9rem;
+            }
+
+            .article-container {
+                width: 95%;
+                /* スマホでのコンテナ幅 */
+                padding: 20px 15px;
+                /* スマホでのコンテナ内側余白 */
+                margin-top: 15px;
+                /* スマホでのスティッキーヘッダー下のマージン */
+            }
+
+            /* スマホでの見出しフォントサイズ調整 */
+            .article-container h1 {
+                font-size: 1.6rem;
+            }
+
+            .article-container h2 {
+                font-size: 1.3rem;
+            }
+
+            .article-container h3 {
+                font-size: 1.1rem;
+            }
+
+            /* スマホでのトップへ戻るボタンの位置とサイズ調整 */
+            #scrollTopBtn {
+                bottom: 20px;
+                /* フッターの高さと合わせて調整 */
+                right: 20px;
+                padding: 10px 12px;
+                font-size: 16px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- ========================================================================== -->
+    <!-- BODYセクション: 実際にブラウザに表示されるコンテンツ -->
+    <!-- ========================================================================== -->
+
+    <!-- --- サイト共通ヘッダー（テンプレート.htmlからコピー） --- -->
+    <header id="main-header">
+        <h1>
+            総合解説プラットフォーム
+            <span class="subtitle">あらゆる疑問に、明快な解答を。</span>
+        </h1>
+    </header>
+
+    <!-- ナビゲーションバー: サイト内の主要ページへのリンク（テンプレート.htmlからコピー） -->
+    <nav>
+        <ul>
+            <li><a href="../index.html">トップ</a></li>
+            <li><a href="../contents.html">コンテンツ</a></li>
+            <li><a href="../index.html#about">このサイトについて</a></li>
+        </ul>
+    </nav>
+
+    <!-- --- メインコンテンツ（記事固有の内容はそのまま） --- -->
+    <main class="article-container">
+        <h1>電機システムII 宿題7 詳細解説</h1>
+
+        <p>
+            この記事では、電機システムIIの宿題7で出題された三相誘導電動機に関する問題について、詳細な解説を行います。
+            各問題の条件整理、基本的な公式の適用、計算過程、そして最終的な解答をステップバイステップで説明します。
+            この記事を読むことで、誘導電動機の特性計算（すべり、トルク、効率、抵抗制御など）についての理解を深めることができます。
+        </p>
+
+        <section id="problem1">
+            <h2>問題1. 巻線形誘導機の最大トルクと始動時抵抗</h2>
+            <p><strong>問題文:</strong>
+                4極、定格出力20kW、200V、50Hzの巻線形回転子を持つ三相誘導機があり、二次巻線には抵抗を外付け出来るようになっている。二次巻線を短絡した場合この誘導機は1380rpmの時に最大トルクを発生する。以下の問に答えよ。
+            </p>
+
+            <h3>与えられた情報:</h3>
+            <ul>
+                <li>極数 <code>p = 4</code></li>
+                <li>定格出力 <code>P_out = 20 kW</code></li>
+                <li>定格電圧 <code>V = 200 V</code></li>
+                <li>周波数 <code>f = 50 Hz</code></li>
+                <li>二次巻線短絡時、最大トルク発生時の回転数 <code>N_m = 1380 rpm</code></li>
+                <li>(1-2)で与えられる回転子の一相あたりの巻線抵抗 <code>R_2 = 0.40 Ω</code></li>
+            </ul>
+
+            <section id="problem1-1">
+                <h3>(1-1) 二次巻線短絡時に最大トルクを発生するすべりを求めよ。</h3>
+                <p><strong>解説:</strong><br>
+                    同期回転数 \(N_s\) は電源周波数 \(f\) と極数 \(p\) で決まります。すべり \(s\) は、同期回転数 \(N_s\) と回転子の回転数 \(N\) から次のように定義されます。
+                </p>
+                <div class="math-block">$$ s = \frac{N_s - N}{N_s} $$</div>
+                <p>最大トルクを発生するときの回転数が与えられているので、このときのすべり \(s_m\) を計算します。</p>
+
+                <p><strong>式と計算:</strong></p>
+                <ol>
+                    <li>同期回転数 \(N_s\) の計算:
+                        <div class="math-block">
+                            \[ N_s = \frac{120 \times f}{p} \]
+                            \[ N_s = \frac{120 \times 50 \text{ Hz}}{4} = \frac{6000}{4} = 1500 \text{ rpm} \]
+                        </div>
+                    </li>
+                    <li>最大トルク発生時のすべり \(s_m\) の計算:
+                        <div class="math-block">
+                            \[ s_m = \frac{N_s - N_m}{N_s} \]
+                            \[ s_m = \frac{1500 \text{ rpm} - 1380 \text{ rpm}}{1500 \text{ rpm}} = \frac{120}{1500} =
+                            0.080 \]
+                        </div>
+                    </li>
+                </ol>
+                <p><strong>解答:</strong> 最大トルクを発生するすべり <span class="highlight">\(s_m = 0.080\)</span></p>
+            </section>
+
+            <section id="problem1-2">
+                <h3>(1-2) 始動(s=1)の時に最大トルクを出すためには一相あたりの二次巻線の外付け抵抗を何Ωにすればよいか。ただし回転子の一相あたりの巻線抵抗は0.40Ωであるとする。</h3>
+                <p><strong>解説:</strong><br>
+                    誘導電動機の最大トルクを発生するすべり \(s_m\) は、二次回路の全抵抗 \(R_{2,total}\) と二次回路の漏れリアクタンス \(X_{20}\) (始動時、すなわち \(s=1\)
+                    での回転子周波数におけるリアクタンス) の比で決まります。この関係は「比例推移」として知られ、二次抵抗 \(R_{2,total}\)
+                    を変えると、最大トルクの値自体は変わらずに、最大トルクを発生するすべり \(s_m\) が \(R_{2,total}\) に比例して移動します。
+                </p>
+                <div class="math-block">$$ s_m = \frac{R_{2,total}}{X_{20}} $$</div>
+                <p><strong>式と計算:</strong></p>
+                <ol>
+                    <li>二次回路の漏れリアクタンス \(X_{20}\) の算出:
+                        <p>条件1: 二次巻線短絡時 (外付け抵抗 \(R_{ext1} = 0\))。回転子固有抵抗 \(R_2 = 0.40 \, \Omega\)。このときの全二次抵抗
+                            \(R_{2,total1} = R_2 = 0.40 \, \Omega\)。最大トルク時すべり \(s_{m1} = 0.080\)。</p>
+                        <div class="math-block">
+                            \[ s_{m1} = \frac{R_{2,total1}}{X_{20}} \]
+                            \[ \implies X_{20} = \frac{R_{2,total1}}{s_{m1}} \]
+                            \[ X_{20} = \frac{0.40 \, \Omega}{0.080} = 5.0 \, \Omega \]
+                        </div>
+                    </li>
+                    <li>始動時 (\(s=1\)) に最大トルクを出すための全二次抵抗 \(R_{2,total2}\) の計算:
+                        <p>条件2: 始動時に最大トルクを発生させたいので、このときの最大トルク時すべり \(s_{m2} = 1\)。必要な回転子全抵抗を \(R_{2,total2} = R_2 +
+                            R_{ext2}\) とします (\(R_{ext2}\) は求める外付け抵抗)。</p>
+                        <div class="math-block">
+                            \[ s_{m2} = \frac{R_{2,total2}}{X_{20}} \]
+                            \[ \implies R_{2,total2} = s_{m2} \times X_{20} \]
+                            \[ R_{2,total2} = 1 \times 5.0 \, \Omega = 5.0 \, \Omega \]
+                        </div>
+                    </li>
+                    <li>必要な外付け抵抗 \(R_{ext2}\) の計算:
+                        <div class="math-block">
+                            \[ R_{2,total2} = R_2 + R_{ext2} \]
+                            \[ R_{ext2} = R_{2,total2} - R_2 \]
+                            \[ = 5.0 \, \Omega - 0.40 \, \Omega = 4.6 \, \Omega \]
+                        </div>
+                    </li>
+                </ol>
+                <p><strong>解答:</strong> 始動時に最大トルクを出すために必要な外付け抵抗は <span class="highlight">4.6 Ω</span></p>
+            </section>
+        </section>
+
+        <section id="problem2">
+            <h2>問題2. 回転数比例負荷時の抵抗制御 (トルクはすべりに比例)</h2>
+            <p><strong>問題文:</strong>
+                巻線形回転子を持つ三相誘導機があり、二次巻線の抵抗\(R_2\)を自由に変更することが出来る。この誘導機を用いて回転数に比例する負荷を運転させた時すべりが1%であった。この回転子の抵抗を増加させてすべりを2%に変更するには二次巻線の抵抗\(R_2\)を何倍にすれば良いか。ただし誘導機の発生するトルクはすべりに比例するとする。
+            </p>
+
+            <h3>与えられた情報:</h3>
+            <ul>
+                <li>負荷トルク \(T_L \propto N\) (回転数 \(N\) に比例)</li>
+                <li>誘導機の発生トルク \(T_M \propto s\) (すべり \(s\) に比例)</li>
+                <li>初期状態: すべり \(s_1 = 1\% = 0.01\)</li>
+                <li>変更後状態: すべり \(s_2 = 2\% = 0.02\)</li>
+            </ul>
+
+            <section id="problem2-1">
+                <h3>(2-1) すべり 1%およびすべり 2%で回転している時の負荷トルクをそれぞれ \(T_1\)、\(T_2\)とする。負荷トルクが回転子の回転数に比例することから \(T_2\)を
+                    \(T_1\)で表せ。</h3>
+                <p><strong>解説:</strong><br>
+                    回転数 \(N = N_s (1-s)\) であり、負荷トルク \(T_L = k_L N\) です。
+                </p>
+                <p><strong>式と計算:</strong></p>
+                <ol>
+                    <li>状態1 (すべり \(s_1 = 0.01\)):
+                        <div class="math-block">
+                            \[ N_1 = N_s (1 - s_1) = N_s (1 - 0.01) = 0.99 N_s \]
+                            \[ T_1 = k_L N_1 = k_L \times 0.99 N_s \]
+                        </div>
+                    </li>
+                    <li>状態2 (すべり \(s_2 = 0.02\)):
+                        <div class="math-block">
+                            \[ N_2 = N_s (1 - s_2) = N_s (1 - 0.02) = 0.98 N_s \]
+                            \[ T_2 = k_L N_2 = k_L \times 0.98 N_s \]
+                        </div>
+                    </li>
+                    <li>\(T_2\) と \(T_1\) の比:
+                        <div class="math-block">
+                            \[ \frac{T_2}{T_1} = \frac{k_L \times 0.98 N_s}{k_L \times 0.99 N_s} = \frac{0.98}{0.99} \]
+                            \[ T_2 = \frac{0.98}{0.99} T_1 \]
+                            \[ T_2 \approx 0.99 T_1 \]
+                        </div>
+                    </li>
+                </ol>
+                <p><strong>解答:</strong> <span class="highlight">\(T_2 = 0.99 T_1\)</span></p>
+            </section>
+
+            <section id="problem2-2">
+                <h3>(2-2) 回転子の抵抗を増加させずにトルク \(T_2\)を発生させるために必要なすべり \(s_0\)を求めよ。</h3>
+                <p><strong>解説:</strong><br>
+                    元の二次抵抗 \(R_{2,orig}\) のままでトルク \(T_2\) を発生させる場合を考えます。誘導機の発生トルクはすべりに比例する (\(T_M = k_M s\)) と仮定します。ここで
+                    \(k_M\) は元の抵抗値での比例定数です。
+                </p>
+                <p><strong>式と計算:</strong></p>
+                <ul>
+                    <li>状態1 (\(T_1, s_1=0.01\)): \(T_1 = k_M s_1 = k_M \times 0.01\)</li>
+                    <li>状態0 (\(T_2, s_0\)): \(T_2 = k_M s_0\)</li>
+                </ul>
+                <div class="math-block">
+                    \[ \frac{T_2}{T_1} = \frac{k_M s_0}{k_M \times 0.01} = \frac{s_0}{0.01} \]
+                </div>
+                <p> (2-1) の結果 \(T_2/T_1 = 0.99\) を用いると、</p>
+                <div class="math-block">
+                    \[ 0.99 = \frac{s_0}{0.01} \]
+                    \[ s_0 = 0.01 \times 0.99 = 0.0099 \]
+                </div>
+                <p><strong>解答:</strong> <span class="highlight">\(s_0 = 0.0099\)</span></p>
+            </section>
+
+            <section id="problem2-3">
+                <h3>(2-3) 回転子の抵抗を増加させて2%で運転するには回転子の巻線の抵抗を何倍にする必要があるか (ヒント:比例推移)</h3>
+                <p><strong>解説:</strong><br>
+                    同じトルク \(T_2\) を発生させるのに、
+                <ul>
+                    <li>元の抵抗 \(R_{2,orig}\) では、すべり \(s_0 = 0.0099\) が必要。</li>
+                    <li>新しい抵抗 \(R_{2,new}\) では、すべり \(s_2 = 0.02\) で運転したい。</li>
+                </ul>
+                比例推移の原理より、低すべり領域で特定のトルクを発生させるには、\( \frac{R_{2,new}}{R_{2,orig}} = \frac{s_2}{s_0} \) という関係が成り立ちます。
+                </p>
+                <p><strong>式と計算:</strong></p>
+                <div class="math-block">
+                    \[ \frac{R_{2,new}}{R_{2,orig}} = \frac{s_2}{s_0} \]
+                    \[ \frac{R_{2,new}}{R_{2,orig}} = \frac{0.02}{0.0099} \approx 2.020202... \]
+                    \[ \frac{R_{2,new}}{R_{2,orig}} = 2.02 \]
+                </div>
+                <p><strong>解答:</strong> 回転子の巻線抵抗を <span class="highlight">2.02 倍</span> にする必要がある。</p>
+            </section>
+        </section>
+
+        <section id="problem3">
+            <h2>問題3. 回転数二乗比例負荷時の抵抗制御</h2>
+            <p><strong>問題文:</strong>
+                巻線形回転子を持つ三相誘導機があり、二次巻線の抵抗\(R_2\)を自由に変更することが出来る。この誘導機を用いて回転数の二乗に比例する負荷を運転させた時すべりが1%であった。この回転子の抵抗を増加させてすべりを2%に変更するには二次巻線の抵抗\(R_2\)を何倍にすれば良いか。ただし誘導機の発生するトルクはすべりに比例するとする。
+            </p>
+
+            <h3>与えられた情報:</h3>
+            <ul>
+                <li>負荷トルク \(T_L \propto N^2\) (回転数 \(N\) の二乗に比例)</li>
+                <li>誘導機の発生トルク \(T_M \propto s\) (すべり \(s\) に比例)</li>
+                <li>初期状態: すべり \(s_1 = 1\% = 0.01\)</li>
+                <li>変更後状態: すべり \(s_2 = 2\% = 0.02\)</li>
+            </ul>
+            <p><strong>解説:</strong><br>
+                問題2と同様のアプローチですが、負荷トルクの特性が異なります。平衡点では \(T_L = T_M\)。
+            </p>
+            <p><strong>式と計算:</strong></p>
+            <ol>
+                <li>負荷トルクと回転数の関係:
+                    <div class="math-block">
+                        \[ N = N_s (1-s) \]
+                        \[ T_L = k_L N^2 = k_L (N_s (1-s))^2 \]
+                    </div>
+                </li>
+                <li>平衡点でのトルク \(T_{L1}, T_{L2}\) の関係:
+                    <p>状態1 (\(s_1 = 0.01\)): \(N_1 = N_s(1-0.01) = 0.99 N_s\)</p>
+                    <div class="math-block">
+                        \[ T_{L1} = k_L (0.99 N_s)^2 \]
+                    </div>
+                    <p>状態2 (\(s_2 = 0.02\)): \(N_2 = N_s(1-0.02) = 0.98 N_s\)</p>
+                    <div class="math-block">
+                        \[ T_{L2} = k_L (0.98 N_s)^2 \]
+                    </div>
+                    <p>トルクの比:</p>
+                    <div class="math-block">
+                        \[ \frac{T_{L2}}{T_{L1}} = \frac{k_L (0.98 N_s)^2}{k_L (0.99 N_s)^2} =
+                        \left(\frac{0.98}{0.99}\right)^2 \]
+                    </div>
+                </li>
+                <li>元の抵抗 \(R_{2,orig}\) のままでトルク \(T_{L2}\) を発生させるためのすべり \(s_0\):
+                    <p>誘導機発生トルク \(T_M \propto s\) (抵抗一定なら)。平衡点では \(T_M = T_L\)。</p>
+                    <p>\(T_{M1} = k_M s_1\) であり \(T_{M1} = T_{L1}\)。</p>
+                    <p>\(T_{M0} = k_M s_0\) であり \(T_{M0} = T_{L2}\)。</p>
+                    <div class="math-block">
+                        \[ \frac{T_{M0}}{T_{M1}} = \frac{T_{L2}}{T_{L1}} = \frac{s_0}{s_1} \]
+                        \[ s_0 = s_1 \times \frac{T_{L2}}{T_{L1}} = 0.01 \times \left(\frac{0.98}{0.99}\right)^2 \]
+                        \[ s_0 = 0.01 \times \frac{0.9604}{0.9801} \approx 0.009799 \]
+                    </div>
+                </li>
+                <li>比例推移の適用 (同じトルク \(T_{L2}\) を発生させる):
+                    <p>同じトルクを発生させる場合、すべり \(s\) は二次抵抗 \(R_2\) に比例すると解釈 (\(R_{2,new}/R_{2,orig} = s_2/s_0\))。</p>
+                    <div class="math-block">
+                        \[ \frac{R_{2,new}}{R_{2,orig}} = \frac{s_2}{s_0} \]
+                        \[ = \frac{0.02}{0.01 \times \left(\frac{0.98}{0.99}\right)^2} \]
+                        \[ = \frac{0.02}{0.01} \times \left(\frac{0.99}{0.98}\right)^2 \]
+                        \[ = 2 \times \frac{0.9801}{0.9604} \approx 2 \times 1.0205122 \approx 2.04102 \]
+                        \[ \frac{R_{2,new}}{R_{2,orig}} = 2.04 \]
+                    </div>
+                </li>
+            </ol>
+            <p><strong>解答:</strong> 回転子の巻線抵抗を <span class="highlight">2.04 倍</span> にする必要がある。</p>
+        </section>
+
+        <section id="problem4">
+            <h2>問題4. 定格負荷運転時の特性計算</h2>
+            <p><strong>問題文:</strong>
+                5kW、4極の三相誘導機がある。この誘導機を60Hzの電源に接続して定格負荷運転(出力5kW)を行うと回転数は1728rpmであった。この誘導機について以下の問に答えよ。ただし、無負荷時(s=0)の損失は200W、一次側に換算した時の巻線抵抗値\(R_1\)、\(R_2'\)は
+                \(R_1:R_2'=1:2\)であったとする。</p>
+
+            <h3>与えられた情報:</h3>
+            <ul>
+                <li>定格出力 \(P_{out} = 5 \text{ kW} = 5000 \text{ W}\)</li>
+                <li>極数 \(p = 4\)</li>
+                <li>周波数 \(f = 60 \text{ Hz}\)</li>
+                <li>定格負荷時の回転数 \(N_r = 1728 \text{ rpm}\)</li>
+                <li>無負荷損 \(P_{noload} = 200 \text{ W}\) (鉄損 \(P_{fe}\) と機械損 \(P_{fw}\) の合計)</li>
+                <li>一次抵抗 \(R_1\) と一次換算二次抵抗 \(R_2'\) の比 \(R_1 : R_2' = 1 : 2\)</li>
+            </ul>
+
+            <section id="problem4-1">
+                <h3>(4-1) 同期速度は何 rpm か</h3>
+                <p><strong>式と計算:</strong></p>
+                <div class="math-block">
+                    \[ N_s = \frac{120 \times f}{p} \]
+                    \[ = \frac{120 \times 60 \text{ Hz}}{4 \text{ 極}} = \frac{7200}{4} = 1800 \text{ rpm} \]
+                </div>
+                <p><strong>解答:</strong> 同期速度 \(N_s = \) <span class="highlight">1800 rpm</span></p>
+            </section>
+
+            <section id="problem4-2">
+                <h3>(4-2) 定格負荷時のすべりを求めよ</h3>
+                <p><strong>式と計算:</strong></p>
+                <div class="math-block">
+                    \[ s = \frac{N_s - N_r}{N_s} \]
+                    \[ = \frac{1800 \text{ rpm} - 1728 \text{ rpm}}{1800 \text{ rpm}} = \frac{72}{1800} = \frac{1}{25} =
+                    0.040 \]
+                </div>
+                <p><strong>解答:</strong> 定格負荷時のすべり \(s = \) <span class="highlight">0.040</span></p>
+            </section>
+
+            <section id="problem4-3">
+                <h3>(4-3) 定格負荷時の効率は何%か</h3>
+                <p><strong>解説:</strong><br>
+                    効率 \(\eta = P_{out} / P_{in}\)。入力 \(P_{in} = P_{out} + \text{損失合計}\)。
+                    損失 = 一次銅損 \(P_{c1}\) + 二次銅損 \(P_{c2}'\) + 無負荷損 \(P_{noload}\)。
+                    二次銅損 \(P_{c2}' = P_{out} \frac{s}{1-s}\) (ここで \(P_{out}\) を \(P_m\) と近似して計算)。
+                </p>
+                <p><strong>式と計算:</strong></p>
+                <ol>
+                    <li>二次銅損 \(P_{c2}'\):
+                        <div class="math-block">
+                            \begin{align*} P_{c2}' &= P_{out} \times \frac{s}{1-s} \\ &= 5000 \text{ W} \times
+                            \frac{0.040}{1-0.040} \\ &= 5000 \times \frac{0.040}{0.960} = \frac{200}{0.960} \text{ W} \\
+                            &\approx 208 \text{ W} \end{align*}
+                        </div>
+                    </li>
+                    <li>一次銅損 \(P_{c1}\):
+                        <p>一次電流 \(I_1\) と一次換算二次電流 \(I_2'\) がほぼ等しいと仮定すると、\(P_{c1} / P_{c2}' \approx R_1 / R_2' = 1/2\)。
+                        </p>
+                        <div class="math-block">
+                            \[ P_{c1} = \frac{P_{c2}'}{2} = \frac{208 \text{ W}}{2} = 104 \text{ W} \]
+                        </div>
+                    </li>
+                    <li>一次入力 \(P_{in}\):
+                        <div class="math-block">
+                            \[ P_{in} = P_{out} + P_{c1} + P_{c2}' + P_{noload} \]
+                            \[ P_{in} = 5000 \text{ W} + 104 \text{ W} + 208 \text{ W} + 200 \text{ W} = 5512 \text{ W}
+                            \]
+                        </div>
+                    </li>
+                    <li>効率 \(\eta\):
+                        <div class="math-block">
+                            \[ \eta = \frac{P_{out}}{P_{in}} = \frac{5000 \text{ W}}{5512 \text{ W}} \approx 0.907111...
+                            \]
+                            \[ \eta = 90.7 \% \]
+                        </div>
+                    </li>
+                </ol>
+                <p><strong>解答:</strong> 定格負荷時の効率 \(\eta = \) <span class="highlight">90.7 %</span></p>
+            </section>
+
+            <section id="problem4-4">
+                <h3>(4-4) 全負荷時のトルクは何 Nm か</h3>
+                <p><strong>解説:</strong><br>
+                    出力トルク \(T_{out} = P_{out} / \omega_r\)、ここで \(\omega_r\) は回転子の角速度。
+                </p>
+                <p><strong>式と計算:</strong></p>
+                <ol>
+                    <li>回転子の角速度 \(\omega_r\):
+                        <div class="math-block">
+                            \[ N_r = 1728 \text{ rpm} = \frac{1728}{60} \text{ rps} = 28.8 \text{ rps} \]
+                            \[ \omega_r = 2\pi N_{r,rps} = 2\pi \times 28.8 \text{ rad/s} \]
+                        </div>
+                    </li>
+                    <li>出力トルク \(T_{out}\):
+                        <div class="math-block">
+                            \begin{align*} T_{out} &= \frac{P_{out}}{\omega_r} \\ &= \frac{5000 \text{ W}}{2\pi \times
+                            28.8 \text{ rad/s}} \\ &\approx 27.631... \text{ Nm} \\ T_{out} &= 27.6 \text{ Nm}
+                            \end{align*}
+                        </div>
+                        <p>（別解として、ギャップパワー \(P_{ag} = P_{out} + P_{c2}' = 5000 + 208 = 5208 \text{ W}\) を用い、同期角速度
+                            \(\omega_s = 2\pi N_s / 60 = 2\pi \times 1800 / 60 = 60\pi \text{ rad/s}\) から \(T_{ag} =
+                            P_{ag}/\omega_s = 5208 / (60\pi) \approx 27.62 \text{ Nm}\) としてもほぼ同じ値が得られます。）
+                        </p>
+                    </li>
+                </ol>
+                <p><strong>解答:</strong> 全負荷時のトルク \(T_{out} = \) <span class="highlight">27.6 Nm</span></p>
+            </section>
+        </section>
+
+        <section id="problem5">
+            <h2>問題5. かご形誘導機の拘束試験</h2>
+            <p><strong>問題文:</strong>
+                定格出力40kW、6極、440V、50Hzのあるかご形三相誘導機の拘束試験を行った結果は以下の通りである。ただし鉄損は無視できるとする。線間電圧60V、線電流60A、三相入力電力3.2kW、端子間の直流抵抗0.212Ω。
+            </p>
+
+            <h3>与えられた情報 (拘束試験時, s=1):</h3>
+            <ul>
+                <li>印加線間電圧 \(V_{L,br} = 60 \text{ V}\)</li>
+                <li>線電流 \(I_{L,br} = 60 \text{ A}\)</li>
+                <li>三相入力電力 \(P_{3ph,br} = 3.2 \text{ kW} = 3200 \text{ W}\)</li>
+                <li>固定子巻線の端子間直流抵抗 \(R_{dc,term} = 0.212 \, \Omega\) (Y結線と仮定し、2相分の抵抗)</li>
+                <li>鉄損無視</li>
+                <li>一般情報: 定格出力 \(40 \text{ kW}\), \(p=6\)極, 定格電圧 \(V_{L,rated} = 440 \text{ V}\), \(f=50 \text{ Hz}\)
+                </li>
+            </ul>
+
+            <section id="problem5-1">
+                <h3>(5-1) 一相あたりの一次抵抗値を求めよ。</h3>
+                <p><strong>解説:</strong><br>
+                    Y結線の場合、端子間の直流抵抗は2相分の抵抗となります。\(R_{dc,term} = 2 \times R_{1,dc}\)。交流における実効抵抗 \(R_{1,ac}\)
+                    は皮相効果などにより直流抵抗より若干大きくなることがありますが、ここでは直流抵抗値を用います。
+                </p>
+                <p><strong>式と計算:</strong></p>
+                <div class="math-block">
+                    \[ R_1 = R_{1,dc} = \frac{R_{dc,term}}{2} \]
+                    \[ = \frac{0.212 \, \Omega}{2} = 0.106 \, \Omega \]
+                </div>
+                <p><strong>解答:</strong> 一相あたりの一次抵抗値 \(R_1 = \) <span class="highlight">0.106 Ω</span></p>
+            </section>
+
+            <section id="problem5-2">
+                <h3>(5-2) 拘束試験時の二次入力 \(P_2\)を求めよ。</h3>
+                <p><strong>解説:</strong><br>
+                    二次入力 \(P_2\) はギャップパワー \(P_{ag}\) に等しいです。拘束試験時 (\(s=1\)) の入力電力 \(P_{3ph,br}\) は、一次銅損 \(P_{c1,br}\)
+                    と二次入力 \(P_{ag,br}\) (これは全て二次銅損 \(P_{c2}',br\) になる) の合計です（鉄損は無視）。
+                    \(P_{3ph,br} = P_{c1,br} + P_{ag,br}\)。
+                    Y結線なので、相電流 \(I_{1,ph,br} = I_{L,br} = 60 \text{ A}\)。
+                </p>
+                <p><strong>式と計算:</strong></p>
+                <ol>
+                    <li>一次銅損 \(P_{c1,br}\):
+                        <div class="math-block">
+                            \[ P_{c1,br} = 3 \times I_{1,ph,br}^2 \times R_1 \]
+                            \[ = 3 \times (60 \text{ A})^2 \times 0.106 \, \Omega \]
+                            \[ = 3 \times 3600 \times 0.106 = 10800 \times 0.106 = 1144.8 \text{ W} \]
+                        </div>
+                    </li>
+                    <li>二次入力 \(P_{ag,br}\) (または \(P_2\)):
+                        <div class="math-block">
+                            \[ P_{ag,br} = P_{3ph,br} - P_{c1,br} \]
+                            \[ = 3200 \text{ W} - 1144.8 \text{ W} = 2055.2 \text{ W} \]
+                            \[ P_{ag,br} = 2055 \text{ W} \]
+                        </div>
+                    </li>
+                </ol>
+                <p><strong>解答:</strong> 拘束試験時の二次入力 \(P_2 = \) <span class="highlight">2055 W</span></p>
+            </section>
+
+            <section id="problem5-3">
+                <h3>(5-3) 発生トルクを求めよ</h3>
+                <p><strong>解説:</strong><br>
+                    拘束試験時 (\(s=1\)) の発生トルク \(T_{br}\) は、二次入力 \(P_{ag,br}\) を同期角速度 \(\omega_s\) で割ったものです。
+                    \(\omega_s = 2\pi N_{s,rps} = \frac{4\pi f}{p}\)。
+                </p>
+                <p><strong>式と計算:</strong></p>
+                <ol>
+                    <li>同期角速度 \(\omega_s\):
+                        <div class="math-block">
+                            \[ N_s = \frac{120 \times f}{p} = \frac{120 \times 50 \text{ Hz}}{6 \text{ 極}} = 1000 \text{
+                            rpm} \]
+                            \[ \omega_s = \frac{2\pi N_s}{60} = \frac{2\pi \times 1000}{60} = \frac{100\pi}{3} \text{
+                            rad/s} \approx 104.719... \text{ rad/s} \]
+                        </div>
+                    </li>
+                    <li>発生トルク \(T_{br}\):
+                        <div class="math-block">
+                            \begin{align*} T_{br} &= \frac{P_{ag,br}}{\omega_s} \\ &= \frac{2055 \text{ W}}{100\pi/3
+                            \text{ rad/s}} \\ &\approx 19.623... \text{ Nm} \\ T_{br} &= 19.6 \text{ Nm} \end{align*}
+                        </div>
+                    </li>
+                </ol>
+                <p><strong>解答:</strong> 発生トルク \(T_{br} = \) <span class="highlight">19.6 Nm</span></p>
+            </section>
+
+            <section id="problem5-4">
+                <h3>(5-4) この電動機を拘束したまま、定格電圧を印加した。二次入力を求めよ</h3>
+                <p><strong>解説:</strong><br>
+                    拘束状態 (\(s=1\)) で電圧を変えた場合、インピーダンスはほぼ変わらないと仮定できます。電力は電圧の二乗に比例します (\(P \propto V^2\))。
+                    二次入力 \(P'_{ag}\) は、拘束試験時の二次入力 \(P_{ag,br}\) を基準に、電圧比の二乗をかけます。
+                </p>
+                <p><strong>式と計算:</strong></p>
+                <div class="math-block">
+                    \begin{align*} P'_{ag} &= P_{ag,br} \times \left(\frac{V_{L,rated}}{V_{L,br}}\right)^2 \\ &= 2055
+                    \text{ W} \times \left(\frac{440 \text{ V}}{60 \text{ V}}\right)^2 \\ &= 2055 \times
+                    \left(\frac{44}{6}\right)^2 = 2055 \times \left(\frac{22}{3}\right)^2 \\ &= 2055 \times
+                    \frac{484}{9} \\ &= 2055 \times 53.777... = 110500 \text{ W} \\ P'_{ag} &= 110.5 \text{ kW}
+                    \end{align*}
+                </div>
+                <p><strong>解答:</strong> 定格電圧印加時の二次入力 \(P'_{ag} = \) <span class="highlight">110.5 kW</span></p>
+            </section>
+
+            <section id="problem5-5">
+                <h3>(5-5) 発生トルクを求めよ。</h3>
+                <p><strong>解説:</strong><br>
+                    トルクは二次入力 (ギャップパワー) に比例し、同期角速度は変わりません。 \(T' = P'_{ag} / \omega_s\)。
+                </p>
+                <p><strong>式と計算:</strong></p>
+                <div class="math-block">
+                    \begin{align*} T' &= \frac{P'_{ag}}{\omega_s} \\ &= \frac{110500 \text{ W}}{100\pi/3 \text{ rad/s}}
+                    \\ &\approx 1055.19... \text{ Nm} \\ T' &= 1055 \text{ Nm} \end{align*}
+                </div>
+                <p><strong>解答:</strong> 発生トルク \(T' = \) <span class="highlight">1055 Nm</span></p>
+            </section>
+        </section>
+
+
+        <section id="problem6">
+            <h2>問題6. 誘導機の逆相制動運転</h2>
+            <p><strong>問題文:</strong>
+                三相誘導機を逆相制動運転させ誘導制動機として用いている。電動機の電源周波数を60Hzとする。今重量W[kg]の重量物を吊り下げて一定速度v[m/s]で巻き降ろしたとき、誘導機の回転数は400rpmであった。以下の問に答えよ。なお重力加速度はg[m/s^2]、誘導機の電源周波数は60Hz、極数12、一次の巻線抵抗、鉄損を無視する。
+            </p>
+
+            <h3>与えられた情報:</h3>
+            <ul>
+                <li>電源周波数 \(f = 60 \text{ Hz}\)</li>
+                <li>重量物の質量 \(M = W \text{ [kg]}\) (問題文のWを質量Mとします)</li>
+                <li>巻き降ろし速度 \(v \text{ [m/s]}\)</li>
+                <li>逆相制動時の回転数 \(N_{r,brake} = 400 \text{ rpm}\) (通常の回転方向と逆)</li>
+                <li>重力加速度 \(g \text{ [m/s}^2\text{]}\)</li>
+                <li>極数 \(p = 12\)</li>
+                <li>一次巻線抵抗 \(R_1\) 無視、鉄損 \(P_{fe}\) 無視</li>
+            </ul>
+
+            <section id="problem6-1">
+                <h3>(6-1) 重量物を一定速度で巻き降ろすのに必要な力は何Nか</h3>
+                <p><strong>解説:</strong><br>
+                    一定速度で巻き降ろすということは、重量物にかかる重力と、誘導機が発生する（支持する）力が釣り合っている状態です。誘導機は制動しているので、上向きの力を発生させており、その力の大きさは重力に等しいです。
+                </p>
+                <p><strong>式と計算:</strong></p>
+                <div class="math-block">$$ F = M \times g = Wg \text{ [N]} $$</div>
+                <p><strong>解答:</strong> 必要な力 \(F = \) <span class="highlight">Wg [N]</span></p>
+            </section>
+
+            <section id="problem6-2">
+                <h3>(6-2) 三相誘導モータが吸収している機械エネルギーは何Wか</h3>
+                <p><strong>解説:</strong><br>
+                    機械的パワー \(P_m = \text{力} F \times \text{速度}
+                    v\)。このパワーは、重量物が失う位置エネルギーの割合であり、誘導機の軸に入力される機械的パワーとなります。誘導機が「吸収している」と表現されているので、正の値で答えます。
+                </p>
+                <p><strong>式と計算:</strong></p>
+                <div class="math-block">
+                    \[ P_{m,absorbed} = F \times v \]
+                    \[ = (Wg) \times v = Wgv \text{ [W]} \]
+                </div>
+                <p><strong>解答:</strong> 誘導モータが吸収している機械エネルギー \(P_{m,absorbed} = \) <span class="highlight">Wgv [W]</span>
+                </p>
+            </section>
+
+            <section id="problem6-3">
+                <h3>(6-3) 誘導機のすべりを求めよ</h3>
+                <p><strong>解説:</strong><br>
+                    同期速度 \(N_s = 120f/p\)。逆相制動なので、回転磁界の方向に対して回転子は逆方向に回転しています。回転磁界の回転数を \(+N_s\) とすると、回転子の回転数は
+                    \(-N_{r,brake}\) となります。
+                    すべり \(s = (N_s - N_{rotor,actual}) / N_s\)。
+                </p>
+                <p><strong>式と計算:</strong></p>
+                <ol>
+                    <li>同期速度 \(N_s\):
+                        <div class="math-block">
+                            \[ N_s = \frac{120 \times f}{p} \]
+                            \[ = \frac{120 \times 60 \text{ Hz}}{12 \text{ 極}} = \frac{7200}{12} = 600 \text{ rpm} \]
+                        </div>
+                    </li>
+                    <li>すべり \(s\):
+                        <p>\(N_{rotor,actual} = -N_{r,brake} = -400 \text{ rpm}\)</p>
+                        <div class="math-block">
+                            \[ s = \frac{N_s - (-N_{r,brake})}{N_s} = \frac{N_s + N_{r,brake}}{N_s} \]
+                            \[ s = \frac{600 \text{ rpm} + 400 \text{ rpm}}{600 \text{ rpm}} \]
+                            \[ = \frac{1000}{600} = \frac{10}{6} = \frac{5}{3} \approx 1.6666... \]
+                            \[ s = 1.67 \]
+                        </div>
+                    </li>
+                </ol>
+                <p><strong>解答:</strong> 誘導機のすべり \(s = \) <span class="highlight">1.67</span></p>
+            </section>
+
+            <section id="problem6-4">
+                <h3>(6-4) 一次側電源が供給している電力を求めよ。(ヒント:一次巻線、鉄損を無視するので二次入力に等しい)</h3>
+                <p><strong>解説:</strong><br>
+                    一次巻線抵抗と鉄損を無視するので、一次入力 \(P_1\) は二次入力 \(P_{ag}\) (ギャップパワー) に等しいです (\(P_1 = P_{ag}\))。
+                    誘導機が吸収する機械的パワー \(P_{m,absorbed}\) は、電動機から見ると負の機械的出力 \(-P_{m,developed}\) となります。
+                    つまり \(P_{m,developed} = -P_{m,absorbed} = -Wgv\)。
+                    また、\(P_{m,developed} = P_{ag} (1-s)\)。
+                </p>
+                <p><strong>式と計算:</strong></p>
+                <div class="math-block">
+                    \begin{align*} -Wgv &= P_{ag} (1-s) \\ -Wgv &= P_{ag} \left(1 - \frac{5}{3}\right) \\ -Wgv &= P_{ag}
+                    \left(-\frac{2}{3}\right) \\ P_{ag} &= \frac{-Wgv}{-2/3} = \frac{3}{2} Wgv = 1.5 Wgv \end{align*}
+                </div>
+                <p>一次入力 \(P_1 = P_{ag}\)。</p>
+                <p><strong>解答:</strong> 一次側電源が供給している電力 \(P_1 = \) <span class="highlight">1.5 Wgv [W]</span></p>
+            </section>
+
+            <section id="problem6-5">
+                <h3>(6-5) 二次銅損を求めよ</h3>
+                <p><strong>解説:</strong><br>
+                    二次銅損 \(P_{c2}' = P_{ag} \times s\)。
+                    または、エネルギー保存則から、二次銅損は、二次入力(ギャップパワー)と機械的出力の差: \(P_{c2}' = P_{ag} - P_{m,developed} = P_{ag} -
+                    (-P_{m,absorbed}) = P_{ag} + P_{m,absorbed}\)。
+                </p>
+                <p><strong>式と計算:</strong></p>
+                <p>使用する値: \(P_{ag} = 1.5 Wgv\), \(s = 5/3\), \(P_{m,absorbed} = Wgv\)。</p>
+                <p>方法1: \(P_{c2}' = P_{ag} \times s\)</p>
+                <div class="math-block">
+                    \begin{align*} P_{c2}' &= (1.5 Wgv) \times \frac{5}{3} \\ &= \left(\frac{3}{2} Wgv\right) \times
+                    \frac{5}{3} \\ &= \frac{5}{2} Wgv = 2.5 Wgv \end{align*}
+                </div>
+                <p><strong>解答:</strong> 二次銅損 \(P_{c2}' = \) <span class="highlight">2.5 Wgv [W]</span></p>
+            </section>
+        </section>
+
+        <section id="conclusion">
+            <h2>まとめ</h2>
+            <p>本解説では、三相誘導電動機に関する様々な計算問題に取り組みました。すべりの定義、トルク特性、効率計算、抵抗制御、拘束試験、逆相制動といった重要な概念について、具体的な数値例を通して理解を深めることができたかと思います。誘導電動機の動作原理と特性を把握することは、電機システムの設計や運用において非常に重要です。
+            </p>
+        </section>
+
+    </main> <!-- .article-container の終了 -->
+
+    <!-- --- フッター（テンプレート.htmlからコピー） --- -->
+    <footer>
+        <p>
+            <a href="../index.html">トップページ</a> |
+            <a href="../contents.html">コンテンツ</a>
+        </p>
+        <p>© 2025 総合解説プラットフォーム. All rights reserved.</p>
+    </footer>
+
+    <!-- --- トップへ戻るボタン (HTML構造) --- -->
+    <button id="scrollTopBtn" title="トップへ戻る">⇧</button> <!-- Unicodeの上矢印記号 -->
+
+    <!-- ========================================================================== -->
+    <!-- JavaScript: 主にインタラクティブな機能のため（テンプレート.htmlからコピー） -->
+    <!-- ========================================================================== -->
+    <script>
+        // DOMContentLoadedイベント: HTMLの読み込みと解析が完了した後に実行される
+        document.addEventListener('DOMContentLoaded', () => {
+            // --- トップへ戻るボタンの機能 ---
+            const scrollTopBtn = document.getElementById('scrollTopBtn'); // ボタン要素を取得
+
+            // スクロールイベントを監視
+            window.addEventListener('scroll', () => {
+                // 表示/非表示の閾値 (ビューポートの高さの半分程度スクロールしたら表示)
+                const scrollThreshold = window.innerHeight / 2;
+                if (window.pageYOffset > scrollThreshold) { // 現在の垂直スクロール量が閾値を超えたら
+                    scrollTopBtn.classList.add('show');     // 'show'クラスを追加してボタンを表示
+                } else {
+                    scrollTopBtn.classList.remove('show');  // 閾値以下なら'show'クラスを削除してボタンを非表示
+                }
+            });
+
+            // ボタンがクリックされた時の処理
+            scrollTopBtn.addEventListener('click', () => {
+                window.scrollTo({ // ウィンドウを指定した位置にスクロール
+                    top: 0,            // ページの最上部 (Y座標0)
+                    behavior: 'smooth' // スムーズスクロール効果を適用
+                });
+            });
+
+            // --- ヘッダーのメインタイトルをクリックでトップページへ遷移 ---
+            const mainHeader = document.getElementById('main-header'); // header要素を直接取得
+            if (mainHeader) {
+                mainHeader.addEventListener('click', (event) => {
+                    // ヘッダー内のリンク（例えばナビゲーションなど）がクリックされた場合は何もしない
+                    if (event.target.closest('a')) {
+                        return;
+                    }
+                    // ここではheader全体がクリックされたらトップへ戻る
+                    window.location.href = '../index.html'; // トップページへの相対パス
+                });
+            }
+        });
+    </script>
+
+</body>
+
+</html>
