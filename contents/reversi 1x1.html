@@ -1,0 +1,636 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>オセロゲーム（1P vs 2P）</title>
+    <meta name="article-number" content="000002">
+    <meta name="description" content="２人でオセロで遊ぶことができます。">
+
+    <style>
+        body {
+            touch-action: pan-x pan-y;
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+            margin: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            background-color: #f0f0f0;
+            color: #333;
+        }
+
+        #game-container {
+            position: relative;
+            background-color: #4CAF50;
+            padding: 20px;
+            border-radius: 10px;
+        }
+
+        #turn-display,
+        #result {
+            font-size: 24px;
+            color: #000000;
+            text-align: center;
+            position: absolute;
+            top: 420px;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+
+        table {
+            border-collapse: collapse;
+            width: 360px;
+        }
+
+        td {
+            width: 45px;
+            height: 45px;
+            padding: 0;
+            border: 1.5px solid #333;
+            position: relative;
+            cursor: pointer;
+        }
+
+        td:hover {
+            background-color: rgba(255, 255, 255, 0.2);
+        }
+
+        .piece {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 1;
+        }
+
+        .black {
+            background-color: #000;
+        }
+
+        .white {
+            background-color: #fff;
+        }
+
+        .valid-move-indicator {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background-color: #333;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            display: none;
+            z-index: 0;
+        }
+
+        #piece-count {
+            font-size: 16px;
+            position: absolute;
+            top: 10px;
+            background-color: #fff;
+            padding: 5px;
+            border-radius: 5px;
+            pointer-events: none;
+            /* クリックやホバーの反応を無効にする */
+        }
+
+        #piece-count table {
+            margin: 0 auto;
+        }
+
+        #piece-count td {
+            border: 2px solid #ccc;
+            text-align: center;
+        }
+
+        #play-button {
+            position: absolute;
+            bottom: 10px;
+            left: 10px;
+            display: block;
+            margin: 20px;
+            padding: 10px 20px;
+            font-size: 18px;
+            background-color: #fff;
+            border: 2px solid #333;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        /* ================================================================== */
+        /* ナビゲーションメニューのスタイル (ここからコピー)                   */
+        /* ================================================================== */
+
+        /* メニューを開閉するアイコンボタンのスタイル */
+        #menu-toggle-icon {
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+            position: fixed;
+            /* 画面に固定表示 */
+            top: 15px;
+            /* 画面上から15pxの位置 */
+            right: 20px;
+            /* 画面右から20pxの位置 */
+            font-size: 28px;
+            /* アイコンの文字サイズ */
+            font-weight: bold;
+            /* 太字にする */
+            color: #333;
+            /* アイコンの色 (濃いグレー) */
+            background-color: rgba(255, 255, 255, 0.8);
+            /* 背景色 (半透明の白) */
+            width: 45px;
+            /* ボタンの幅 */
+            height: 45px;
+            /* ボタンの高さ */
+            border-radius: 50%;
+            /* 円形にする */
+            text-align: center;
+            /* 文字を中央揃え */
+            line-height: 45px;
+            /* 文字を垂直方向に中央揃え */
+            cursor: pointer;
+            /* カーソルを指マークに */
+            z-index: 1002;
+            /* 他の要素より手前に表示 */
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+            /* 影をつけて立体感を出す */
+            transition: transform 0.2s, background-color 0.2s;
+            /* アニメーション効果 */
+        }
+
+        /* アイコンにマウスを乗せたときのスタイル */
+        #menu-toggle-icon:hover {
+            transform: scale(1.1);
+            /* 少し大きくする */
+            background-color: rgba(255, 255, 255, 1);
+            /* 背景を不透明の白に */
+        }
+
+        /* フローティングメニュー本体のスタイル */
+        #floating-menu {
+            position: fixed;
+            /* 画面に固定表示 */
+            top: 70px;
+            /* アイコンの下に配置 */
+            right: 20px;
+            /* アイコンと同じ右からの位置 */
+            background-color: rgba(255, 255, 255, 0.98);
+            /* 背景色 (ほぼ不透明の白) */
+            padding: 15px 20px;
+            /* 内側の余白 */
+            border-radius: 8px;
+            /* 角を丸くする */
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+            /* 影をつける */
+            display: flex;
+            /* 内部のリンクをFlexboxで配置 */
+            flex-direction: column;
+            /* リンクを縦に並べる */
+            gap: 10px;
+            /* リンク間の隙間 */
+            z-index: 1001;
+
+            /* アニメーションのための初期設定 */
+            transform-origin: top right;
+            /* 右上を基点にアニメーション */
+            transform: scale(0.95);
+            opacity: 0;
+            visibility: hidden;
+            /* 表示されていないときは操作不可に */
+            transition: transform 0.2s ease-out, opacity 0.2s ease-out, visibility 0.2s;
+        }
+
+        /* メニューが表示されるときのスタイル（showクラスが付与されたとき） */
+        #floating-menu.show {
+            transform: scale(1);
+            opacity: 1;
+            visibility: visible;
+        }
+
+        /* メニュー内のリンクのスタイル */
+        #floating-menu a {
+            color: #007bff;
+            /* リンクの文字色 */
+            text-decoration: none;
+            font-size: 1.1rem;
+            font-weight: bold;
+            padding: 10px;
+            transition: background-color 0.2s;
+            border-radius: 5px;
+        }
+
+        #floating-menu a:hover {
+            background-color: #f0f0f0;
+            /* ホバー時の背景色 */
+        }
+
+        /* ================================================================== */
+        /* ナビゲーションメニューのスタイル (ここまでコピー)                   */
+        /* ================================================================== */
+
+    </style>
+</head>
+
+<body>
+    <!-- ================================================================== -->
+    <!-- ナビゲーションメニュー ここから (ここからコピー)                  -->
+    <!-- ================================================================== -->
+    
+    <!-- 画面右上に表示されるメニュー開閉ボタン -->
+    <div id="menu-toggle-icon">≡</div>
+    
+    <!-- クリック時に表示されるフローティングメニュー -->
+    <div id="floating-menu">
+        <!-- 各ページへのリンク。パスは適宜調整してください -->
+        <a href="../index.html">トップページへ</a>
+        <a href="../contents.html">コンテンツ一覧へ</a>
+    </div>
+    
+    <!-- ================================================================== -->
+    <!-- ナビゲーションメニュー ここまで (ここまでコピー)                  -->
+    <!-- ================================================================== -->
+
+    <button onclick="retryGame()" id="play-button">リトライ</button>
+    <div id="piece-count"></div>
+    <div id="game-container">
+        <div id="turn-display">ターン: <span id="player-turn">黒</span></div>
+        <table id="board"></table>
+        <div id="result"></div>
+    </div>
+
+    <script>
+        let board = [];
+        let currentPlayer = 'black';
+        let consecutivePasses = 0;
+
+            /* ================================================================== */
+            /* ナビゲーションメニューの制御スクリプト (ここからコピー)             */
+            /* ================================================================== */
+            document.addEventListener('DOMContentLoaded', () => {
+                // HTML要素を取得
+                const menuToggleIcon = document.getElementById('menu-toggle-icon');
+                const floatingMenu = document.getElementById('floating-menu');
+
+                // アイコンとメニュー要素が存在する場合のみイベントリスナーを設定
+                if (menuToggleIcon && floatingMenu) {
+
+                    // メニューアイコンをクリックしたらメニューの表示/非表示を切り替える
+                    menuToggleIcon.addEventListener('click', (event) => {
+                        // イベントの伝播を停止し、下のdocumentのクリックイベントがすぐに発火するのを防ぐ
+                        event.stopPropagation();
+                        floatingMenu.classList.toggle('show');
+                    });
+
+                    // メニューの外側をクリックしたときにメニューを閉じる
+                    document.addEventListener('click', (event) => {
+                        // メニューが表示されている状態か確認
+                        if (floatingMenu.classList.contains('show')) {
+                            // クリックされたのがメニューアイコンでも、メニュー自身でもない場合
+                            if (!menuToggleIcon.contains(event.target) && !floatingMenu.contains(event.target)) {
+                                floatingMenu.classList.remove('show');
+                            }
+                        }
+                    });
+                }
+            });
+            /* ================================================================== */
+            /* ナビゲーションメニューの制御スクリプト (ここまでコピー)             */
+            /* ================================================================== */
+
+        // ゲームボードの初期化を行う関数
+        function initializeBoard() {
+            for (let i = 0; i < 8; i++) {
+                board[i] = [];
+                for (let j = 0; j < 8; j++) {
+                    board[i][j] = '';
+                }
+            }
+            board[3][3] = 'white';
+            board[3][4] = 'black';
+            board[4][3] = 'black';
+            board[4][4] = 'white';
+
+            currentPlayer = 'black';
+        }
+
+        // ゲームボードの表示を更新する関数
+        function renderBoard() {
+            const table = document.getElementById('board');
+            table.innerHTML = '';
+
+            renderPieceCount();
+
+            for (let i = 0; i < 8; i++) {
+                const row = document.createElement('tr');
+                for (let j = 0; j < 8; j++) {
+                    const cell = document.createElement('td');
+                    const piece = document.createElement('div');
+                    const validMoveIndicator = document.createElement('div');
+
+                    piece.className = board[i][j] === 'black' ? 'piece black' : board[i][j] === 'white' ? 'piece white' : '';
+                    validMoveIndicator.className = 'valid-move-indicator';
+
+                    cell.appendChild(piece);
+                    cell.appendChild(validMoveIndicator);
+                    cell.addEventListener('click', () => handleCellClick(i, j));
+                    row.appendChild(cell);
+                }
+                table.appendChild(row);
+            }
+
+            updateValidMoveIndicators();
+        }
+
+        // セルがクリックされた時の処理を行う関数
+        function handleCellClick(row, col) {
+            if (board[row][col] === '' && isValidMove(row, col)) {
+                flipTiles(row, col);
+                board[row][col] = currentPlayer;
+                switchPlayer();
+                renderBoard();
+                updateTurnDisplay();
+            
+                if (!hasValidMoves(currentPlayer)) {
+                    consecutivePasses++;
+                    if (consecutivePasses >= 2) {
+                        endGame();
+                    } else {
+                        // 次のプレイヤーに有効な手がない場合は、パスして相手にターンを渡す
+                        switchPlayer();
+                        if (!hasValidMoves(currentPlayer)) {
+                            consecutivePasses++;
+                            if (consecutivePasses >= 2) {
+                                endGame();
+                            } else {
+                                switchPlayer();
+                                renderBoard();
+                                updateTurnDisplay();
+                            }
+                        } else {
+                            consecutivePasses = 0;
+                        }
+                    }
+                } else {
+                    consecutivePasses = 0;
+                }
+            
+            }
+        }
+
+        // ランダムな位置に石を置く関数
+        function makeRandomMove() {
+            const emptyCells = [];
+            for (let i = 0; i < 8; i++) {
+                for (let j = 0; j < 8; j++) {
+                    if (board[i][j] === '' && isValidMove(i, j)) {
+                        emptyCells.push({ row: i, col: j });
+                    }
+                }
+            }
+
+            if (emptyCells.length > 0) {
+                const randomIndex = Math.floor(Math.random() * emptyCells.length);
+                const { row, col } = emptyCells[randomIndex];
+                handleCellClick(row, col);
+            }
+        }
+
+        // 指定された位置に石を置けるかどうかを判定する関数
+        function isValidMove(row, col) {
+            let tempBoard = JSON.parse(JSON.stringify(board));
+            tempBoard[row][col] = currentPlayer;
+            return canFlipTiles(tempBoard, row, col);
+        }
+
+        // 指定された位置に石を置いて、相手の石をひっくり返す関数
+        function flipTiles(row, col) {
+            const directions = [
+                { row: -1, col: 0 }, { row: 1, col: 0 },
+                { row: 0, col: -1 }, { row: 0, col: 1 },
+                { row: -1, col: -1 }, { row: -1, col: 1 },
+                { row: 1, col: -1 }, { row: 1, col: 1 }
+            ];
+
+            for (const dir of directions) {
+                let r = row + dir.row;
+                let c = col + dir.col;
+                let flipTiles = [];
+
+                while (r >= 0 && r < 8 && c >= 0 && c < 8 && board[r][c] !== '' && board[r][c] !== currentPlayer) {
+                    flipTiles.push({ row: r, col: c });
+                    r += dir.row;
+                    c += dir.col;
+                }
+
+                if (r >= 0 && r < 8 && c >= 0 && c < 8 && board[r][c] === currentPlayer) {
+                    for (const tile of flipTiles) {
+                        board[tile.row][tile.col] = currentPlayer;
+                    }
+                }
+            }
+        }
+
+        // 指定された位置に石を置いた場合、相手の石をひっくり返せるかどうかを判定する関数
+        function canFlipTiles(tempBoard, row, col) {
+            const directions = [
+                { row: -1, col: 0 }, { row: 1, col: 0 },
+                { row: 0, col: -1 }, { row: 0, col: 1 },
+                { row: -1, col: -1 }, { row: -1, col: 1 },
+                { row: 1, col: -1 }, { row: 1, col: 1 }
+            ];
+
+            for (const dir of directions) {
+                let r = row + dir.row;
+                let c = col + dir.col;
+                let flipTiles = [];
+
+                while (r >= 0 && r < 8 && c >= 0 && c < 8 && tempBoard[r][c] !== '' && tempBoard[r][c] !== currentPlayer) {
+                    flipTiles.push({ row: r, col: c });
+                    r += dir.row;
+                    c += dir.col;
+                }
+
+                if (r >= 0 && r < 8 && c >= 0 && c < 8 && tempBoard[r][c] === currentPlayer && flipTiles.length > 0) {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+        // プレイヤーを切り替える関数
+        function switchPlayer() {
+            currentPlayer = currentPlayer === 'black' ? 'white' : 'black';
+        }
+
+        // 指定された色のプレイヤーが有効な手を持っているかどうかを判定する関数
+        function hasValidMoves(color) {
+            for (let i = 0; i < 8; i++) {
+                for (let j = 0; j < 8; j++) {
+                    if (board[i][j] === '' && isValidMoveForColor(i, j, color)) {
+                        console.log(`Valid move found for ${color} at (${i}, ${j})`);
+                        return true;
+                    }
+                }
+            }
+            return false;
+        }
+
+        // ゲームが終了しているかどうかを判定する関数
+        function isGameOver() {
+            return !hasValidMoves(currentPlayer) && !hasValidMoves(getOpponent());
+        }
+
+        // ゲームの結果を表示する関数
+        function displayResult() {
+            const resultDisplay = document.getElementById('result');
+            const playerTurnDisplay = document.getElementById('turn-display');
+            const blackCount = countPieces('black');
+            const whiteCount = countPieces('white');
+
+            if (blackCount > whiteCount) {
+                resultDisplay.textContent = '黒の勝利！';
+            } else if (blackCount < whiteCount) {
+                resultDisplay.textContent = '白の勝利！';
+            } else {
+                resultDisplay.textContent = '引き分けです！';
+            }
+
+            // ターン表示を非表示にする
+            playerTurnDisplay.style.display = 'none';
+        }
+
+        // 指定された色のプレイヤーが持つ石の数を数える関数
+        function countPieces(color) {
+            let count = 0;
+            for (let i = 0; i < 8; i++) {
+                for (let j = 0; j < 8; j++) {
+                    if (board[i][j] === color) {
+                        count++;
+                    }
+                }
+            }
+            return count;
+        }
+
+        // ターン表示を更新する関数
+        function updateTurnDisplay() {
+            const playerTurnDisplay = document.getElementById('player-turn');
+            playerTurnDisplay.textContent = currentPlayer === 'black' ? '黒' : '白';
+        
+            if (!hasValidMoves(currentPlayer)) {
+                playerTurnDisplay.textContent += ' (パス)';
+                consecutivePasses++;
+                if (consecutivePasses >= 2) {
+                    endGame();
+                } else {
+                    // 次のプレイヤーに有効な手がない場合は、パスして相手にターンを渡す
+                    switchPlayer();
+                    renderBoard();
+                    updateTurnDisplay();
+                }
+            } else {
+                consecutivePasses = 0;
+            }
+        
+            if (isGameOver()) {
+                displayResult();
+            }
+        }
+
+        // 相手のプレイヤーを取得する関数
+        function getOpponent() {
+            return currentPlayer === 'black' ? 'white' : 'black';
+        }
+
+        // 指定された色のプレイヤーが有効な手を持っているかどうかを判定する関数
+        function hasValidMoves(color) {
+            for (let i = 0; i < 8; i++) {
+                for (let j = 0; j < 8; j++) {
+                    if (board[i][j] === '' && isValidMoveForColor(i, j, color)) {
+                        return true;
+                    }
+                }
+            }
+            return false;
+        }
+
+        // 指定された色のプレイヤーが指定された位置に石を置けるかどうかを判定する関数
+        function isValidMoveForColor(row, col, color) {
+            let tempBoard = JSON.parse(JSON.stringify(board));
+            tempBoard[row][col] = color;
+            return canFlipTiles(tempBoard, row, col);
+        }
+
+        // 有効な手のインジケーターを更新する関数
+        function updateValidMoveIndicators() {
+            for (let i = 0; i < 8; i++) {
+                for (let j = 0; j < 8; j++) {
+                    const cell = document.querySelector(`#board tr:nth-child(${i + 1}) td:nth-child(${j + 1})`);
+                    const validMoveIndicator = cell.querySelector('.valid-move-indicator');
+                    validMoveIndicator.style.display = isValidMove(i, j) ? 'block' : 'none';
+                }
+            }
+        }
+
+        // 石の数を表示する関数
+        function renderPieceCount() {
+            const pieceCountContainer = document.getElementById('piece-count');
+            const blackCount = countPieces('black');
+            const whiteCount = countPieces('white');
+
+            const table = document.createElement('table');
+            const tr1 = document.createElement('tr');
+
+            const td1_1 = document.createElement('td');
+            td1_1.textContent = '黒：' + blackCount;
+            const td1_2 = document.createElement('td');
+            td1_2.textContent = '白：' + whiteCount;
+
+            tr1.appendChild(td1_1);
+            tr1.appendChild(td1_2);
+
+            table.appendChild(tr1);
+
+            pieceCountContainer.innerHTML = '';
+            pieceCountContainer.appendChild(table);
+        }
+
+        // ゲームを終了する関数
+        function endGame() {
+            displayResult();
+        }
+
+        initializeBoard();
+        renderBoard();
+        updateTurnDisplay();
+
+        // ゲームをリトライする関数
+        function retryGame() {
+            // ゲームを初期状態に戻す
+            initializeBoard();
+            renderBoard();
+            updateTurnDisplay();
+
+            // ターンの表示に戻す
+            const resultDisplay = document.getElementById('result');
+            const playerTurnDisplay = document.getElementById('turn-display');
+            resultDisplay.textContent = '';
+            playerTurnDisplay.style.display = 'block';
+        }
+    </script>
+
+</body>
+
+</html>
