@@ -270,6 +270,59 @@
                 grid-template-columns: 1fr;
             }
         }
+        /* ▼▼▼ トップへ戻るボタンのスタイル（この部分を自分のCSSにコピーしてください） ▼▼▼ */
+        #scrollTopBtn {
+            display: none;
+            /* 初期状態では非表示 (JSで制御) */
+            position: fixed;
+            /* 画面に固定 */
+            bottom: 30px;
+            /* 画面の下から30pxの位置 */
+            right: 30px;
+            /* 画面の右から30pxの位置 */
+            z-index: 999;
+            /* 他の要素より手前に表示 */
+            border: none;
+            outline: none;
+            background-color: #007bff;
+            /* 背景色 (青) */
+            color: white;
+            /* アイコン色 (白) */
+            cursor: pointer;
+            /* カーソルを指マークに */
+            padding: 12px 15px;
+            /* 内側余白 */
+            border-radius: 50%;
+            /* 円形にする */
+            font-size: 18px;
+            /* アイコンのフォントサイズ */
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+            /* ボタンの影 */
+            transition: opacity 0.3s, visibility 0.3s;
+            /* 表示/非表示時のアニメーション */
+            opacity: 0;
+            /* 初期状態では透明 */
+            visibility: hidden;
+            /* 初期状態では見えない (レイアウトに影響しない) */
+        }
+
+        #scrollTopBtn.show {
+            /* JavaScriptでこのクラスが付与されると表示される */
+            display: block;
+            /* 表示 */
+            opacity: 1;
+            /* 不透明に */
+            visibility: visible;
+            /* 見えるように */
+        }
+
+        #scrollTopBtn:hover {
+            background-color: #0056b3;
+            /* マウスを乗せた時の背景色 */
+        }
+
+        /* ▲▲▲ ここまでを自分のCSSにコピーしてください ▲▲▲ */
+
     </style>
 </head>
 
@@ -280,6 +333,9 @@
             <span class="subtitle">あらゆる疑問に、明快な解答を。</span>
         </h1>
     </header>
+    <!-- ▼▼▼ トップへ戻るボタン（このHTML要素を自分のbodyタグの閉じタグ直前などにコピーしてください） ▼▼▼ -->
+    <button id="scrollTopBtn" title="トップへ戻る">⇧</button> <!-- Unicodeの上矢印記号 -->
+    <!-- ▲▲▲ ここまでを自分のページにコピーしてください ▲▲▲ -->
 
     <nav>
         <ul>
@@ -314,6 +370,37 @@
     </footer>
 
     <script>
+            /* ▼▼▼ トップへ戻るボタンのJavaScript（このscriptタグ全体を自分のbodyタグの閉じタグ直前などにコピーしてください） ▼▼▼ */
+            // DOMContentLoadedイベント: HTMLの読み込みと解析が完了した後に実行される
+            document.addEventListener('DOMContentLoaded', () => {
+                // --- トップへ戻るボタンの機能 ---
+                const scrollTopBtn = document.getElementById('scrollTopBtn'); // ボタン要素を取得
+
+                // ボタンが存在しない場合は何もしない
+                if (!scrollTopBtn) return;
+
+                // スクロールイベントを監視
+                window.addEventListener('scroll', () => {
+                    // 表示/非表示の閾値 (ビューポートの高さの半分スクロールしたら表示)
+                    const scrollThreshold = window.innerHeight / 2;
+
+                    if (window.pageYOffset > scrollThreshold) { // 現在の垂直スクロール量が閾値を超えたら
+                        scrollTopBtn.classList.add('show');     // 'show'クラスを追加してボタンを表示
+                    } else {
+                        scrollTopBtn.classList.remove('show');  // 閾値以下なら'show'クラスを削除してボタンを非表示
+                    }
+                });
+
+                // ボタンがクリックされた時の処理
+                scrollTopBtn.addEventListener('click', () => {
+                    window.scrollTo({ // ウィンドウを指定した位置にスクロール
+                        top: 0,            // ページの最上部 (Y座標0)
+                        behavior: 'smooth' // スムーズスクロール効果を適用
+                    });
+                });
+            });
+            /* ▲▲▲ ここまでを自分のページにコピーしてください ▲▲▲ */
+
         document.addEventListener('DOMContentLoaded', async () => {
             // --- ヘッダーをクリックでトップページへ遷移 ---
             const mainHeader = document.getElementById('main-header');
