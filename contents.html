@@ -52,10 +52,16 @@
         header {
             background-color: #007bff;
             color: white;
-            padding: 20px 15px;
             text-align: center;
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-            cursor: pointer;
+        }
+
+        header a {
+            display: block; /* リンクをブロック要素にし、領域全体をクリック可能にする */
+            padding: 20px 15px; /* パディングをこちらに移動 */
+            color: inherit; /* 親要素（header）の文字色を継承する */
+            text-decoration: none; /* リンクの下線を削除 */
+            cursor: pointer; /* カーソルを指マークにする */
         }
 
         /* ヘッダー内のh1要素 (サイトのメインタイトル) のスタイル */
@@ -129,8 +135,8 @@
             margin-top: 20px;
         }
 
-        /* 個々の記事や情報を表示するカードのスタイル */
-        .content-card {
+        /* 個々の記事や情報を表示するカードのスタイル (aタグに変更) */
+        a.content-card { /* ★セレクタを 'a.content-card' に変更 */
             background-color: #ffffff;
             border: 1px solid #dee2e6;
             border-radius: 6px;
@@ -140,10 +146,11 @@
             display: flex;
             flex-direction: column;
             cursor: pointer;
+            text-decoration: none; /* ★リンクの下線を削除 */
         }
 
         /* コンテンツカードのマウスオーバー時のスタイル */
-        .content-card:hover {
+        a.content-card:hover { /* ★セレクタを 'a.content-card:hover' に変更 */
             transform: translateY(-3px);
             box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
         }
@@ -161,20 +168,19 @@
         .content-card p {
             font-size: clamp(0.9rem, 2.2vw, 1rem);
             margin-bottom: 15px;
-            color: #495057;
+            color: #495057; /* ★カード内の文字が青くならないように色を再指定 */
             display: -webkit-box;
             -webkit-line-clamp: 3;
             -webkit-box-orient: vertical;
             overflow: hidden;
             text-overflow: ellipsis;
-            /* 互換性のための標準プロパティ */
             line-clamp: 3;
         }
 
         /* コンテンツカード内の「詳しく読む」などのリンクのスタイル */
-        .content-card a.learn-more {
+        .content-card .learn-more { /* ★'a.learn-more' から 'a' を削除 */
             display: inline-block;
-            color: #007bff;
+            color: #007bff; /* ★文字色を青に指定 */
             text-decoration: none;
             font-weight: bold;
             padding: 8px 0;
@@ -185,7 +191,7 @@
         }
 
         /* 「詳しく読む」リンクのマウスオーバー時のスタイル */
-        .content-card a.learn-more:hover {
+        .content-card .learn-more:hover { /* ★'a.learn-more:hover' から 'a' を削除 */
             border-bottom-color: #007bff;
         }
 
@@ -329,10 +335,12 @@
 
 <body>
     <header id="main-header">
-        <h1>
-            総合解説プラットフォーム
-            <span class="subtitle">あらゆる疑問に、明快な解答を。</span>
-        </h1>
+        <a href="index.html">
+            <h1>
+                総合解説プラットフォーム
+                <span class="subtitle">あらゆる疑問に、明快な解答を。</span>
+            </h1>
+        </a>
     </header>
     <!-- ▼▼▼ トップへ戻るボタン（このHTML要素を自分のbodyタグの閉じタグ直前などにコピーしてください） ▼▼▼ -->
     <button id="scrollTopBtn" title="トップへ戻る">⇧</button> <!-- Unicodeの上矢印記号 -->
@@ -402,16 +410,6 @@
 
         document.addEventListener('DOMContentLoaded', async () => {
             // --- ヘッダーをクリックでトップページへ遷移 ---
-            const mainHeader = document.getElementById('main-header');
-            if (mainHeader) {
-                mainHeader.addEventListener('click', (event) => {
-                    // ヘッダー内のリンクがクリックされた場合は、そちらを優先する
-                    if (event.target.closest('a')) {
-                        return;
-                    }
-                    window.location.href = 'index.html'; // トップページへ遷移
-                });
-            }
             const contentGrid = document.querySelector('.content-grid');
             const loadingMessage = document.getElementById('loading-message');
 
@@ -474,9 +472,9 @@
                     const title = titleElement ? titleElement.textContent.trim() : 'タイトルなし';
 
                     // コンテンツの概要（<meta name="description">から取得）
-                    // contents.htmlでは、descriptionメタタグの内容を概要とする
                     const descriptionMeta = doc.querySelector('meta[name="description"]');
-                    const description = descriptionMeta ? descriptionMeta.content : '概要なし';
+                    // descriptionMeta から content 属性の値を取得する
+                    const description = descriptionMeta ? descriptionMeta.getAttribute('content') : '概要がありません。';
 
                     // コンテンツの連番（<meta name="article-number">から取得）
                     const articleNumberMeta = doc.querySelector('meta[name="article-number"]');
@@ -505,25 +503,20 @@
 
             // 取得したデータに基づいてカードを生成し、グリッドに追加
             articles.forEach(article => {
-                const card = document.createElement('div');
+                // div の代わりに a 要素を作成
+                const card = document.createElement('a');
+                // href属性に記事へのパスを設定してリンクにする
+                card.href = article.path;
                 card.classList.add('content-card');
 
-                // MathJaxの数式を含む可能性があるので、innerHTMLを使用
+                // 「詳しく読む」は a タグではなく span タグに変更
                 card.innerHTML = `
-                    <h3>${article.title}</h3>
-                    <p>${article.description}</p>
-                    <a href="${article.path}" class="learn-more">詳しく読む →</a>
+                <h3>${article.title}</h3>
+                <p>${article.description}</p>
+                <span class="learn-more">詳しく読む →</span>
                 `;
 
-                // カード全体をクリック可能にするイベントリスナー
-                card.addEventListener('click', (event) => {
-                    // 「詳しく読む」リンク自体がクリックされた場合は、デフォルトのリンク動作を優先
-                    if (event.target.closest('.learn-more')) {
-                        return;
-                    }
-                    // カードの他の部分がクリックされた場合は、リンク先に遷移
-                    window.location.href = article.path;
-                });
+                // card自体がリンクなので、クリックイベントの追加は不要です
 
                 contentGrid.appendChild(card);
             });
