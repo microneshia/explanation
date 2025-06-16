@@ -1,0 +1,452 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>計算機ハードウェア 試験予想 複数選択</title>
+    <meta name="article-number" content="000010"> <!-- 新しい連番を割り当て -->
+    <meta name="description" content="計算機ハードウェアの複数選択問題です。正しい選択肢をすべて選んでください。">
+
+    <!-- Google FontsとナビゲーションCSSの読み込み -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../css/nav-menu.css">
+
+    <!-- このページ固有のスタイル -->
+    <style>
+        :root {
+            --primary-color: #c0392b;
+            --secondary-color: #8e2014;
+            --light-bg: #f9f9f9;
+            --dark-text: #34495e;
+            --light-text: #ffffff;
+            --correct-color: #27ae60;
+            --incorrect-color: #c0392b;
+            --neutral-color: #7f8c8d;
+            --border-color: #e0e0e0;
+        }
+
+        body {
+            font-family: 'Noto Sans JP', sans-serif;
+            background-color: var(--light-bg);
+            color: var(--dark-text);
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+        }
+
+        .exam-container {
+            width: 100%;
+            max-width: 800px;
+            background-color: var(--light-text);
+            margin: 0 auto;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+            min-height: 100vh;
+        }
+
+        .exam-header {
+            background: var(--primary-color);
+            color: var(--light-text);
+            padding: 10px 20px;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .progress-text {
+            font-size: 0.9em;
+            margin: 0;
+            white-space: nowrap;
+            margin-right: 15px;
+        }
+
+        .progress-bar-container {
+            width: 100%;
+        }
+
+        .progress-bar-bg {
+            background-color: rgba(255, 255, 255, 0.3);
+            border-radius: 5px;
+            height: 10px;
+            overflow: hidden;
+        }
+
+        #progress-bar {
+            width: 0%;
+            height: 100%;
+            background-color: #f1c40f;
+            transition: width 0.3s ease-in-out;
+            border-radius: 5px;
+        }
+
+        .exam-content-wrapper {
+            padding: 20px;
+        }
+
+        .main-title {
+            text-align: center;
+            margin-bottom: 10px;
+            color: var(--secondary-color);
+        }
+
+        .main-subtitle {
+            text-align: center;
+            font-size: 0.9em;
+            color: var(--neutral-color);
+            margin-top: 0;
+            margin-bottom: 25px;
+        }
+
+        .questions-area {
+            padding: 0 10px 10px 10px;
+        }
+
+        .question-card {
+            margin-bottom: 25px;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 20px;
+            transition: box-shadow 0.3s;
+            background-color: #fff;
+        }
+
+        .question-title {
+            font-weight: 700;
+            margin-bottom: 15px;
+            font-size: 1.1em;
+            line-height: 1.6;
+        }
+
+        .options-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 10px;
+        }
+
+        .options-list li {
+            margin-bottom: 0;
+        }
+
+        .options-list label {
+            display: flex;
+            align-items: center;
+            text-align: center;
+            justify-content: center;
+            padding: 12px 15px;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.2s;
+            line-height: 1.5;
+            height: 100%;
+            box-sizing: border-box;
+        }
+
+        .options-list label:hover {
+            background-color: #f8f9fa;
+            border-color: var(--primary-color);
+        }
+
+        .options-list input[type="checkbox"] {
+            display: none;
+        }
+
+        .options-list input[type="checkbox"]:checked+label {
+            background-color: var(--primary-color);
+            color: var(--light-text);
+            border-color: var(--primary-color);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .button-container {
+            text-align: center;
+            padding: 10px;
+        }
+
+        #submit-btn {
+            background-color: var(--primary-color);
+            color: var(--light-text);
+            border: none;
+            padding: 15px 30px;
+            font-size: 1.2em;
+            font-weight: 700;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background-color 0.3s, transform 0.2s;
+        }
+
+        #submit-btn:hover {
+            background-color: var(--secondary-color);
+            transform: translateY(-2px);
+        }
+
+        #result-area {
+            padding: 10px;
+        }
+
+        .score-display {
+            text-align: center;
+            margin-bottom: 30px;
+            padding: 20px;
+            background-color: var(--light-bg);
+            border-radius: 8px;
+        }
+
+        .score-display h2 {
+            margin: 0 0 10px;
+            font-size: 1.8em;
+            color: var(--primary-color);
+        }
+
+        .score-display p {
+            margin: 0;
+            font-size: 2.5em;
+            font-weight: 700;
+        }
+
+        .score-display span {
+            font-size: 0.6em;
+            font-weight: 400;
+        }
+
+        .feedback-card {
+            margin-bottom: 20px;
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+            background-color: #fff;
+        }
+
+        .feedback-title-container {
+            padding: 15px 20px;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .feedback-result-badge {
+            padding: 5px 10px;
+            border-radius: 15px;
+            color: white;
+            font-weight: 700;
+            font-size: 0.9em;
+            margin-left: 10px;
+        }
+
+        .feedback-result-badge.correct {
+            background-color: var(--correct-color);
+        }
+
+        .feedback-result-badge.incorrect {
+            background-color: var(--incorrect-color);
+        }
+
+        .feedback-details {
+            padding: 20px;
+        }
+
+        .feedback-summary {
+            list-style-type: none;
+            padding-left: 0;
+            margin-bottom: 15px;
+        }
+
+        .feedback-summary li {
+            margin-bottom: 8px;
+        }
+
+        .feedback-explanation-text {
+            font-size: 0.95em;
+            color: #555;
+            line-height: 1.6;
+            margin-top: 15px;
+            padding: 15px;
+            background-color: #f8f9fa;
+            border-left: 4px solid var(--primary-color);
+            border-radius: 4px;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- フローティングナビゲーションメニュー -->
+    <div id="menu-toggle-icon">≡</div>
+    <div id="floating-menu">
+        <a href="../index.html">トップページへ</a>
+        <a href="../contents.html">コンテンツ一覧へ</a>
+    </div>
+
+    <!-- 元のコンテンツHTML -->
+    <div class="exam-container">
+        <header class="exam-header" id="exam-header">
+            <div class="progress-text" id="progress-text">進捗: 0 / 20 問</div>
+            <div class="progress-bar-container">
+                <div class="progress-bar-bg">
+                    <div id="progress-bar"></div>
+                </div>
+            </div>
+        </header>
+
+        <div class="exam-content-wrapper">
+            <h1 class="main-title">計算機ハードウェア 複数選択問題</h1>
+            <p class="main-subtitle">各問題について、正しい選択肢を<strong>すべて</strong>選んでください。</p>
+            <main id="questions-area" class="questions-area"></main>
+
+            <div class="button-container">
+                <button id="submit-btn">採点する</button>
+            </div>
+
+            <div id="result-area" style="display: none;"></div>
+        </div>
+    </div>
+
+    <!-- 統合されたJavaScript -->
+    <script>
+        // ナビゲーションメニューのロジック
+        document.addEventListener('DOMContentLoaded', () => {
+            const menuToggleIcon = document.getElementById('menu-toggle-icon');
+            const floatingMenu = document.getElementById('floating-menu');
+            if (menuToggleIcon && floatingMenu) {
+                menuToggleIcon.addEventListener('click', (event) => {
+                    event.stopPropagation();
+                    floatingMenu.classList.toggle('show');
+                });
+                document.addEventListener('click', (event) => {
+                    if (floatingMenu.classList.contains('show')) {
+                        if (!menuToggleIcon.contains(event.target) && !floatingMenu.contains(event.target)) {
+                            floatingMenu.classList.remove('show');
+                        }
+                    }
+                });
+            }
+        });
+
+        // コンテンツ固有のロジック
+        document.addEventListener('DOMContentLoaded', () => {
+            const questions = [
+                { question: "1. コンピュータの5大機能に該当するものをすべて選びなさい。", options: { a: "記憶", b: "通信", c: "演算", d: "制御", e: "入力", f: "出力", g: "表示" }, answers: ["a", "c", "d", "e", "f"], explanation: "コンピュータの5大機能は「入力・出力・記憶・演算・制御」です。「表示」は出力機能の一種、「通信」は5大機能には含まれません。" },
+                { question: "2. CPUの「制御装置」に含まれる構成要素をすべて選びなさい。", options: { a: "汎用レジスタ (GR)", b: "プログラムカウンタ (PC)", c: "命令レジスタ (IR)", d: "ALU", e: "デコーダ (DEC)", f: "フラグレジスタ (FR)" }, answers: ["b", "c", "e"], explanation: "制御装置は、命令の解読と実行制御を担当します。プログラムカウンタ(PC)、命令レジスタ(IR)、デコーダ(DEC)がこれに該当します。他は演算装置の要素です。" },
+                { question: "3. CPUの「演算装置」に含まれる構成要素をすべて選びなさい。", options: { a: "汎用レジスタ (GR)", b: "プログラムカウンタ (PC)", c: "命令レジスタ (IR)", d: "算術論理演算装置 (ALU)", e: "デコーダ (DEC)", f: "フラグレジスタ (FR)" }, answers: ["a", "d", "f"], explanation: "演算装置は、実際のデータ演算を行います。ALU、演算データを一時保持する汎用レジスタ(GR)、演算結果の状態を保持するフラグレジスタ(FR)がこれに該当します。" },
+                { question: "4. コンピュータの記憶装置のうち、「揮発性メモリ」(電源が切れると内容が消える)に分類されるものをすべて選びなさい。", options: { a: "SRAM", b: "DRAM", c: "ROM", d: "SSD", e: "キャッシュメモリ", f: "レジスタ" }, answers: ["a", "b", "e", "f"], explanation: "SRAM、DRAM、キャッシュメモリ、レジスタはすべてRAMの一種であり、電源供給がなければ記憶を保持できない揮発性メモリです。ROMとSSDは不揮発性です。" },
+                { question: "5. コンピュータの記憶装置のうち、「不揮発性メモリ」(電源が切れても内容が残る)に分類されるものをすべて選びなさい。", options: { a: "主記憶(メインメモリ)", b: "HDD", c: "ROM", d: "SSD", e: "キャッシュメモリ", f: "光学ドライブ(CD/DVD/BD)" }, answers: ["b", "c", "d", "f"], explanation: "HDD, ROM, SSD, 光学ドライブは電源がなくてもデータを長期間保持できる不揮発性メモリです。主記憶やキャッシュメモリは揮発性です。" },
+                { question: "6. 「組み合わせ回路」に分類されるものをすべて選びなさい。", options: { a: "マルチプレクサ", b: "デコーダ", c: "フリップフロップ", d: "全加算器", e: "レジスタ", f: "カウンタ" }, answers: ["a", "b", "d"], explanation: "組み合わせ回路は現在の入力のみで出力が決まります。マルチプレクサ、デコーダ、加算器が該当します。フリップフロップ、レジスタ、カウンタは内部状態を記憶するため「順序回路」です。" },
+                { question: "7. 「順序回路」に分類されるものをすべて選びなさい。", options: { a: "マルチプレクサ", b: "デコーダ", c: "フリップフロップ", d: "エンコーダ", e: "レジスタ", f: "カウンタ" }, answers: ["c", "e", "f"], explanation: "順序回路は内部状態（記憶）を持ちます。フリップフロップ、レジスタ、カウンタが代表例です。他は組み合わせ回路です。" },
+                { question: "8. 冗長性を持たせるシステム構成のうち、「性能向上」を主な目的とするものをすべて選びなさい。", options: { a: "デュプレックスシステム", b: "デュアルシステム", c: "タンデムシステム", d: "フォールトトレラント" }, answers: ["b"], explanation: "デュアルシステムは2つのCPUで並列処理を行い、処理能力を強化します。デュプレックスやタンデム、フォールトトレラントは主に信頼性や可用性（障害対策）を目的とします。" },
+                { question: "9. 冗長性を持たせるシステム構成のうち、「信頼性・可用性の向上（障害対策）」を主な目的とするものをすべて選びなさい。", options: { a: "デュプレックスシステム", b: "デュアルシステム", c: "タンデムシステム", d: "密結合マルチプロセッサ" }, answers: ["a", "c"], explanation: "デュプレックスシステムは待機系への切り替え、タンデムシステムは障害時の処理引き継ぎにより、信頼性・可用性を高めます。デュアルシステムや密結合マルチプロセッサは主に性能向上を目的とします。" },
+                { question: "10. コンピュータバスを構成する主な信号線の種類をすべて選びなさい。", options: { a: "データバス", b: "アドレスバス", c: "I/Oバス", d: "コントロールバス", e: "システムバス", f: "メモリバス" }, answers: ["a", "b", "d"], explanation: "コンピュータバスは論理的に「データバス」「アドレスバス」「コントロールバス」の3種類に大別されます。I/Oバス、システムバス、メモリバスはこれらの物理的な実装形態や用途による呼称です。" },
+                { question: "11. 10進数「13」を、異なる進数で正しく表現しているものをすべて選びなさい。", options: { a: "2進数: 1101", b: "2進数: 1011", c: "16進数: C", d: "16進数: D", e: "8進数: 15" }, answers: ["a", "d", "e"], explanation: "13 = 8+4+1 = 1101 (2進数)。13は16進数でD。13 = 8*1 + 5 = 15 (8進数)。" },
+                { question: "12. 16進数「B9」について、正しい記述をすべて選びなさい。", options: { a: "10進数に変換すると185である。", b: "10進数に変換すると175である。", c: "2進数に変換すると 10111001 である。", d: "2進数に変換すると 10111010 である。" }, answers: ["a", "c"], explanation: "Bは11、9は9なので、11 * 16 + 9 = 176 + 9 = 185。2進数ではBが1011、9が1001なので、10111001となります。" },
+                { question: "13. 高速化技術に関連するキーワードをすべて選びなさい。", options: { a: "キャッシュメモリ", b: "リップルキャリー", c: "パイプライン処理", d: "高速キャリー送り(LACG)", e: "ハザード", f: "スーパースカラ" }, answers: ["a", "c", "d", "f"], explanation: "キャッシュ、パイプライン、高速キャリー送り、スーパースカラはすべて処理速度を向上させるための技術です。リップルキャリーやハザードは性能を阻害する要因であり、これらの対策として高速化技術が用いられます。" },
+                { question: "14. 論理回路における「ハザード」に関連するものをすべて選びなさい。", options: { a: "ゲートの伝搬遅延", b: "レーシング", c: "順序回路での誤動作", d: "クロック同期", e: "2の補数" }, answers: ["a", "b", "c", "d"], explanation: "ハザードはゲートの伝搬遅延(a)が原因で発生する信号の競合(レーシング)(b)であり、順序回路で特に問題(c)となります。その対策としてクロック同期(d)が有効です。2の補数は無関係です。" },
+                { question: "15. シリアル転送方式を採用しているバス規格をすべて選びなさい。", options: { a: "USB", b: "SATA (シリアルATA)", c: "PCI Express", d: "IDE (パラレルATA)", e: "SCSI (パラレル)" }, answers: ["a", "b", "c"], explanation: "USB, SATA, PCIeはその名の通り、または規格としてシリアル転送方式です。IDEや旧来のSCSIはパラレル転送方式の代表例です。" },
+                { question: "16. 1ビット全加算器(Full Adder)の入力となるものをすべて選びなさい。", options: { a: "被加数 (X)", b: "加数 (Y)", c: "下位からの桁上がり (Cin)", d: "上位への桁上がり (Cout)", e: "その桁の和 (S)" }, answers: ["a", "b", "c"], explanation: "全加算器は、2つの入力ビット(X, Y)と、下位からのキャリー(Cin)の3つを入力とし、和(S)と上位へのキャリー(Cout)の2つを出力します。" },
+                { question: "17. 歴史的なコンピュータや技術について、正しい組み合わせをすべて選びなさい。", options: { a: "ENIAC - プログラム内蔵方式", b: "EDVAC - フォン・ノイマン型アーキテクチャ", c: "リレー - 機械式計算機", d: "真空管 - ENIAC", e: "トランジスタ - 第2世代コンピュータ" }, answers: ["b", "d", "e"], explanation: "EDVACでノイマン型が確立され、ENIACは真空管を使用しました。トランジスタの登場が第2世代コンピュータの始まりです。ENIACは外部プログラム方式、リレーは電子式計算機以前の技術です。" },
+                { question: "18. CMOSインバータ(NOT回路)について、正しい記述をすべて選びなさい。", options: { a: "PMOSとNMOSで構成される", b: "入力がHの時、PMOSがオンになる", c: "入力がLの時、NMOSがオフになる", d: "静止時の消費電力が小さい", e: "入力と出力の論理が同じになる" }, answers: ["a", "c", "d"], explanation: "CMOSはPMOSとNMOSの相補的な構成(a)で、静止時の消費電力が小さい(d)のが特徴です。入力LでPMOSがオン、NMOSがオフ(c)になります。入力HではNMOSがオン、PMOSがオフです。入力と出力の論理は反転します。" },
+                { question: "19. メモリのアドレスデコードにおいて、「フルデコード」が持つ利点をすべて選びなさい。", options: { a: "ハードウェア構成が最も単純になる", b: "イメージアドレスが発生しない", c: "将来のメモリ増設時にアドレスの競合が起きにくい", d: "デコード速度が最も速い" }, answers: ["b", "c"], explanation: "フルデコードはアドレスバスの全ビットを使うため、ハードウェアは複雑になりますが、各アドレスが一意に定まるためイメージアドレス(b)や増設時の競合(c)を防げます。速度は必ずしも最速とは限りません。" },
+                { question: "20. HDD(ハードディスクドライブ)を構成する要素をすべて選びなさい。", options: { a: "プラッタ (磁気ディスク)", b: "スピンドルモータ", c: "磁気ヘッド", d: "アクチュエータ", e: "レーザーピックアップ", f: "フローティングゲート" }, answers: ["a", "b", "c", "d"], explanation: "HDDは、データを記録するプラッタ(a)、それを回転させるスピンドルモータ(b)、データの読み書きを行う磁気ヘッド(c)、ヘッドを動かすアクチュエータ(d)で構成されます。レーザーピックアップは光学ドライブ、フローティングゲートはフラッシュメモリの要素です。" }
+            ];
+
+            const totalQuestions = questions.length;
+            const pointsPerQuestion = 100 / totalQuestions;
+            const questionsArea = document.getElementById('questions-area');
+            const submitBtn = document.getElementById('submit-btn');
+            const resultArea = document.getElementById('result-area');
+            const progressBar = document.getElementById('progress-bar');
+            const progressText = document.getElementById('progress-text');
+            const examHeader = document.getElementById('exam-header');
+            const mainTitle = document.querySelector('.main-title');
+            const mainSubtitle = document.querySelector('.main-subtitle');
+
+            let answeredQuestions = new Set();
+
+            function updateProgress() {
+                const answeredCount = answeredQuestions.size;
+                const progressPercentage = (answeredCount / totalQuestions) * 100;
+                progressBar.style.width = `${progressPercentage}%`;
+                progressText.innerText = `進捗: ${answeredCount} / ${totalQuestions} 問`;
+            }
+
+            function renderQuestions() {
+                let html = '';
+                questions.forEach((q, index) => {
+                    html += `<div class="question-card" id="q-card-${index}"><p class="question-title">${q.question}</p><ul class="options-list">`;
+                    for (const [key, value] of Object.entries(q.options)) {
+                        html += `<li><input type="checkbox" name="q${index}" id="q${index}o${key}" value="${key}"><label for="q${index}o${key}">${value}</label></li>`;
+                    }
+                    html += `</ul></div>`;
+                });
+                questionsArea.innerHTML = html;
+
+                document.querySelectorAll('input[type="checkbox"]').forEach(checkbox => {
+                    checkbox.addEventListener('change', (e) => {
+                        const qName = e.target.name;
+                        const qIndex = qName.replace('q', '');
+                        if (document.querySelectorAll(`input[name="${qName}"]:checked`).length > 0) {
+                            answeredQuestions.add(qIndex);
+                        } else {
+                            answeredQuestions.delete(qIndex);
+                        }
+                        updateProgress();
+                    });
+                });
+            }
+
+            function calculateScore() {
+                let totalScore = 0;
+                let feedbackHTML = `<div class="score-display"><h2>あなたの得点</h2><p><span id="score-value"></span> / 100<span>点</span></p></div><h3>解答と解説</h3>`;
+
+                questions.forEach((q, index) => {
+                    const userNodes = document.querySelectorAll(`input[name="q${index}"]:checked`);
+                    const userChoices = new Set(Array.from(userNodes).map(node => node.value));
+                    const correctAnswers = new Set(q.answers);
+
+                    const isPerfect = correctAnswers.size === userChoices.size && [...correctAnswers].every(ans => userChoices.has(ans));
+                    if (isPerfect) { totalScore += pointsPerQuestion; }
+
+                    const userChoicesText = userChoices.size > 0 ? [...userChoices].map(key => `「${q.options[key]}」`).join('、') : 'なし';
+                    const correctAnswersText = q.answers.map(key => `「${q.options[key]}」`).join('、');
+
+                    feedbackHTML += `
+                        <div class="feedback-card">
+                            <div class="feedback-title-container">
+                                 <p class="question-title">${q.question}</p>
+                                 <span class="feedback-result-badge ${isPerfect ? 'correct' : 'incorrect'}">${isPerfect ? '正解' : '不正解'}</span>
+                            </div>
+                            <div class="feedback-details">
+                                <ul class="feedback-summary">
+                                    <li><strong>あなたの選択:</strong> ${userChoicesText}</li>
+                                    <li><strong>正解:</strong> ${correctAnswersText}</li>
+                                </ul>
+                                <div class="feedback-explanation-text">${q.explanation}</div>
+                            </div>
+                        </div>`;
+                });
+
+                mainTitle.style.display = 'none'; mainSubtitle.style.display = 'none';
+                questionsArea.style.display = 'none'; submitBtn.parentElement.style.display = 'none';
+                examHeader.style.display = 'none'; resultArea.style.display = 'block';
+                resultArea.innerHTML = feedbackHTML;
+                document.getElementById('score-value').innerText = Math.round(totalScore);
+                window.scrollTo(0, 0);
+            }
+
+            renderQuestions();
+            updateProgress();
+            submitBtn.addEventListener('click', calculateScore);
+        });
+    </script>
+</body>
+
+</html>

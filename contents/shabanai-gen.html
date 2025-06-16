@@ -1,0 +1,741 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>シャバナイ外伝ジェネレーター - 総合解説プラットフォーム</title>
+    <meta name="article-number" content="000012">
+    <meta name="description" content="AIがランダムなテーマで「シャバナイ」の物語を生成するジェネレーターです。">
+
+    <link rel="stylesheet" href="../css/common.css">
+    <link rel="stylesheet" href="../css/article.css">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;700&display=swap" rel="stylesheet">
+
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script src="../js/mathjax-config.js"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+
+    <style>
+        .article-container {
+            max-width: 800px;
+        }
+
+        .api-key-section {
+            margin-bottom: 20px;
+            text-align: left;
+        }
+
+        .api-key-section label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+        }
+
+        .api-key-input-wrapper {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .api-key-section input[type="password"] {
+            flex-grow: 1;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            font-size: 14px;
+        }
+
+        #pasteApiKeyButton {
+            padding: 8px 12px;
+            font-size: 14px;
+            background-color: #6c757d;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: background-color 0.2s ease;
+        }
+
+        #pasteApiKeyButton:hover {
+            background-color: #5a6268;
+        }
+
+        .api-key-section small {
+            display: block;
+            margin-top: 8px;
+            font-size: 12px;
+            color: #777;
+        }
+
+        #modelName {
+            font-weight: bold;
+            color: #007bff;
+        }
+
+        .container-center {
+            text-align: center;
+        }
+
+        button#generateButton,
+        .story-actions button {
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            font-size: 15px;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: background-color 0.3s ease, transform 0.1s ease;
+            margin-top: 10px;
+            margin-bottom: 10px;
+            font-weight: 500;
+        }
+
+        button:hover:not(:disabled) {
+            opacity: 0.9;
+        }
+
+        button:active:not(:disabled) {
+            transform: scale(0.98);
+        }
+
+        button:disabled {
+            background-color: #cccccc;
+            cursor: not-allowed;
+        }
+
+        button#generateButton {
+            background-color: #007bff;
+            padding: 12px 25px;
+            font-size: 16px;
+        }
+
+        button#generateButton:hover:not(:disabled) {
+            background-color: #0056b3;
+        }
+
+        .story-actions button {
+            background-color: #17a2b8;
+            margin: 0 5px;
+        }
+
+        .story-actions button:hover:not(:disabled) {
+            background-color: #138496;
+        }
+
+        #resultArea {
+            margin-top: 25px;
+            padding: 20px;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            background-color: #f9f9f9;
+            min-height: 150px;
+            text-align: left;
+            white-space: pre-wrap;
+            font-size: 15px;
+            line-height: 1.7;
+        }
+
+        #resultArea p:first-of-type {
+            margin-top: 0;
+        }
+
+        #resultArea h1,
+        #resultArea h2,
+        #resultArea h3,
+        #resultArea h4,
+        #resultArea h5,
+        #resultArea h6 {
+            color: #333;
+            margin-top: 1.2em;
+            margin-bottom: 0.6em;
+            line-height: 1.3;
+            font-weight: bold;
+            border: none;
+            padding: 0;
+        }
+
+        #resultArea h1 {
+            font-size: 1.5em;
+        }
+
+        #resultArea h2 {
+            font-size: 1.3em;
+        }
+
+        #resultArea h3 {
+            font-size: 1.15em;
+        }
+
+        #resultArea ul,
+        #resultArea ol {
+            margin: 0.5em 0;
+            padding-left: 1.5em;
+        }
+
+        .story-actions {
+            margin-top: 15px;
+            text-align: center;
+            display: none;
+        }
+
+        #loadingIndicator {
+            margin-top: 20px;
+            color: #555;
+            display: none;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        #loadingIndicator #loadingMessage {
+            margin-bottom: 10px;
+        }
+
+        .spinner {
+            border: 4px solid rgba(0, 0, 0, 0.1);
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            border-left-color: #007bff;
+            animation: spin 1s ease infinite;
+        }
+
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+
+        .error-message {
+            color: #721c24;
+            background-color: #f8d7da;
+            border: 1px solid #f5c6cb;
+            padding: 10px 15px;
+            border-radius: 5px;
+            margin-top: 15px;
+            white-space: pre-wrap;
+            font-size: 14px;
+            text-align: left;
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <a href="../index.html" class="header-link">
+            <h1>総合解説プラットフォーム <span class="subtitle">あらゆる疑問に、明快な解答を。</span></h1>
+        </a>
+    </header>
+
+    <nav>
+        <ul>
+            <li><a href="../index.html">トップ</a></li>
+            <li><a href="../contents.html">コンテンツ</a></li>
+            <li><a href="../tags.html">タグ検索</a></li>
+            <li><a href="../index.html#about">このサイトについて</a></li>
+        </ul>
+    </nav>
+
+    <main class="article-container">
+        <h1>シャバナイ外伝ジェネレーター</h1>
+        <div class="card-tags" style="justify-content: center;"></div>
+        <p>ボタンを押すとAIがランダムなテーマを生成し、そのテーマに沿って「シャバナイ」と「食」の要素を絡めた外伝を生成します。</p>
+        <div class="api-key-section">
+            <label for="apiKeyInput">Gemini APIキー:</label>
+            <div class="api-key-input-wrapper">
+                <input type="password" id="apiKeyInput" placeholder="ここにGemini APIキーを貼り付け">
+                <button id="pasteApiKeyButton" title="クリップボードから貼り付け">貼り付け</button>
+            </div>
+            <small>APIキーはGoogle AI Studioで取得できます。このキーはブラウザに保存されず、ページを離れると消えます。</small>
+        </div>
+        <div class="container-center">
+            <p>使用モデル: <span id="modelName"></span></p>
+            <button id="generateButton">物語を生成する</button>
+        </div>
+        <div id="resultArea">
+            <p>APIキーを入力後、ボタンを押すとここに生成された物語が表示されます。</p>
+        </div>
+        <div id="storyActions" class="story-actions">
+            <button id="continueStoryButton">続きを生成</button>
+            <button id="completeStoryButton">物語を完結させる</button>
+        </div>
+        <div id="loadingIndicator">
+            <p id="loadingMessage">生成中...</p>
+            <div class="spinner"></div>
+        </div>
+    </main>
+
+    <footer>
+        <p>© 2025 総合解説プラットフォーム. All rights reserved.</p>
+    </footer>
+
+    <button id="scrollTopBtn" title="トップへ戻る">⇧</button>
+
+    <script src="../js/article-list.js"></script>
+    <script src="../js/common.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const generateButton = document.getElementById('generateButton');
+            const resultArea = document.getElementById('resultArea');
+            const loadingIndicator = document.getElementById('loadingIndicator');
+            const loadingMessage = document.getElementById('loadingMessage');
+            const modelNameSpan = document.getElementById('modelName');
+            const apiKeyInput = document.getElementById('apiKeyInput');
+            const pasteApiKeyButton = document.getElementById('pasteApiKeyButton');
+            const storyActionsDiv = document.getElementById('storyActions');
+            const continueStoryButton = document.getElementById('continueStoryButton');
+            const completeStoryButton = document.getElementById('completeStoryButton');
+            const MODEL_NAME = 'gemini-2.0-flash';
+            const characterName = "シャバナイ";
+            let currentStoryRawText = "";
+            let currentGeneratedTheme = "";
+            let previousThemes = [];
+
+            if (modelNameSpan) modelNameSpan.textContent = MODEL_NAME;
+
+            if (pasteApiKeyButton) {
+                pasteApiKeyButton.addEventListener('click', async () => {
+                    try {
+                        if (navigator.clipboard?.readText) {
+                            apiKeyInput.value = await navigator.clipboard.readText();
+                        } else { console.warn('クリップボードの貼り付けに非対応です。'); }
+                    } catch (err) { console.error('クリップボード読取失敗:', err); }
+                });
+            }
+
+            async function callGeminiAPI(apiKey, promptText, generationConfig = { temperature: 0.7, maxOutputTokens: 200 }) {
+                const API_ENDPOINT = `https://generativelanguage.googleapis.com/v1beta/models/${MODEL_NAME}:generateContent?key=${apiKey}`;
+                const requestBody = {
+                    "contents": [{ "parts": [{ "text": promptText }] }],
+                    "generationConfig": generationConfig
+                };
+                const response = await fetch(API_ENDPOINT, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(requestBody)
+                });
+                if (!response.ok) {
+                    let errorData, errorMessageText = `APIリクエスト失敗(ステータス: ${response.status})。`;
+                    try {
+                        errorData = await response.json();
+                        if (errorData.error?.message) {
+                            errorMessageText = `APIエラー: ${errorData.error.message}`;
+                            if (response.status === 400 && errorData.error.message.toLowerCase().includes("api key not valid")) {
+                                errorMessageText = `APIキーが無効か、間違っているようです。`;
+                            }
+                        }
+                    } catch (e) { }
+                    throw new Error(errorMessageText);
+                }
+                return await response.json();
+            }
+
+            function markdownToHtml(text) {
+                if (!text) return "";
+                let html = String(text)
+                    .replace(/\*\*(.*?)\*\*|__(.*?)__/g, '<strong>$1$2</strong>')
+                    .replace(/^######\s+(.*)/gm, '<h6>$1</h6>').replace(/^#####\s+(.*)/gm, '<h5>$1</h5>')
+                    .replace(/^####\s+(.*)/gm, '<h4>$1</h4>').replace(/^###\s+(.*)/gm, '<h3>$1</h3>')
+                    .replace(/^##\s+(.*)/gm, '<h2>$1</h2>').replace(/^#\s+(.*)/gm, '<h1>$1</h1>');
+                const lines = html.split('\n'); let inList = false;
+                html = lines.map(line => {
+                    const match = line.match(/^(\s*[\-\+\*]\s+)(.*)/);
+                    if (match) {
+                        const item = `<li>${match[2]}</li>`;
+                        if (!inList) { inList = true; return `<ul>${item}`; }
+                        return item;
+                    } else {
+                        if (inList) { inList = false; return `</ul>${line}`; }
+                        return line;
+                    }
+                }).join('\n');
+                if (inList) html += '</ul>';
+                return html;
+            }
+
+            function displayStory(theme, rawText, isAppending = false) {
+                const titleHTML = `<p><strong>テーマ: ${markdownToHtml(theme)}</strong></p>`;
+                const paragraphs = rawText.split(/\n{2,}/);
+                let bodyHtml = paragraphs.map(para => {
+                    if (para.trim() === "") return "";
+                    const paraHtml = markdownToHtml(para.trim());
+                    return paraHtml.match(/^<(h[1-6]|ul|ol|li)/i) ? paraHtml : `<p>${paraHtml}</p>`;
+                }).join('');
+
+                const newContentContainer = document.createElement('div');
+                newContentContainer.innerHTML = bodyHtml;
+
+                if (isAppending) {
+                    currentStoryRawText += `\n\n${rawText}`;
+                    resultArea.appendChild(newContentContainer);
+                } else {
+                    currentStoryRawText = rawText;
+                    resultArea.innerHTML = titleHTML;
+                    resultArea.appendChild(newContentContainer);
+                }
+                storyActionsDiv.style.display = 'block';
+                enableActionButtons();
+            }
+
+            function disableActionButtons() {
+                continueStoryButton.disabled = true; completeStoryButton.disabled = true;
+            }
+            function enableActionButtons() {
+                continueStoryButton.disabled = false; completeStoryButton.disabled = false;
+            }
+
+            // ▼▼▼ プロンプトを復元 ▼▼▼
+            const getStoryPrompt = (theme) => `
+以下の条件で、登場人物「${characterName}」が登場する物語を創作してください。
+
+テーマ: 「${theme}」
+
+物語の要件:
+α.  今回は、ミステリものにして、シャバナイが殺人事件に巻き込まれて、それを解決する話にしましょう。
+0.  テーマからタイトルを新たに作り出してください。できれば「シャバナイ」という言葉をタイトルに入れてほしいです。物語の冒頭に強調して"【外伝】生成したタイトル"のように記載してください。一般的なタイトルで構いません。
+1.  上記の「${theme}」を物語の主軸のアイデアの一つとしてください。基本的にはシャバナイがグルメを探求する外伝に、テーマを結びつけた物語、というイメージです。ジャンルはグルメの話です。「禁断の……」や「……の鎮魂歌」のような、変に意味深な言葉を付け足したチープな感じのするタイトルは避けてください。
+2.  登場人物「${characterName}」と「俺(名前無し)」を主要なキャラクターとしてください。主人公はシャバナイです。
+3.  「食」に関連する要素を物語に含めてください。これは、${characterName}の食に対するこだわり（例：「シャバい」もしくは「シャバくない」食べ物への言及）、特定の食事シーン、食にまつわる出来事や思い出、あるいは食を通じた人間関係の変化など、様々な形で表現できます。ただし、本編にない家族・父・母など、親族関係の出来事は書かないでください。
+4.  物語の雰囲気は、提供された参考テキストのような、日常と少しの不思議さが混在する雰囲気を意識してください。
+5.  出力は日本語の物語形式で、約100字から1500字程度でお願いします。
+6.  物語は、完結するように書かなくて問題ありません。面白そうであれば後から文章を追加するつもりです。
+7.  下記の参考テキストをよく読み込んで、${characterName}の性格、口調を理解してください。登場人物等の関係、出会い、その他の設定は、決して変更しないように注意してください。文体も下記の物語に合わせてください。
+
+8.  会話例
+A.  俺のセリフ(物語中盤あたり、食べ物を食べている時に、考え事をするシャバナイを見て、心配している時)
+「シャバナイ、どうした？飯がシャバいか？」
+ただし、飯を食べてからのセリフ。食べる前に聞くと矛盾する。
+B.  シャバナイのセリフ(別の事を考えていた時)
+「いや、飯はシャバくない。むしろ、(料理の感想などを言う)、これは...シャバさとは対極にあると言える」(高評価のとき)
+このように感想とともにセリフを言うこともあれば、
+シャバい時は躊躇なく、「シャバい」(低評価のとき)と理由も添えて言うこともある(冒頭ではこちらの方が多い)。
+C.  シャバナイのセリフ(探求の末、シャバくない店で料理を食べた時)
+「どうだ、シャバくないだろ？」
+D.  俺のセリフ(俺はシャバい、シャバくない、という言葉を日常的に、基本的に、使わない)
+「ああ、旨い」
+
+9.  設定
+・俺とシャバナイはお互いに大学生です。
+・俺がチェーン店(実在する店)を提案し、「それはシャバいわ」とシャバナイに一蹴されることがよくある。
+・俺はシャバナイに飽きれながらも、結局シャバナイと共に行動する。
+・俺はシャバナイの突拍子の無さには慣れきっているが、あまり文句は言わず、少し茶化す程度である。
+・基本的に、シャバナイが店を見つけてくる情報源は謎である。
+・シャバい／シャバくない：
+・シャバナイが使用する評価基準。食べ物について、安易で平凡なもの、日常的なもの、満足感の低いものを「シャバい」とし、独特で深遠なもの、非日常的なもの、強い印象を与えるものを「シャバくない」とする。
+・当初は主に飯屋の評価に使われたが、後に体験、出来事、さらには概念にまで適用されるようになる（例：「シャバい展開だな」）。
+・「禁断の……」や「……の鎮魂歌」のようなチープな感じのする料理はでてこない。
+・全ての設定や人物像に矛盾のない物語にすること。
+
+参考テキスト（${characterName}のキャラクター性、文体、物語の雰囲気の参考にしてください）：
+【怪談】おうちルール
+冬不純黄昏
+　シャバナイと出会ったのは、一度しか行っていないサークルの、まさにその一度のときだった。
+
+
+　つまり去年の春であり、大学一年目の春である。総合棟一階の大階段すぐ下で新入生たちを待ち受ける先輩方の勧誘はもう遠目から見る分にも暑苦しく、脂汗の染みたビラを受け取る気にはなれず、無料で肉が食えるBBQも魅力的に感じず、ようはそうした陽キャノリのサークルに馴染める気がしなかった。
+
+　しかし受験期に見ていたなんＪ大学生スレによると、「大学生はサークルに入るかなんなりして人と関わらないと終わる」、らしくて、何かしらのサークルには入らないといけないことは分かっていた。
+
+　できればおとなしめのサークルがいい。例えば、Twitterで見かけた、「キャンパス間バス同好会」など。「キャンパス間をつなぐバス 通称再履バスを愛でる」という活動内容は意味不明だが、月に数回ゆるく集まるだけで、飲み会もなさそうだし、会費も無い。
+　とはいえそうしたいわゆる「マイナーサークル」はどうも、どこも部員が少ないらしく、現所属部員たちもどこかとの兼部が基本らしい。そんなとき、ふと掲示板に貼られてあった手書きのビラが目に入った のが始まりだったと記憶している。青とオレンジのマーカーが多用されており、触るとペン特有のインクの感触がした。驚いたことに、手書きでビラを作っているようである。中身を見てみると、部員も多そうだし、かといってはっちゃけるような活動内容でもない。そこに行ってみることにした。
+
+　つまり、「おさんぽサークル」に。
+
+　今度の土曜日に一回集まってみようという機会があったので、まずはそこに参加して様子を見てみることにした。会費も無料なので、合わなければすぐ抜ければいい。
+　事前連絡も不要らしい。メアドを渡したりや名簿登録をしないでいいのも、好感が持てた。それなりに楽しみに、土曜日を待ったおぼえがある。
+
+　当日、近くの商店街入口に集合したのは６人で、内、俺を含める２人が新入生とのことだった。新入生の片割れが、シャバナイである。ぱっと見の印象は、一般的な大学生。といっても自分より社交的なのはなんとなく分かった。
+
+　商店街の店の多くが開く午前１０時まで少しあり、近くの公園で、会話を交わしたりして軽く交流しようということになった。先輩方からの質問も多かったが、次第に、自然に、同級生であるシャバナイとの会話にシフトした。当然だがシャバナイはのちに俺が付けたあだ名で、初対面のこの時は本名 上の名前に「くん」を付けて呼び合った。あまり会話内容は覚えていないが、それなりに気は合い LINE交換までいった。
+
+
+　１０時に近づくにつれ商店街に活気が出てくるのが分かり、ついに１０時になった。商店街は大きな屋根に覆われており、直射日光が防がれたことで歩きやすかった。「だから最初の散歩には最適なんだ」と先輩が言って、「なるほど」と思った。
+
+　散歩はそれなりに楽しく、「ここでならやっていけるかも」と思い始めてくる。個人経営の古本屋で、シャバナイと好きな漫画の話になって、シャバナイともどんどん仲良くなっているのを実感した。
+　ただ、「昼食にしよう」という時間になって、先輩たちはそこらへんの松屋に入ろうとしたときにシャバナイがそれを拒否した。そんなに語気は強くないのだが、「チェーン店ではなく せっかくならここらでおすすめの飯屋がいい」という旨のことを言った。結局、もう少し歩いて夫婦でやってる定食屋に入った。今思えば、「シャバナイのシャバナイたるゆえんだ」というカンジだ。
+
+　このとき定食屋で何定食を頼んだかも覚えていない。だが、それから後は忘れるわけもない。昼食の後、俺たちが「散歩」の先に向かったのは、商店街を抜けた先にあるベージュ色の建物だった。中に入ると、そこには笑顔の老人たちが規則正しく椅子に着いていた。
+
+
+　そこは、有料老人ホームらしかった。「おさんぽサークル」は社会に貢献する活動も行うのだろうか。別に行っても不思議ではないが、正直社会に貢献する活動に俺は興味がなかった。だが、たまにこうして徳を積む活動があっても就活の際に使えるかもしれない。よし決めた、大学４年間はこの「おさんぽサークル」と共にすることにしよう。
+
+　その決意は、すぐ崩れることになる。老人たちの話をだらだらと聞いた後しばらくして、施設を出て解散することとなった。長い散歩だったが、おおむね満足できる日だったと思っていると、施設から出る際、最初来たときにはなかった看板が、門の外に立てられていることに気付いた。
+
+　………………思い返したら、老人たちの話も、““そういう”” 内容が多かった。ようは、そこは、新興宗教の施設だった。
+
+「おさんぽサークル」は、大学に巣食う宗教勧誘集団だったのだ。
+
+
+　今となっても笑い話にはならない。帰宅後 パソコンを開いて宗教名を検索窓に打ち込むと、出る結果に良いものがない。
+
+　すぐにサークルのグループLINEを抜け、先輩方をブロックした。おかげで、入学後に増えた「友だち」欄が振り出しに戻ってしまった。……いや、一人だけ増えたまま、か。そう、シャバナイがいた。
+
+　我々は同胞を求めて魔窟に迷い込んだ無知で無垢で哀れな一回生である点において全く同じ立場、つまり被害者だ。そのよしみで、シャバナイにも、「おさんぽサークル」の正体をLINEで教えてやることにした。
+
+　検索して出たサイトのリンクをいくつか送り、「あのサークル どうも宗教勧誘系のとこで結構ヤバいらしいよ。今日行った施設もソレ関係らしい。」といった旨のメッセージを送り、だから自分はサークルから抜けることにする といった旨のメッセージも送った。
+
+「もし シャバナイ……コイツが既に宗教の毒に侵され済みならば、コイツもブロックせねばならない」と静かに誓い、LINEを閉じた。
+
+……
+
+　どうもその後 自分は寝てしまったらしく、次に目を覚ましたのは午後９時くらいだった、と思う。だるい体を起こし、遅めの晩飯を作った。そう、俺は入学を機に独り暮らしを始めたのだった。不出来な野菜炒めを箸で突きながら左手でスマホを操作、LINEを見ると、シャバナイからメッセージが来ていた。一言一句覚えているわけではないが、要約すると「マジかーじゃあオレもあのサークル辞めるかな～」みたいなことだ。
+
+　続けて、「じゃあ今度ボードゲーム研究会ってとこに仮入部してみようか考えてんねんけど、一緒にどう？」とシャバナイから来た。断る理由もないので、そうすることにした。一週間後、「ボードゲーム研究会」の部室にて再開した俺たちは、こうして、友人になった。
+
+
+　あいつは生物系の理系学部に属しており、年中忙しそうにしていたが、比較的早くに授業が終わる木曜日はよく部室に顔を出し、そのまま晩飯を一緒に食べることも多かった。
+　このとき、俺が安易にチェーン店や定番のラーメン屋に行こうとすると、シャバナイはよく「それはシャバいわ」と言って、別のところを提案した。どうも食にうるさく、特にゆっくりできる木曜日の夜は、飯に妥協したくないらしい。ただあまりにどの飯屋を俺が提案しても「それはシャバいわ」で一蹴するものだから、あるとき「じゃあお前がシャバくない飯屋に連れてってくれ」と言うと、実際に美味い飯屋を教えてくれて一緒に食べに行った。以来、毎回木曜夜、シャバナイの選ぶシャバくない飯屋に二人で食いに行った。これが、シャバナイの、シャバナイというあだ名の由来である。
+
+今日は、それから丁度一年経ったくらいだ。
+
+　生物系の学徒はこうも忙しいものなのか、学部２回生にしてシャバナイは学校に泊まり込みの実験をすることになった。暇な文系学生とはずいぶん違う。
+　俺は、一晩 家を空けることになってしまったシャバナイから頼まれごとをされてしまい、今 合鍵を握りながらあいつの家に向かっている。シャバナイもまたアパートでの独り暮らしらしいのは知っていたが、家に訪れたのは初めてだった。
+
+
+　別に友人の家に入りたがる性分でもないし、特に気にしたことはなかった。「そういえばシャバナイの家に来るのは初めてだな」とここで初めて気づく。
+
+　…………しかし……今回の「頼み事」は違和感を覚えるというか、聞いただけで奇妙なカンジのものだった。シャバナイの、俺への頼み事は「花に水をやってほしい」だ。……家を一晩空けるということで、「ペットを預かってほしい」なら分かるが、「花に水をやってほしい」とは一体どういうことなのか。
+
+　いくら大切に育てている花があるとしても、「晩に水をやるのを欠かせてはならない」なんてことがあるのだろうか。朝、家を出る前に水をやれば、それでいいではないか。
+
+
+　不思議に思いながら、俺はGoogleマップで共有されたところまでやって来た。ここの四階……４０２がシャバナイの住処ということだ。
+
+いつの間にか、空が灰をまき散らしたように曇っていることに、今、ふと気づいた。
+
+　４０２号室。貰った合鍵は、当然だがスッと挿し込まれた。
+
+そのときシャバナイの顔がなぜか思い浮かんだ。
+
+　そいうえば、あいつは俺にこの奇妙な頼み事をするときも、合鍵を渡すときも、どうも渋い顔をしていた。できれば誰にも頼みたくないものだったらしく、というかどうも、本当は誰も家に入れたくないようだ。今日みたいな用でもなければ俺を家に招くことは永劫なかっただろう。……そう思うと、少しムカついた。別に俺だってシャバナイの家に入りたかったわけではないが、友人なら家に誘ってくれてもよさそうなものだ。
+
+…………なにか、見られたくないモンでも、あんのか？
+
+　かちゃ。軽快に音を立ててその小綺麗なドアが開いた。俺の住むボロアパートとは大違い────な、なんだこのにおい……！ぐぁ、あ、鼻が潰れる！！
+
+　扉を開いた瞬間、強烈な、「かおり」が俺の鼻腔を襲った。……ようやく慣れてきた俺の鼻が、香りの正体に気付く。それは、甘い香りだった。トイレに置いている、ラベンダーとかの芳香剤。あれを１00個並べたような、強烈でわざとらしい、甘い香りだ！
+
+　……俺がよく分からないだけで、アロマとかなのかもしれない。シャバナイにそういう趣味があってもおかしくはない。……だとしたら申し訳ないが、こういう趣味は俺とは合いそうにない。
+
+　いいから、さっさと頼まれごとを済ますか。パチ、とスイッチを押すと瞬間に、真っ暗だった部屋にあかりが灯った。玄関と廊下の全貌が明らかになる。
+
+　まさか、コレか…？玄関入ってすぐ、靴をしまう棚の上に、植木鉢とそれに植わっている……枯れかけの白い花が、あった。その隣に、ゾウさん型のじょうろ。まさか、俺への頼み事というのは、これに水をやってくれということなのか。
+
+　とりあえず じょうろを持って、その枯れかけの白い花に水をそそいだ。きっとこの花が枯れてゆくのは、水のやり過ぎのためだと思った。
+
+　それにしても、さっきからくさい！！薬品っぽい芳香剤のニオイが、鼻の、粘膜にこびりつくようだ！！
+
+　くらくらするほどだ。人間がここで毎日過ごしているとは、とても思えない。ひたいから噴く汗をぬぐいながら、ちらりと周囲を見ると、ノートがあった。靴棚の上、植木鉢の隣のノッペリとした模様のようなものに見えていたそれは、ノートだった。薄いピンク色の大学ノート。題も所持者名も書いてない。
+
+　頼まれごと……水やりはもう済ませたのだし、この家から去ってしまうべきだと思えた。いつまでも、言ってしまえば「他人の家」をうろちょろするのも良くない。だけど、そのピンクのノートが気になった。
+
+なんも書いてない表紙を、めくることにした。めくる。
+
+『夕方の花の水やりを欠いてはならない』
+
+そう書いてあった。
+それだけが、表紙の次のページの、一行目に書かれてあった。
+
+　……いや、意味不明だ。なに？これは。なんで、花の水やりを、夕方に？
+　この白い花が、夕に水やりする必要のある特殊な花かなんか のようには見えない。
+
+　分からないうちに、次のページをめくってしまった。
+
+『白い靴を玄関に置いてはならない』
+
+　今度は少し大きな文字で書かれていた。意味不明だ。……「まさか」と思って靴棚を開けると、黒や紺ばかりで、確かに白い靴は無い。……ちょっと気になってしまい、俺が今履いている靴は何色だったか、目線を落として確認した。……良かった、黒だ。なにが良かったかは分からないが、そう思ってしまった。
+
+　次のページ。
+
+『スリッパを投げてはならない』
+
+なんだか急に、幼稚な内容になった。まるで子供に言い聞かせるような内容だ。スリッパ投げちゃダメって、当たり前だろ。
+
+……ここまで、全て、１ページに一行ずつしか書かれていない。
+
+『チラシを６枚以上貯めてはならない』
+
+『かぼちゃを暗所に置いてはならない』
+
+『床に油を撒いてはならない』
+
+『殺虫剤を冷蔵庫の半径２メートル以内に近づけてはならない』
+
+『緑色の包装紙をしたトイレットペーパーは置いてはならない』
+
+『縦に皿を積んではならない』
+
+　全て意味は分からないが、分かった。ここに書いてあることは、この家の、「おうちルール」だ。ほら友達の家によって「夜１０時以降は電話してはいけない」とかあっただろう。この奇妙なルールたちも、どうも同様らしい。……しかし……まさかシャバナイは、毎日こんな妙ちくりんなルールを家で守っているのか……。
+
+『口にものを含んだままトイレの電気をつけてはならない』
+
+『東の部屋で寝てはならない』
+
+『午前３時５９分に窓の外を見てはならない』
+
+　なんとなく分かったことが、もうひとつある。このノートに書かれているルールは、後ろのページほど、奥の部屋のルールのようだ。だから最初のルールが、玄関に関することだったのか。
+
+　改めて、部屋を見渡す。意図の分からないものがいくらか散らばっているのだが、それが「おうちルール」と関係していることはもう推測できた。
+　西の部屋には、絨毯の上に本が３冊落ちている。廊下には、ガムテープが張られて星型を描いている。たぶん、これらの全てが、「おうちルール」と関係しているのだろう。
+
+　北の部屋……最も奥の部屋の、扉が開いている。近づくと、ラベンダーの芳香剤のにおいがグンと強くなった。
+
+　北の部屋に関するルールなら、ノートのページも後ろの方だろう。そう考えてばらばらとページをめくると、おどろいたことに全てのページにルールが載せられてあった。１ページ、ひとつずつ。
+
+　じゃあいっそ最後のページまで飛ばそうと、大きくノートの側面を掴んで、ガッと最後のページをひろげる。
+
+『一番北の部屋を空けてはいけない』
+
+　一番大きな文字に、少したじろぐ。が、すぐに冷静が戻ってくる。この文章に向き合ってみる。『一番北の部屋を空けてはいけない』……この号室の一番北の部屋といえば、やはり一番奥の部屋だ。にしても、「空けて」？「開けて」ならまだ分かるが、「空けて」は誤字ではないのか。
+
+　というか、北の部屋……扉、開いてるし。
+
+　なんで今気づいたんだろう。ラベンダーの強烈なかおりは、北の部屋から生まれているみたいだ。
+
+『一番北の部屋を空けてはいけない』
+
+　「開けて」も別によくて、やはり「空けて」はダメなのか。でも、俺が来るさっきまで、そもそも家に人がいなかったんだから、部屋は空いていることになる。
+
+　この奇妙な矛盾が、妙に気になって、俺は一歩北の部屋に近づいた。ツンとラベンダーのかおりが強くなる。それに混じって、別のにおいがあるのに気づいた。
+
+　まるで、このニオイを隠すために、ラベンダーをかおらせているみたいではないか。
+
+『一番北の部屋を空けてはいけない』
+
+　ニオイを我慢しながら、身を乗り出して、北の部屋をぐるりと見渡してみた。芳香剤もアロマも、どこにも見当たらない。学習机、椅子、寝具に本棚……いたって普通だ。
+
+　胸を撫で下ろす自分がいた。よかった。
+……もし『一番北の部屋を空けてはいけない』が、「一番北の部屋には常に人が居ないといけない」という意味ならば、もしかするとこの部屋に、俺以外のだれかが居るのかと思った。今この時も。
+
+『一番北の部屋を空けてはいけない』
+
+……あれ？おかしいな。だとすると、シャバナイは今、「おうちルール」を破っていることになる。
+
+　でも、そもそもこれは どうやっても守れないルールなのだから。……常に部屋を空けないなんて、無理なのだ。
+
+『一番北の部屋を空けてはいけない』
+
+　もう、この奇妙な家から出るとしよう。そんで、次 シャバナイに会った時、この変な「おうちルール」について問い詰めてやる。
+
+　帰り道を確認するために、地図アプリを開く。右上に、小さなコンパスマークが表示されている。…………それは……正十字を示していなかった。少し斜めっている。そうか、あの、さっきの部屋は、厳密には「北の部屋」ではなく、「北北東の部屋」だったらしい。
+
+　「北北東の部屋」の左隣には、壁を隔てて、風呂場があった。だから、方角の微妙なズレを考慮すれば、この４０２号室において、最も北に近い部屋は…………
+
+『一番北の部屋を空けてはいけない』
+
+　風呂場だ。
+
+　換気扇がつけっぱなしになっている。
+
+　「北北東の部屋」から出て、風呂場に近づくと、ラベンダーではない方のニオイが、強くなった。
+
+　パチ。電気をつける。
+
+　押すタイプの扉を開ける。
+
+　そして、俺はシャバナイが、「おうちルール」を決して破ってはないことを知った。彼は、厳格にルールを守っている。
+　『一番北の部屋を空けてはならない』。「一番北の部屋には常に人間が居なくてはならない」。
+
+　だから、  つまり、  どうやら、  どうも、  その、  人間が居ればそれでいいわけで、  その人間は、  ルールによれば、 別に、
+…………生きているものでなくても、構わないらしい`;
+            // ▲▲▲ プロンプトを復元 ▲▲▲
+
+            generateButton.addEventListener('click', async () => {
+                const apiKey = apiKeyInput.value.trim();
+                if (!apiKey) {
+                    resultArea.innerHTML = `<div class="error-message"><p><strong>エラー: APIキーが入力されていません。</strong></p></div>`;
+                    return;
+                }
+                resultArea.innerHTML = `<p>AIが物語のテーマを生成しています...</p>`;
+                loadingMessage.textContent = 'テーマを生成中...';
+                loadingIndicator.style.display = 'flex';
+                generateButton.disabled = true;
+                storyActionsDiv.style.display = 'none';
+                disableActionButtons();
+                currentStoryRawText = "";
+
+                try {
+                    let themePromptAddition = previousThemes.length > 0 ? `\n\n以前のテーマ例: 「${previousThemes.join('」「')}」。これらとは異なるアイデアを。` : "";
+                    const themePrompt = `物語のテーマを、自身が自由に短いフレーズで一つだけ提案してください。10個考え、ランダムに一個選んで、選んだもののみ出力してください。それ以外の関係無い文章は出力しないでください。\nテーマは食に関するもの、一般的な食べ物をお願いします。(出力例:高級カレーライス、冷製パスタ)${themePromptAddition}`;
+                    const themeResponse = await callGeminiAPI(apiKey, themePrompt, { temperature: 0.98, maxOutputTokens: 50 });
+
+                    currentGeneratedTheme = themeResponse.candidates?.[0]?.content?.parts?.[0]?.text.trim().replace(/^「(.*?)」$/, '$1') || "";
+                    if (!currentGeneratedTheme) throw new Error('AIによってテーマが生成されませんでした。');
+                    if (!previousThemes.includes(currentGeneratedTheme)) previousThemes.push(currentGeneratedTheme);
+                    if (previousThemes.length > 50) previousThemes.shift();
+
+                    resultArea.innerHTML = `<p><strong>生成されたテーマ:</strong> ${markdownToHtml(currentGeneratedTheme)}</p><p>このテーマで物語を生成しています...</p>`;
+                    loadingMessage.textContent = '物語を生成中...';
+
+                    const storyPrompt = getStoryPrompt(currentGeneratedTheme); // 関数呼び出しに変更
+                    const storyResponse = await callGeminiAPI(apiKey, storyPrompt, { temperature: 0.85, maxOutputTokens: 4000 });
+
+                    if (storyResponse.candidates?.[0]?.content?.parts?.[0]?.text) {
+                        const generatedText = storyResponse.candidates[0].content.parts[0].text.trim();
+                        displayStory(currentGeneratedTheme, generatedText);
+                        if (storyResponse.candidates[0].finishReason && storyResponse.candidates[0].finishReason !== 'STOP') {
+                            resultArea.innerHTML += `<p><small>補足: 生成は途中で終了しました (理由: ${storyResponse.candidates[0].finishReason})</small></p>`;
+                        }
+                    } else { throw new Error('AIからの物語生成に失敗しました。'); }
+                } catch (error) {
+                    console.error('処理中にエラーが発生しました:', error);
+                    resultArea.innerHTML = `<div class="error-message"><p><strong>エラーが発生しました:</strong></p><p>${error.message}</p></div>`;
+                } finally {
+                    loadingIndicator.style.display = 'none';
+                    generateButton.disabled = false;
+                    if (currentStoryRawText) enableActionButtons();
+                }
+            });
+
+            async function handleStoryContinuation(apiKey, type) {
+                if (!currentStoryRawText || !currentGeneratedTheme) return;
+                loadingMessage.textContent = type === 'continue' ? '続きを生成中...' : '物語を完結中...';
+                loadingIndicator.style.display = 'flex';
+                disableActionButtons();
+                generateButton.disabled = true;
+                const promptType = type === 'continue' ? '続きを、完結させずに創作してください。' : '物語を自然な形で完結させてください。';
+                const continuationPrompt = `以下の物語の${promptType}\nテーマは「${currentGeneratedTheme}」です。登場人物「${characterName}」の個性や、「食」に関する要素も引き続き意識してください。物語の雰囲気は元のテキストを引き継いでください。約100～1000字程度でお願いします。\n\n【これまでの物語】\n${currentStoryRawText}\n\n【${type === 'continue' ? '続き' : '完結部分'}】`;
+
+                try {
+                    const response = await callGeminiAPI(apiKey, continuationPrompt, { temperature: 0.8, maxOutputTokens: 2000 });
+                    if (response.candidates?.[0]?.content?.parts?.[0]?.text) {
+                        const additionalText = response.candidates[0].content.parts[0].text.trim();
+                        displayStory(currentGeneratedTheme, additionalText, true);
+                        if (type === 'complete') storyActionsDiv.style.display = 'none';
+                        if (response.candidates[0].finishReason && response.candidates[0].finishReason !== 'STOP') {
+                            resultArea.innerHTML += `<p><small>補足: 生成は途中で終了しました (理由: ${response.candidates[0].finishReason})</small></p>`;
+                        }
+                    } else { throw new Error(`AIからの${type}の生成に失敗しました。`); }
+                } catch (error) {
+                    console.error(`${type}処理中にエラー:`, error);
+                    resultArea.innerHTML += `<div class="error-message"><p><strong>${type}の生成に失敗しました:</strong> ${error.message}</p></div>`;
+                } finally {
+                    loadingIndicator.style.display = 'none';
+                    generateButton.disabled = false;
+                    if (type !== 'complete' && currentStoryRawText) enableActionButtons();
+                }
+            }
+
+            continueStoryButton.addEventListener('click', () => {
+                const apiKey = apiKeyInput.value.trim();
+                if (!apiKey) { alert('APIキーを入力してください。'); return; }
+                handleStoryContinuation(apiKey, 'continue');
+            });
+
+            completeStoryButton.addEventListener('click', () => {
+                const apiKey = apiKeyInput.value.trim();
+                if (!apiKey) { alert('APIキーを入力してください。'); return; }
+                handleStoryContinuation(apiKey, 'complete');
+            });
+        });
+    </script>
+</body>
+
+</html>

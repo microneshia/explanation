@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>総合解説プラットフォーム - 解答への道しるべ</title>
+
+    <link rel="stylesheet" href="css/common.css">
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script src="js/mathjax-config.js"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+</head>
+
+<body>
+    <header>
+        <a href="index.html" class="header-link">
+            <h1>総合解説プラットフォーム <span class="subtitle">あらゆる疑問に、明快な解答を。</span></h1>
+        </a>
+    </header>
+    <nav>
+        <ul>
+            <li><a href="index.html">トップ</a></li>
+            <li><a href="contents.html">コンテンツ</a></li>
+            <li><a href="tags.html">タグ検索</a></li>
+            <li><a href="#about">このサイトについて</a></li>
+        </ul>
+    </nav>
+    <div class="main-container">
+        <section id="explanation-articles">
+            <h2 class="section-title">解説記事一覧</h2>
+            <div id="articles-grid" class="content-grid">
+                <p id="loading-message">記事を読み込み中...</p>
+            </div>
+            <div id="pagination-container" class="pagination-container"></div>
+        </section>
+        <section id="about" style="margin-top: 40px;">
+            <h2 class="section-title">このサイトについて</h2>
+            <p>「総合解説プラットフォーム」は、学習者、研究者、そして知的好奇心を持つすべての人々に向けて、幅広い分野のトピックに関する質の高い解説を提供することを目的としています。複雑な概念も、基本から丁寧に解きほぐし、理解への最短経路を示します。皆様の学習の一助となれば幸いです。
+            </p>
+        </section>
+    </div>
+    <footer>
+        <p>© 2025 総合解説プラットフォーム. All rights reserved.</p>
+    </footer>
+    <button id="scrollTopBtn" title="トップへ戻る">⇧</button>
+
+    <script src="js/common.js"></script>
+    <script src="js/article-list.js"></script>
+    <script src="js/article-loader.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', async () => {
+            const loadingMessage = document.getElementById('loading-message');
+            const articlePromises = explanationArticles.map(item =>
+                fetchArticleData(item.file, 'explanation', 'p').then(data => data ? { ...data, tags: item.tags } : null)
+            );
+            const articles = (await Promise.all(articlePromises)).filter(Boolean);
+            if (loadingMessage) loadingMessage.remove();
+            initializePaginatedList(articles, '#articles-grid', '#pagination-container');
+        });
+    </script>
+</body>
+
+</html>

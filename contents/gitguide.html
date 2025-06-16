@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GitHubリポジトリの全ファイルを安全に入れ替える方法 - 総合解説プラットフォーム</title>
+    <meta name="article-number" content="000016">
+    <meta name="description" content="過去のコミット履歴を安全に保持しながら、GitHubリポジトリ内のファイルをすべて新しいものに入れ替える手順を解説します。">
+
+    <!-- 共通CSSファイルの読み込み -->
+    <link rel="stylesheet" href="../css/common.css">
+    <link rel="stylesheet" href="../css/article.css">
+
+    <!-- このページ固有のスタイル -->
+    <style>
+        .pre-wrapper {
+            position: relative;
+            margin: 20px 0;
+        }
+
+        .pre-wrapper button {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background-color: #555;
+            color: white;
+            border: 1px solid #777;
+            padding: 8px 12px;
+            border-radius: 5px;
+            cursor: pointer;
+            opacity: 0.2;
+            /* 初期状態では半透明 */
+            transition: opacity 0.2s, background-color 0.2s;
+            z-index: 10;
+        }
+
+        .pre-wrapper:hover button {
+            opacity: 1;
+            /* ホバーで表示 */
+        }
+
+        .pre-wrapper button:hover {
+            background-color: #777;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- 共通ヘッダー -->
+    <header>
+        <a href="../index.html" class="header-link">
+            <h1>総合解説プラットフォーム <span class="subtitle">あらゆる疑問に、明快な解答を。</span></h1>
+        </a>
+    </header>
+
+    <!-- 共通ナビゲーションバー -->
+    <nav>
+        <ul>
+            <li><a href="../index.html">トップ</a></li>
+            <li><a href="../contents.html">コンテンツ</a></li>
+            <li><a href="../tags.html">タグ検索</a></li>
+            <li><a href="../index.html#about">このサイトについて</a></li>
+        </ul>
+    </nav>
+
+    <!-- メインコンテンツ -->
+    <main class="article-container">
+        <h1>GitHubリポジトリの全ファイルを安全に入れ替える方法【VS Code対応版】</h1>
+
+        <!-- タグはJavaScriptによってこの位置に自動挿入されます -->
+
+        <p>
+            プロジェクトの構成を全面的に見直したり、静的サイトのコンテンツを丸ごと更新したりする際に、GitHubリポジトリ内のファイルをすべて新しいものに入れ替えたい場合があります。
+            このガイドでは、過去のコミット履歴を安全に保持しながら、ファイルを入れ替えるための最も標準的で安全な方法を、VS Codeを使ってステップ・バイ-ステップで詳しく解説します。
+        </p>
+
+        <section id="s1">
+            <h2>３つのアプローチとその比較</h2>
+            <p>
+                ファイルを入れ替える方法はいくつかありますが、それぞれにメリット・デメリットがあります。状況に応じて最適な方法を選ぶことが重要です。
+            </p>
+            <table>
+                <thead>
+                    <tr>
+                        <th>方法</th>
+                        <th>手軽さ</th>
+                        <th>安全性</th>
+                        <th>履歴の保持</th>
+                        <th>おすすめの場面</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>GUI (手動)</td>
+                        <td>★★★</td>
+                        <td>★★★</td>
+                        <td>保持される</td>
+                        <td>Git初心者、小規模プロジェクト</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Gitコマンド (本ガイド)</strong></td>
+                        <td>★★☆</td>
+                        <td>★★★</td>
+                        <td><strong>保持される</strong></td>
+                        <td><strong>開発者、あらゆるプロジェクト（最も推奨）</strong></td>
+                    </tr>
+                    <tr>
+                        <td>強制プッシュ</td>
+                        <td>★★☆</td>
+                        <td>★☆☆</td>
+                        <td><span class="important">完全に消える</span></td>
+                        <td>履歴をリセットしたい特殊な場合のみ（非推奨）</td>
+                    </tr>
+                </tbody>
+            </table>
+            <p>
+                このガイドでは、安全性と確実性が最も高い<strong>「Gitコマンド」</strong>を使った方法を詳しく解説します。
+            </p>
+        </section>
+
+        <section id="s2">
+            <h2>VS Codeを使った詳細な手順</h2>
+            <p>
+                既存のリポジトリを一度ローカルにクローンし、その中身を空にしてから新しいファイルをコピーします。これにより、Gitの履歴を壊すことなく、安全に総入れ替えが可能です。
+            </p>
+
+            <h3>ステップ1：作業場所の確保とVS Codeの起動</h3>
+            <ol>
+                <li>Visual Studio Codeを起動します。</li>
+                <li>メニューバーから「ターミナル」→「新しいターミナル」を選択し、VS Code内にターミナルを開きます。</li>
+            </ol>
+
+            <h3>ステップ2：作業用フォルダへの移動とリポジトリのクローン</h3>
+            <p>
+                ターミナルで、リポジトリをダウンロード（クローン）したい場所（例：デスクトップ）に移動します。
+            </p>
+            <pre><code>cd ~/Desktop</code></pre>
+            <p>
+                次に、その場所に入れ替え対象のGitHubリポジトリをクローンします。<code>[YOUR-URL]</code> の部分を、あなたのリポジトリのURLに書き換えてください。
+            </p>
+            <pre><code>git clone [YOUR-URL]</code></pre>
+
+            <h3>ステップ3：作業フォルダをVS Codeで開く</h3>
+            <p>
+                今クローンしたフォルダにターミナルで移動し、そのフォルダをVS Codeで開き直します。
+            </p>
+            <pre><code>cd [YOUR-REPOSITORY-NAME]
+code . -r</code></pre>
+
+            <h3>ステップ4：リポジトリ内を空にする</h3>
+            <p>
+                VS Codeのウィンドウがリロードされたら、再度ターミナルを開き、以下のコマンドを実行して、Gitが管理しているファイルとフォルダをすべて削除します。
+            </p>
+            <pre><code>git rm -r *</code></pre>
+            <div class="highlight">
+                <strong>解説:</strong> このコマンドは、Gitの追跡対象からファイルを削除し、同時に物理ファイルも削除します。リポジトリの心臓部である <code>.git</code>
+                フォルダは削除されないため、<strong>過去のコミット履歴は安全に保たれます。</strong>
+            </div>
+
+            <h3>ステップ5：新しいファイルのコピー（手動操作）</h3>
+            <p>
+                新しいファイル群を、今空にしたリポジトリフォルダにコピーします。
+            </p>
+            <ol>
+                <li>PCのファイルエクスプローラー（またはFinder）を開きます。</li>
+                <li><strong>入れ替えたい新しいファイルが揃っているフォルダ</strong>の中身をすべて選択してコピーします。</li>
+                <li><strong>今作業しているリポジトリのフォルダ</strong>に貼り付けます。</li>
+            </ol>
+
+            <h3>ステップ6：Git操作（ステージング、コミット、プッシュ）</h3>
+            <p>
+                最後に、この「総入れ替え」という変更を記録し、GitHubに反映させます。
+            </p>
+            <h4>1. 変更をステージング</h4>
+            <pre><code>git add .</code></pre>
+
+            <h4>2. 変更をコミット</h4>
+            <pre><code>git commit -m "feat: Replace all project files with new version"</code></pre>
+
+            <h4>3. 変更をGitHubにプッシュ</h4>
+            <pre><code>git push origin main</code></pre>
+            <div class="highlight">
+                <strong>注意:</strong> あなたのリポジトリのデフォルトブランチが <code>master</code> の場合は、<code>git push origin master</code>
+                と入力してください。
+            </div>
+        </section>
+
+        <section id="conclusion">
+            <h2>最終確認</h2>
+            <p>
+                以上で全ての作業は完了です。GitHubのリポジトリページをブラウザでリロードし、ファイルが正しく入れ替わっているか、そして過去のコミット履歴も残っているかを確認してください。
+            </p>
+        </section>
+    </main>
+
+    <!-- 共通フッター -->
+    <footer>
+        <p>© 2025 総合解説プラットフォーム. All rights reserved.</p>
+    </footer>
+
+    <!-- トップへ戻るボタン -->
+    <button id="scrollTopBtn" title="トップへ戻る">⇧</button>
+
+    <!-- 外部JavaScriptの読み込み (順序が重要) -->
+    <script src="../js/article-list.js"></script>
+    <script src="../js/common.js"></script>
+
+    <!-- このページ固有のスクリプト (コピーボタン) -->
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            document.querySelectorAll('pre').forEach(pre => {
+                const wrapper = document.createElement('div');
+                wrapper.className = 'pre-wrapper';
+                pre.parentNode.insertBefore(wrapper, pre);
+                wrapper.appendChild(pre);
+
+                const button = document.createElement('button');
+                button.innerText = 'Copy';
+                wrapper.appendChild(button);
+
+                button.addEventListener('click', () => {
+                    const code = pre.querySelector('code');
+                    if (code) {
+                        navigator.clipboard.writeText(code.innerText).then(() => {
+                            button.innerText = 'Copied!';
+                            setTimeout(() => { button.innerText = 'Copy'; }, 2000);
+                        }).catch(err => {
+                            console.error('Copy failed', err);
+                            button.innerText = 'Error';
+                        });
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+
+</html>

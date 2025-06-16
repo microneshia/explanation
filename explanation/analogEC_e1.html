@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- 記事のタイトル -->
+    <title>アナログ電子回路演習問題① 徹底解説 - 総合解説プラットフォーム</title>
+
+    <!-- 記事の連番 -->
+    <meta name="article-number" content="000008">
+
+    <!-- 共通CSSファイルの読み込み -->
+    <link rel="stylesheet" href="../css/common.css">
+    <link rel="stylesheet" href="../css/article.css">
+
+    <!-- MathJax関連スクリプト -->
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script src="../js/mathjax-config.js"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+</head>
+
+<body>
+    <!-- 共通ヘッダー -->
+    <header>
+        <a href="../index.html" class="header-link">
+            <h1>総合解説プラットフォーム <span class="subtitle">あらゆる疑問に、明快な解答を。</span></h1>
+        </a>
+    </header>
+
+    <!-- 共通ナビゲーションバー -->
+    <nav>
+        <ul>
+            <li><a href="../index.html">トップ</a></li>
+            <li><a href="../contents.html">コンテンツ</a></li>
+            <li><a href="../tags.html">タグ検索</a></li>
+            <li><a href="../index.html#about">このサイトについて</a></li>
+        </ul>
+    </nav>
+
+    <!-- メインコンテンツ -->
+    <main class="article-container">
+        <h1>アナログ電子回路演習問題① 徹底解説</h1>
+
+        <!-- タグはJavaScriptによってこの位置に自動挿入されます -->
+
+        <p>
+            この記事では、アナログ電子回路の基礎であるオペアンプを用いた各種回路に関する演習問題の解答と詳細な解説を提供します。理想オペアンプの特性から非理想特性まで、理論と計算の両面から深く理解することを目指します。
+        </p>
+
+        <section id="Q1">
+            <h2>問1. オペアンプの基礎回路</h2>
+            <p>理想オペアンプの重要特性は「入力インピーダンス無限大」「出力インピーダンスゼロ」「オープンループゲイン無限大」の3点です。特にゲインが無限大であることから、負帰還がかかった回路では入力端子間の電位差がゼロになる<span
+                    class="important">イマジナリショート</span>が成立します。</p>
+
+            <h4>反転増幅回路</h4>
+            <p>電圧利得 \(A_v = \frac{V_o}{V_s} = -\frac{R_F}{R_s}\) となります。</p>
+            <ul>
+                <li>(A) \(V_o = (-10\text{k}\Omega / 5\text{k}\Omega) \times 5\text{V} = -10\text{V}\)</li>
+                <li>(B) \(R_F = -(-6\text{V} / 2\text{V}) \times 3\text{k}\Omega = 9\text{k}\Omega\)</li>
+                <li>(C) \(V_s = 9\text{V} / (-12\text{k}\Omega / 4\text{k}\Omega) = -3\text{V}\)</li>
+            </ul>
+
+            <h4>非反転増幅回路</h4>
+            <p>電圧利得 \(A_v = \frac{V_o}{V_s} = 1 + \frac{R_F}{R_s}\) となります。</p>
+            <ul>
+                <li>(D) \(V_o = (1 + 10\text{k}\Omega / 5\text{k}\Omega) \times 2\text{V} = 6\text{V}\)</li>
+                <li>(E) \(R_F = (7\text{V} / 2\text{V} - 1) \times 4\text{k}\Omega = 10\text{k}\Omega\)</li>
+                <li>(F) \(V_s = 9\text{V} / (1 + 8\text{k}\Omega / 4\text{k}\Omega) = 3\text{V}\)</li>
+            </ul>
+        </section>
+
+        <section id="Q2">
+            <h2>問2. 回路の動作波形</h2>
+            <p>各回路の電圧利得を計算し、入力波形に適用します。</p>
+            <ul>
+                <li><strong>反転増幅回路(図1):</strong> 利得は-1倍。出力波形は入力波形を上下反転させたものになります。</li>
+                <li><strong>非反転増幅回路(図3):</strong> 利得は2倍。出力波形は入力波形の振幅を2倍にしたものになります。</li>
+            </ul>
+        </section>
+
+        <section id="Q3">
+            <h2>問3. ボルテージフォロア</h2>
+            <p>ボルテージフォロアは、電圧利得が1の非反転増幅回路です。主な役割は、信号源に負荷をかけずに電圧を伝達する<span class="highlight">バッファ</span>として機能することです。</p>
+            <ul>
+                <li><strong>(図5) ボルテージフォロアあり:</strong> 出力は入力と等しく \(V_o = V_s = 3\text{V}\)。</li>
+                <li><strong>(図6) ボルテージフォロアなし:</strong> 単純な抵抗分圧となり、\(V_o = 3\text{V} \times
+                    \frac{1\text{k}\Omega}{10\text{k}\Omega + 1\text{k}\Omega} \approx 0.27\text{V}\)。</li>
+            </ul>
+        </section>
+
+        <section id="Q4">
+            <h2>問4. 加減算回路</h2>
+            <p>理想オペアンプのイマジナリショート (\(V_+ = V_-\)) と、入力端子に電流が流れない性質を利用し、各入力ノードでキルヒホッフの電流則を立てて解きます。</p>
+            <p>V-端子とV+端子それぞれの電位を計算し、それらを等しいと置くことで、最終的に以下の出力電圧式が導出されます。</p>
+            <div class="math-block">
+                $$ V_o = \frac{R_F}{R_1} (V_3 + V_4 - V_1 - V_2) $$
+            </div>
+        </section>
+
+        <section id="Q5">
+            <h2>問5. 実際のオペアンプの等価回路</h2>
+            <p>有限のゲイン\(A_v\)、入力インピーダンス\(Z_i\)、出力インピーダンス\(Z_o\)を持つ現実的なモデルで解析します。</p>
+            <p>ノードX (Va) と出力ノードでキルヒホッフの電流則を適用し、連立方程式を解くことで、\(V_a\) は \(V_o\) を用いて次のように表せます。</p>
+            <div class="math-block">
+                $$ V_a = V_o \frac{Z_o + R_F}{Z_o - A_v R_F} $$
+            </div>
+            <p>ここで、理想オペアンプの条件 \(A_v \to \infty\), \(Z_o \to 0\), \(Z_i \to \infty\) を適用すると、\(V_a \to 0\) となり、回路全体の電圧利得は
+                \(\frac{V_o}{V_s} = -\frac{R_F}{R_s}\) に収束します。これは理想的な反転増幅回路の利得と一致します。</p>
+        </section>
+
+        <section id="conclusion">
+            <h2>まとめ</h2>
+            <p>
+                本解説では、オペアンプの基本回路の動作原理と計算方法を詳述しました。特に、理想オペアンプの特性である「<span
+                    class="important">イマジナリショート</span>」が回路解析においていかに重要であるかを理解いただけたことと思います。
+            </p>
+        </section>
+
+    </main>
+
+    <!-- 共通フッター -->
+    <footer>
+        <p>© 2025 総合解説プラットフォーム. All rights reserved.</p>
+    </footer>
+
+    <!-- トップへ戻るボタン -->
+    <button id="scrollTopBtn" title="トップへ戻る">⇧</button>
+
+    <!-- 外部JavaScriptの読み込み (順序が重要) -->
+    <script src="../js/article-list.js"></script>
+    <script src="../js/common.js"></script>
+</body>
+
+</html>

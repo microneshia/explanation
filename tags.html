@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>タグ検索 - 総合解説プラットフォーム</title>
+
+    <link rel="stylesheet" href="css/common.css">
+    <link rel="stylesheet" href="css/tags.css">
+
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script src="js/mathjax-config.js"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+</head>
+
+<body>
+    <header>
+        <a href="index.html" class="header-link">
+            <h1>総合解説プラットフォーム <span class="subtitle">あらゆる疑問に、明快な解答を。</span></h1>
+        </a>
+    </header>
+
+    <nav>
+        <ul>
+            <li><a href="index.html">トップ</a></li>
+            <li><a href="contents.html">コンテンツ</a></li>
+            <li><a href="tags.html">タグ検索</a></li>
+        </ul>
+    </nav>
+
+    <div class="main-container">
+        <h2 class="section-title">タグで検索</h2>
+
+        <button id="tag-toggle-btn">タグ一覧を表示する</button>
+
+        <div id="tag-cloud-wrapper" class="tag-cloud-wrapper">
+            <div id="tag-cloud" class="tag-cloud">
+                <p>タグを読み込み中...</p>
+            </div>
+        </div>
+
+        <div class="clear-selection-container">
+            <button id="clear-selection-btn">選択をすべて解除</button>
+        </div>
+
+        <div id="search-results-container">
+            <h2 id="results-title">全ての記事とコンテンツ</h2>
+            <div id="results-grid" class="content-grid"></div>
+            <!-- IDをより明確に -->
+            <div id="tags-pagination-container" class="pagination-container"></div>
+        </div>
+    </div>
+
+    <footer>
+        <p>© 2025 総合解説プラットフォーム. All rights reserved.</p>
+    </footer>
+
+    <button id="scrollTopBtn" title="トップへ戻る">⇧</button>
+
+    <script src="js/common.js"></script>
+    <script src="js/article-list.js"></script>
+    <script src="js/article-loader.js"></script>
+    <script src="js/tags.js"></script>
+</body>
+
+</html>

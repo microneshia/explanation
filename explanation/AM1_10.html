@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- 記事のタイトル -->
+    <title>周期2πの区分的関数の複素フーリエ級数 - 総合解説プラットフォーム</title>
+
+    <!-- 記事の連番 -->
+    <meta name="article-number" content="000010">
+
+    <!-- 共通CSSファイルの読み込み -->
+    <link rel="stylesheet" href="../css/common.css">
+    <link rel="stylesheet" href="../css/article.css">
+
+    <!-- MathJax関連スクリプト -->
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script src="../js/mathjax-config.js"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+</head>
+
+<body>
+    <!-- 共通ヘッダー -->
+    <header>
+        <a href="../index.html" class="header-link">
+            <h1>総合解説プラットフォーム <span class="subtitle">あらゆる疑問に、明快な解答を。</span></h1>
+        </a>
+    </header>
+
+    <!-- 共通ナビゲーションバー -->
+    <nav>
+        <ul>
+            <li><a href="../index.html">トップ</a></li>
+            <li><a href="../contents.html">コンテンツ</a></li>
+            <li><a href="../tags.html">タグ検索</a></li>
+            <li><a href="../index.html#about">このサイトについて</a></li>
+        </ul>
+    </nav>
+
+    <!-- メインコンテンツ -->
+    <main class="article-container">
+        <h1>周期2πの区分的関数の複素フーリエ級数</h1>
+
+        <!-- タグはJavaScriptによってこの位置に自動挿入されます -->
+
+        <p>
+            この記事では、周期が \(2\pi\) で区間によって定義が異なる2つの関数について、複素フーリエ級数を求める詳細な計算過程を解説します。
+        </p>
+
+        <section id="section1">
+            <h2>1. 複素フーリエ級数の基本公式</h2>
+            <p>
+                周期が \(2\pi\) (\(L=\pi\)) の関数 \(f(x)\) の複素フーリエ級数は、係数 \(c_n\) を用いて次のように表されます。
+            </p>
+            <div class="math-block">
+                $$ f(x) = \sum_{n=-\infty}^{\infty} c_n e^{inx} \quad , \quad c_n = \frac{1}{2\pi} \int_{-\pi}^{\pi}
+                f(x) e^{-inx} dx $$
+            </div>
+        </section>
+
+        <section id="section2">
+            <h2>2. 問題 (a) の解説と解答</h2>
+            <p><strong>関数:</strong></p>
+            <div class="math-block">
+                $$ f(x) = \begin{cases} -1 & (-\pi &lt; x &lt; 0) \\ 1 & (0 &lt; x &lt; \pi) \end{cases} $$ </div>
+                    <p>
+                        この関数は<span class="important">奇関数</span>なので、計算すると \(c_0 = 0\)、そして \(c_n\) は純虚数になることが予想されます。
+                    </p>
+                    <h3>フーリエ係数 \(c_n\) の計算</h3>
+                    <p>
+                        \(n=0\) の場合、\(c_0 = \frac{1}{2\pi} (\int_{-\pi}^{0} (-1)dx + \int_{0}^{\pi} 1 dx) = 0\)。<br>
+                        \(n \neq 0\) の場合、
+                    </p>
+                    <div class="math-block">
+                        $$ c_n = \frac{1}{2\pi} \left( \int_{-\pi}^{0} (-1)e^{-inx} dx + \int_{0}^{\pi} (1)e^{-inx} dx
+                        \right) = \frac{i}{\pi n} ((-1)^n - 1) $$
+                    </div>
+                    <h3>結論 (a)</h3>
+                    <p>
+                        \(n\)が偶数のとき\(c_n=0\)、奇数のとき\(c_n = -\frac{2i}{\pi n}\)となります。
+                    </p>
+                    <div class="math-block">
+                        $$ c_n = \begin{cases} -\frac{2i}{\pi n} & (n \text{ が奇数}) \\ 0 & (n \text{ が偶数}) \end{cases} $$
+                    </div>
+        </section>
+
+        <section id="section3">
+            <h2>3. 問題 (b) の解説と解答</h2>
+            <p><strong>関数:</strong></p>
+            <div class="math-block">
+                $$ f(x) = \begin{cases} 0 & (-\pi &lt; x &lt; 0) \\ 1 & (0 &lt; x &lt; \pi) \end{cases} $$ </div>
+                    <h3>フーリエ係数 \(c_n\) の計算</h3>
+                    <p>
+                        \(n=0\) の場合、\(c_0 = \frac{1}{2\pi} \int_{0}^{\pi} 1 dx = \frac{1}{2}\)。<br>
+                        \(n \neq 0\) の場合、
+                    </p>
+                    <div class="math-block">
+                        $$ c_n = \frac{1}{2\pi} \int_{0}^{\pi} (1)e^{-inx} dx = \frac{i}{2\pi n} ((-1)^n - 1) $$
+                    </div>
+                    <h3>結論 (b)</h3>
+                    <p>
+                        \(n\)が偶数のとき\(c_n=0\)、奇数のとき\(c_n = -\frac{i}{\pi n}\)となります。
+                    </p>
+                    <div class="math-block">
+                        $$ c_0 = \frac{1}{2}, \quad c_n = \begin{cases} -\frac{i}{\pi n} & (n \text{ が奇数}) \\ 0 & (n
+                        \text{ が偶数}, n \neq 0) \end{cases} $$
+                    </div>
+        </section>
+
+        <section id="conclusion">
+            <h2>まとめ</h2>
+            <p>この記事では、2つの区分的な周期関数について、複素フーリエ級数を求める手順を解説しました。計算の要点は以下の通りです。</p>
+            <ul>
+                <li>周期 \(2\pi\) の関数の複素フーリエ係数の公式を正しく適用する。</li>
+                <li>\(c_0\) と \(c_n\) (\(n \neq 0\)) は分けて計算する。</li>
+                <li><span class="highlight">\(e^{\pm in\pi} = (-1)^n\)</span> を活用する。</li>
+                <li>関数の対称性（偶関数・奇関数）に注目すると、計算の見通しが良くなる。</li>
+            </ul>
+        </section>
+    </main>
+
+    <!-- 共通フッター -->
+    <footer>
+        <p>© 2025 総合解説プラットフォーム. All rights reserved.</p>
+    </footer>
+
+    <!-- トップへ戻るボタン -->
+    <button id="scrollTopBtn" title="トップへ戻る">⇧</button>
+
+    <!-- 外部JavaScriptの読み込み (順序が重要) -->
+    <script src="../js/article-list.js"></script>
+    <script src="../js/common.js"></script>
+</body>
+
+</html>

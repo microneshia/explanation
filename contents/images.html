@@ -1,0 +1,481 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>画像の雨</title>
+    <meta name="article-number" content="000006">
+    <meta name="description" content="多種多様な画像を雨のように降らせます。">
+
+    <!-- フローティングナビゲーションメニュー用のCSS -->
+    <link rel="stylesheet" href="../css/nav-menu.css">
+
+    <!-- このコンテンツ固有のスタイル（変更なし） -->
+    <style>
+        :root {
+            --background-color: #f0f0f0;
+            --text-color: #333;
+            --accent-color: #007bff;
+            --panel-bg-color: rgba(255, 255, 255, 0.9);
+            --panel-text-color: #333;
+            --button-bg-color: #007bff;
+            --button-text-color: #fff;
+            --current-font-family: 'Noto Sans JP', sans-serif;
+            --base-fall-duration: 12s;
+            --meter-bg-color: #e9ecef;
+            --meter-fill-color: #007bff;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: var(--current-font-family);
+            background-color: var(--background-color);
+            color: var(--text-color);
+            overflow: hidden;
+            width: 100vw;
+            height: 100vh;
+            transition: background-color 0.5s, color 0.5s;
+        }
+
+        #image-container {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+        }
+
+        .image-item {
+            position: absolute;
+            opacity: 0;
+            animation-name: fall;
+            animation-timing-function: linear;
+            animation-iteration-count: 1;
+            animation-fill-mode: forwards;
+            will-change: transform, opacity;
+            animation-duration: var(--base-fall-duration);
+            --initial-rotate: -5deg;
+            --final-rotate: 10deg;
+            padding: 5px;
+            background-color: rgba(255, 255, 255, 0.5);
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+        }
+
+        .image-item img {
+            display: block;
+            width: 100%;
+            height: auto;
+            border-radius: 5px;
+            object-fit: cover;
+        }
+
+        @keyframes fall {
+            0% {
+                transform: translateY(-150px) rotate(var(--initial-rotate));
+                opacity: 0;
+            }
+
+            10% {
+                opacity: 1;
+                transform: translateY(0vh) rotate(0deg);
+            }
+
+            90% {
+                opacity: 1;
+            }
+
+            100% {
+                transform: translateY(105vh) rotate(var(--final-rotate));
+                opacity: 0;
+            }
+        }
+
+        body.theme-dark {
+            --background-color: #222;
+            --text-color: #f0f0f0;
+            --panel-bg-color: rgba(50, 50, 50, 0.9);
+            --panel-text-color: #f0f0f0;
+            --button-bg-color: #0056b3;
+            --meter-bg-color: #444;
+            --meter-fill-color: #0056b3;
+        }
+
+        .theme-dark .image-item {
+            background-color: rgba(80, 80, 80, 0.5);
+        }
+
+        body.theme-sky {
+            --background-color: linear-gradient(to bottom, #87CEEB, #E0F2F7);
+            --text-color: #1A237E;
+            --panel-bg-color: rgba(224, 242, 247, 0.9);
+            --panel-text-color: #1A237E;
+            --button-bg-color: #1E88E5;
+            --meter-bg-color: #cce7ff;
+            --meter-fill-color: #1E88E5;
+        }
+
+        body.theme-sky {
+            background: var(--background-color);
+        }
+
+        body.theme-sakura {
+            --background-color: linear-gradient(to bottom, #FFC0CB, #FFF0F5);
+            --text-color: #C71585;
+            --panel-bg-color: rgba(255, 240, 245, 0.9);
+            --panel-text-color: #C71585;
+            --button-bg-color: #FF69B4;
+            --meter-bg-color: #ffe4e1;
+            --meter-fill-color: #FF69B4;
+        }
+
+        body.theme-sakura {
+            background: var(--background-color);
+        }
+
+        #settings-button {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            padding: 12px 18px;
+            font-size: 16px;
+            background-color: var(--button-bg-color);
+            color: var(--button-text-color);
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            z-index: 1001;
+            transition: background-color 0.3s, opacity 0.3s;
+        }
+
+        #settings-button:hover {
+            opacity: 0.85;
+        }
+
+        #settings-panel {
+            position: fixed;
+            bottom: -100%;
+            left: 0;
+            width: 100%;
+            background-color: var(--panel-bg-color);
+            color: var(--panel-text-color);
+            box-shadow: 0 -4px 10px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            box-sizing: border-box;
+            z-index: 1000;
+            transition: bottom 0.5s ease-in-out, opacity 0.5s ease-in-out, visibility 0.5s ease-in-out;
+            border-top-left-radius: 20px;
+            border-top-right-radius: 20px;
+            max-height: 80vh;
+            overflow-y: auto;
+            visibility: hidden;
+            opacity: 0;
+        }
+
+        #settings-panel.open {
+            bottom: 0;
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .setting-group {
+            margin-bottom: 15px;
+        }
+
+        .setting-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+            font-size: 1em;
+        }
+
+        .setting-group select,
+        .setting-group input[type="range"] {
+            width: 100%;
+            padding: 10px;
+            border-radius: 8px;
+            border: 1px solid #ccc;
+            background-color: var(--background-color);
+            color: var(--text-color);
+            font-size: 1em;
+            box-sizing: border-box;
+            transition: border-color 0.3s, box-shadow 0.3s;
+        }
+
+        .setting-group input[type="range"] {
+            padding: 0;
+        }
+
+        .setting-group select:focus,
+        .setting-group input[type="range"]:focus {
+            outline: none;
+            border-color: var(--accent-color);
+            box-shadow: 0 0 0 2px var(--accent-color-alpha, rgba(0, 123, 255, 0.25));
+        }
+
+        .value-display {
+            display: inline-block;
+            margin-left: 10px;
+            font-weight: bold;
+        }
+
+        .range-labels span {
+            font-size: 0.9em;
+            color: var(--text-color);
+        }
+
+        .range-labels span:last-child {
+            float: right;
+        }
+
+        #image-stock-meter-container {
+            margin-top: 20px;
+            padding-top: 15px;
+            border-top: 1px solid var(--panel-text-color);
+            opacity: 0.8;
+        }
+
+        #image-stock-meter-container p {
+            margin: 0 0 5px 0;
+            font-size: 0.9em;
+        }
+
+        .meter-bar {
+            width: 100%;
+            height: 20px;
+            background-color: var(--meter-bg-color);
+            border-radius: 10px;
+            overflow: hidden;
+            border: 1px solid rgba(0, 0, 0, 0.1);
+        }
+
+        .meter-fill {
+            width: 0%;
+            height: 100%;
+            background-color: var(--meter-fill-color);
+            border-radius: 10px 0 0 10px;
+            transition: width 0.2s ease-out, background-color 0.3s;
+            text-align: center;
+            line-height: 20px;
+            color: var(--button-text-color);
+            font-size: 0.8em;
+            font-weight: bold;
+        }
+    </style>
+</head>
+
+<body class="theme-sky font-noto-sans-jp">
+    <!-- フローティングナビゲーションメニュー -->
+    <div id="menu-toggle-icon">≡</div>
+    <div id="floating-menu">
+        <a href="../index.html">トップページへ</a>
+        <a href="../contents.html">コンテンツ一覧へ</a>
+    </div>
+
+    <!-- 元のコンテンツHTML -->
+    <div id="image-container"></div>
+    <button id="settings-button">設定</button>
+    <div id="settings-panel">
+        <div class="setting-group">
+            <label for="speed-slider">落下スピード (<span id="speed-value" class="value-display">標準</span>)</label>
+            <input type="range" id="speed-slider" min="0.25" max="2.5" step="0.05" value="1.0">
+            <div class="range-labels"><span>遅い</span><span>速い</span></div>
+        </div>
+        <div class="setting-group">
+            <label for="quantity-slider">画像の出現頻度 (<span id="quantity-value" class="value-display">標準</span>)</label>
+            <input type="range" id="quantity-slider" min="0.25" max="3.5" step="0.05" value="1.0">
+            <div class="range-labels"><span>少ない</span><span>多い</span></div>
+        </div>
+        <div class="setting-group">
+            <label for="theme-selector">テーマ</label>
+            <select id="theme-selector">
+                <option value="sky">空と雲</option>
+                <option value="light">ライト</option>
+                <option value="dark">ダーク</option>
+                <option value="sakura">桜</option>
+            </select>
+        </div>
+        <div id="image-stock-meter-container">
+            <p>画像URLストック (<span id="image-stock-count">0</span> / <span id="image-stock-max">0</span>)</p>
+            <div class="meter-bar">
+                <div id="image-stock-meter-fill" class="meter-fill">0%</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- コンテンツ固有のスクリプトと、ナビゲーションのスクリプトを統合 -->
+    <script>
+        const FallingImages = {
+            config: {
+                maxImagesOnScreen: 300, baseSpawnInterval: 500, baseFallDuration: 12, minSpawnIntervalSafety: 150,
+                imageUrlGenerationInterval: 8000, imageUrlGenerationCount: 30, maxImageUrlListLength: 500,
+                loremPicsumBaseUrl: 'https://picsum.photos/800/450?random=', minApiFetchIntervalSafety: 4000, maxApiFetchIntervalSafety: 60000,
+                imageSizeRange: { min: 60, max: 200 }, initialRotationRange: { min: -8, max: 8 },
+                finalRotationRange: { min: -10, max: 10 }, meterUpdateInterval: 200,
+            },
+            state: {
+                imageUrls: [], spawnIntervalId: null, imageUrlGenerationTimeoutId: null, meterUpdateIntervalId: null,
+                currentSpeedFactor: 1.0, currentQuantityFactor: 1.0, activeImages: 0,
+                isPanelOpen: false, currentTheme: 'sky',
+            },
+            elements: {
+                container: null, settingsButton: null, settingsPanel: null, speedSlider: null,
+                speedValueDisplay: null, quantitySlider: null, quantityValueDisplay: null,
+                themeSelector: null, imageStockCount: null, imageStockMax: null, imageStockMeterFill: null,
+                menuToggleIcon: null, floatingMenu: null // メニュー要素を追加
+            },
+            init() {
+                // ナビゲーションメニューの要素を取得
+                this.elements.menuToggleIcon = document.getElementById('menu-toggle-icon');
+                this.elements.floatingMenu = document.getElementById('floating-menu');
+                // 元のコンテンツ要素を取得
+                this.elements.container = document.getElementById('image-container');
+                this.elements.settingsButton = document.getElementById('settings-button');
+                this.elements.settingsPanel = document.getElementById('settings-panel');
+                this.elements.speedSlider = document.getElementById('speed-slider');
+                this.elements.speedValueDisplay = document.getElementById('speed-value');
+                this.elements.quantitySlider = document.getElementById('quantity-slider');
+                this.elements.quantityValueDisplay = document.getElementById('quantity-value');
+                this.elements.themeSelector = document.getElementById('theme-selector');
+                this.elements.imageStockCount = document.getElementById('image-stock-count');
+                this.elements.imageStockMax = document.getElementById('image-stock-max');
+                this.elements.imageStockMeterFill = document.getElementById('image-stock-meter-fill');
+
+                this.state.imageUrls = [];
+                this.setupEventListeners();
+                this.applyInitialSettings();
+                this.updateImageUrlStockMeter();
+            },
+            setupEventListeners() {
+                // ナビゲーションメニューのイベントリスナーを統合
+                if (this.elements.menuToggleIcon && this.elements.floatingMenu) {
+                    this.elements.menuToggleIcon.addEventListener('click', (event) => {
+                        event.stopPropagation();
+                        this.elements.floatingMenu.classList.toggle('show');
+                    });
+                    document.addEventListener('click', (event) => {
+                        if (this.elements.floatingMenu.classList.contains('show')) {
+                            if (!this.elements.menuToggleIcon.contains(event.target) && !this.elements.floatingMenu.contains(event.target)) {
+                                this.elements.floatingMenu.classList.remove('show');
+                            }
+                        }
+                    });
+                }
+
+                // 元のイベントリスナー
+                this.elements.settingsButton.addEventListener('click', () => {
+                    this.toggleSettingsPanel();
+                    if (this.state.isPanelOpen) {
+                        this.updateImageUrlStockMeter(); if (!this.state.meterUpdateIntervalId) { this.state.meterUpdateIntervalId = setInterval(() => this.updateImageUrlStockMeter(), this.config.meterUpdateInterval); }
+                    } else { if (this.state.meterUpdateIntervalId) { clearInterval(this.state.meterUpdateIntervalId); this.state.meterUpdateIntervalId = null; } }
+                });
+                this.elements.speedSlider.addEventListener('input', (e) => this.updateSpeed(parseFloat(e.target.value)));
+                this.elements.quantitySlider.addEventListener('input', (e) => this.updateQuantity(parseFloat(e.target.value)));
+                this.elements.themeSelector.addEventListener('change', (e) => this.updateTheme(e.target.value));
+            },
+            // ... (FallingImagesオブジェクトの他のメソッドは、元のままで変更ありません) ...
+            updateImageUrlStockMeter() {
+                if (!this.elements.imageStockCount) return; const currentCount = this.state.imageUrls.length; const maxCount = this.config.maxImageUrlListLength;
+                const percentage = maxCount > 0 ? Math.min(100, Math.round((currentCount / maxCount) * 100)) : 0;
+                this.elements.imageStockCount.textContent = currentCount; this.elements.imageStockMax.textContent = maxCount;
+                this.elements.imageStockMeterFill.style.width = `${percentage}%`; this.elements.imageStockMeterFill.textContent = `${percentage}%`;
+                if (percentage < 20) { this.elements.imageStockMeterFill.style.backgroundColor = '#dc3545'; }
+                else if (percentage < 50) { this.elements.imageStockMeterFill.style.backgroundColor = '#ffc107'; }
+                else { const fillColor = getComputedStyle(document.body).getPropertyValue('--meter-fill-color').trim(); this.elements.imageStockMeterFill.style.backgroundColor = fillColor || '#007bff'; }
+            },
+            applyInitialSettings() {
+                const savedSpeed = localStorage.getItem('fallingImagesSpeed'); const initialSpeed = savedSpeed ? parseFloat(savedSpeed) : 1.0;
+                if (this.elements.speedSlider) this.elements.speedSlider.value = initialSpeed; this.updateSpeed(initialSpeed, false);
+                const savedQuantity = localStorage.getItem('fallingImagesQuantity'); const initialQuantity = savedQuantity ? parseFloat(savedQuantity) : 1.0;
+                if (this.elements.quantitySlider) this.elements.quantitySlider.value = initialQuantity; this.updateQuantity(initialQuantity, false);
+                const savedTheme = localStorage.getItem('fallingImagesTheme') || 'sky'; if (this.elements.themeSelector) this.elements.themeSelector.value = savedTheme;
+                this.updateTheme(savedTheme); this.startFalling(); this.restartImageUrlGeneration(100);
+            },
+            startFalling() {
+                if (this.state.spawnIntervalId) clearInterval(this.state.spawnIntervalId);
+                const spawnInterval = Math.max(this.config.minSpawnIntervalSafety, this.config.baseSpawnInterval / (this.state.currentSpeedFactor * this.state.currentQuantityFactor));
+                this.spawnImage(); this.state.spawnIntervalId = setInterval(() => { this.spawnImage(); }, spawnInterval);
+            },
+            stopFalling() { if (this.state.spawnIntervalId) { clearInterval(this.state.spawnIntervalId); this.state.spawnIntervalId = null; } },
+            spawnImage() {
+                if (this.state.activeImages >= this.config.maxImagesOnScreen || this.state.imageUrls.length === 0) { if (this.state.imageUrls.length === 0 && !this.state.imageUrlGenerationTimeoutId) { this.restartImageUrlGeneration(500); } return; }
+                const randomIndex = Math.floor(Math.random() * this.state.imageUrls.length); const imageUrl = this.state.imageUrls.splice(randomIndex, 1)[0];
+                const imageItemElement = document.createElement('div'); imageItemElement.classList.add('image-item');
+                const imgElement = document.createElement('img'); imgElement.src = imageUrl; imgElement.alt = "Falling Image"; imgElement.loading = "lazy";
+                imgElement.onerror = () => { imageItemElement.remove(); this.state.activeImages = Math.max(0, this.state.activeImages - 1); };
+                imageItemElement.appendChild(imgElement);
+                const initialRot = Math.random() * (this.config.initialRotationRange.max - this.config.initialRotationRange.min) + this.config.initialRotationRange.min;
+                const finalRot = Math.random() * (this.config.finalRotationRange.max - this.config.finalRotationRange.min) + this.config.finalRotationRange.min;
+                imageItemElement.style.setProperty('--initial-rotate', `${initialRot}deg`); imageItemElement.style.setProperty('--final-rotate', `${finalRot}deg`);
+                const imageWidth = Math.floor(Math.random() * (this.config.imageSizeRange.max - this.config.imageSizeRange.min + 1)) + this.config.imageSizeRange.min;
+                imageItemElement.style.width = `${imageWidth}px`; this.elements.container.appendChild(imageItemElement);
+                const itemWidth = imageItemElement.offsetWidth || imageWidth; const containerWidth = this.elements.container.offsetWidth;
+                let randomX = 10; if (containerWidth > 0) { randomX = (itemWidth + 20 > containerWidth) ? 10 : Math.max(10, Math.min(Math.random() * (containerWidth - itemWidth - 20), containerWidth - itemWidth - 10)); }
+                imageItemElement.style.left = `${randomX}px`;
+                const fallDuration = Math.max(4, this.config.baseFallDuration / this.state.currentSpeedFactor); imageItemElement.style.animationDuration = `${fallDuration}s`;
+                this.state.activeImages++;
+                imageItemElement.addEventListener('animationend', () => { if (imageItemElement.parentNode) { imageItemElement.remove(); } this.state.activeImages = Math.max(0, this.state.activeImages - 1); }, { once: true });
+            },
+            generateAndAddImageUrls() {
+                let addedCount = 0; const currentPoolSize = this.state.imageUrls.length; const availableSpace = this.config.maxImageUrlListLength - currentPoolSize;
+                if (availableSpace <= 0) { return; } const countToGenerate = Math.min(this.config.imageUrlGenerationCount, availableSpace);
+                for (let i = 0; i < countToGenerate; i++) {
+                    const width = Math.floor(Math.random() * (this.config.imageSizeRange.max - this.config.imageSizeRange.min + 1)) + this.config.imageSizeRange.min;
+                    const height = Math.floor(Math.random() * (this.config.imageSizeRange.max - this.config.imageSizeRange.min + 1)) + this.config.imageSizeRange.min;
+                    const cacheBuster = Date.now() + Math.random(); const imageUrl = `${this.config.loremPicsumBaseUrl}${width}/${height}?random=${cacheBuster}`;
+                    this.state.imageUrls.push(imageUrl); addedCount++;
+                }
+                const overflow = this.state.imageUrls.length - this.config.maxImageUrlListLength; if (overflow > 0) { this.state.imageUrls.splice(0, overflow); }
+            },
+            calculateApiFetchInterval(baseInterval) {
+                let combinedFactor = this.state.currentSpeedFactor * this.state.currentQuantityFactor; if (combinedFactor <= 0.1) combinedFactor = 0.1;
+                let interval = baseInterval / combinedFactor; return Math.min(this.config.maxApiFetchIntervalSafety, Math.max(this.config.minApiFetchIntervalSafety, interval));
+            },
+            scheduleImageUrlGeneration(delay) {
+                if (this.state.imageUrlGenerationTimeoutId) clearTimeout(this.state.imageUrlGenerationTimeoutId);
+                this.state.imageUrlGenerationTimeoutId = setTimeout(() => {
+                    this.state.imageUrlGenerationTimeoutId = null; this.generateAndAddImageUrls();
+                    const nextInterval = this.calculateApiFetchInterval(this.config.imageUrlGenerationInterval); this.scheduleImageUrlGeneration(nextInterval);
+                }, delay);
+            },
+            restartImageUrlGeneration(initialDelay = 500) {
+                if (this.state.imageUrlGenerationTimeoutId) { clearTimeout(this.state.imageUrlGenerationTimeoutId); this.state.imageUrlGenerationTimeoutId = null; }
+                this.scheduleImageUrlGeneration(initialDelay);
+            },
+            updateSpeed(factor, restartFalling = true) {
+                this.state.currentSpeedFactor = factor; localStorage.setItem('fallingImagesSpeed', factor.toString());
+                let speedText = "標準"; if (factor < 0.6) speedText = "かなり遅い"; else if (factor < 0.9) speedText = "遅い"; else if (factor > 1.1 && factor <= 1.5) speedText = "速い";
+                else if (factor > 1.5 && factor <= 2.0) speedText = "かなり速い"; else if (factor > 2.0) speedText = "超高速";
+                if (this.elements.speedValueDisplay) { this.elements.speedValueDisplay.textContent = speedText + ` (x${factor.toFixed(2)})`; }
+                if (restartFalling) { this.stopFalling(); this.startFalling(); this.restartImageUrlGeneration(); }
+            },
+            updateQuantity(factor, restartFalling = true) {
+                this.state.currentQuantityFactor = factor; localStorage.setItem('fallingImagesQuantity', factor.toString());
+                let quantityText = "標準"; if (factor < 0.6) quantityText = "かなり少ない"; else if (factor < 0.9) quantityText = "少ない";
+                else if (factor > 1.1 && factor <= 1.8) quantityText = "多い"; else if (factor > 1.8 && factor <= 2.5) quantityText = "かなり多い";
+                else if (factor > 2.5) quantityText = "非常に多い";
+                if (this.elements.quantityValueDisplay) { this.elements.quantityValueDisplay.textContent = quantityText + ` (x${factor.toFixed(2)})`; }
+                if (restartFalling) { this.stopFalling(); this.startFalling(); this.restartImageUrlGeneration(); }
+            },
+            updateTheme(themeName) {
+                document.body.className = document.body.className.replace(/theme-\S+/g, '').trim();
+                document.body.classList.add(`theme-${themeName}`);
+                if (!document.body.classList.contains('font-noto-sans-jp')) { document.body.classList.add('font-noto-sans-jp'); }
+                this.state.currentTheme = themeName; localStorage.setItem('fallingImagesTheme', themeName);
+                setTimeout(() => this.updateImageUrlStockMeter(), 50);
+            },
+            toggleSettingsPanel() {
+                this.state.isPanelOpen = !this.state.isPanelOpen;
+                if (this.elements.settingsPanel) { this.elements.settingsPanel.classList.toggle('open', this.state.isPanelOpen); }
+                if (this.elements.settingsButton) { this.elements.settingsButton.textContent = this.state.isPanelOpen ? '閉じる' : '設定'; }
+            }
+        };
+        window.addEventListener('DOMContentLoaded', () => {
+            try { FallingImages.init(); } catch (error) { console.error("初期化中に致命的なエラーが発生しました:", error); alert("アプリケーションの起動中にエラーが発生しました。"); }
+        });
+    </script>
+</body>
+
+</html>

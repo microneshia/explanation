@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- 記事のタイトル -->
+    <title>ベクトル場の線積分の直感的解説 - 総合解説プラットフォーム</title>
+
+    <!-- 記事の連番 -->
+    <meta name="article-number" content="000013">
+
+    <!-- 共通CSSファイルの読み込み -->
+    <link rel="stylesheet" href="../css/common.css">
+    <link rel="stylesheet" href="../css/article.css">
+
+    <!-- MathJax関連スクリプト -->
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script src="../js/mathjax-config.js"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+
+    <!-- このページ固有のスタイル -->
+    <style>
+        .answer {
+            background-color: #e8f6fc;
+            border-left: 6px solid #2980b9;
+            padding: 15px 25px;
+            margin: 30px 0;
+            font-weight: bold;
+            font-size: 1.2em;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- 共通ヘッダー -->
+    <header>
+        <a href="../index.html" class="header-link">
+            <h1>総合解説プラットフォーム <span class="subtitle">あらゆる疑問に、明快な解答を。</span></h1>
+        </a>
+    </header>
+
+    <!-- 共通ナビゲーションバー -->
+    <nav>
+        <ul>
+            <li><a href="../index.html">トップ</a></li>
+            <li><a href="../contents.html">コンテンツ</a></li>
+            <li><a href="../tags.html">タグ検索</a></li>
+            <li><a href="../index.html#about">このサイトについて</a></li>
+        </ul>
+    </nav>
+
+    <!-- メインコンテンツ -->
+    <main class="article-container">
+        <h1>ベクトル場の線積分 $I = \int_C \mathbf{A} \cdot d\mathbf{s}$ の解説</h1>
+
+        <!-- タグはJavaScriptによってこの位置に自動挿入されます -->
+
+        <p>
+            線積分 $I = \int_C \mathbf{A} \cdot d\mathbf{s}$ は、ベクトル場 $\mathbf{A}$ の中で、経路 $C$
+            に沿って移動するときに「どれだけの効果があったか」を示す量です。これは物理学における「仕事」の概念に非常に似ています。
+        </p>
+
+        <section id="s1">
+            <h2>線積分の直感的な理解</h2>
+            <p>線積分を理解するための最も簡単なイメージは、「力学における仕事」です。経路に沿った微小な移動 $d\mathbf{s}$ に対して、ベクトル場 $\mathbf{A}$
+                がどれだけ「後押し」または「邪魔」したかを経路全体で合計する操作です。</p>
+            <ul>
+                <li>$\mathbf{A}$ と $d\mathbf{s}$ が同じ方向 ⇒ 内積 $\mathbf{A} \cdot d\mathbf{s}$ は <span
+                        class="important">正</span></li>
+                <li>$\mathbf{A}$ と $d\mathbf{s}$ が逆方向 ⇒ 内積 $\mathbf{A} \cdot d\mathbf{s}$ は <span
+                        class="important">負</span></li>
+                <li>$\mathbf{A}$ と $d\mathbf{s}$ が直角 ⇒ 内積 $\mathbf{A} \cdot d\mathbf{s}$ は <span
+                        class="important">ゼロ</span></li>
+            </ul>
+        </section>
+
+        <section id="s2">
+            <h2>問題のベクトル場の種類</h2>
+            <p>各問題で出てくるベクトル場は、大きく分けて2種類あります。</p>
+            <h3>1. 保存場 (例: 噴水のように広がるベクトル場)</h3>
+            <p>原点から放射状に外向きに広がるベクトル場です。例: $\mathbf{A} = (x, y)$。この種の場では、どんな経路をたどっても、最終的に出発点に戻ってくれば（閉経路）、線積分は<span
+                    class="highlight">必ずゼロ</span>になります。</p>
+            <h3>2. 非保存場 (例: 渦を巻くベクトル場)</h3>
+            <p>原点を中心に反時計回りに回転するベクトル場です。例: $\mathbf{A} = (-y, x)$。この種の場では、閉経路の線積分は経路に依存し、一般にゼロにはなりません。</p>
+        </section>
+
+        <section id="problem-a">
+            <h2>(a) 保存場と円形の閉経路</h2>
+            <h4>問題の状況</h4>
+            <p>原点を中心に広がるベクトル場（保存場）の中を、反時計回りの円を描いて一周する。</p>
+            <h4>解説</h4>
+            <p>噴水の水が外向きに流れる中、その周りを円を描いて歩くイメージです。水の流れ（ベクトル場 $\mathbf{A}$）は常に半径方向、歩く方向（経路
+                $d\mathbf{s}$）は常に接線方向です。この2つは常に直交するため、内積 $\mathbf{A} \cdot d\mathbf{s}$ は常に0です。これを一周積分しても結果は0です。また、<span
+                    class="highlight">保存場における閉経路の線積分は常に0</span>という法則からも明らかです。</p>
+            <div class="answer"><strong>結論: ③ I = 0</strong></div>
+        </section>
+
+        <section id="problem-b">
+            <h2>(b) 非保存場と円形の閉経路</h2>
+            <h4>問題の状況</h4>
+            <p>原点を中心に反時計回りに渦を巻くベクトル場（非保存場）の中を、同じく反時計回りの円を描いて一周する。</p>
+            <h4>解説</h4>
+            <p>反時計回りの渦の中で、同じ方向に泳ぐイメージです。流れの方向（ベクトル場 $\mathbf{A}$）と進む方向（経路
+                $d\mathbf{s}$）が常に一致するため、流れから常に「後押し」を受けます。したがって、内積 $\mathbf{A} \cdot d\mathbf{s}$
+                は常に正の値を取り、一周積分した結果も正になります。</p>
+            <div class="answer"><strong>結論: ① I &gt; 0</strong></div>
+        </section>
+
+        <section id="problem-c">
+            <h2>(c) 保存場と複雑な閉経路</h2>
+            <h4>問題の状況</h4>
+            <p>原点を中心に広がるベクトル場（保存場）の中を、扇形をくり抜いたような複雑な経路で一周し、元の場所に戻る。</p>
+            <h4>解説</h4>
+            <p>ベクトル場が<span class="important">保存場</span>である場合、経路がどんなに複雑でも、<span
+                    class="highlight">閉経路（出発点と終点が同じ）であれば線積分は必ず0</span>になります。経路の途中でプラスになっても、必ず同じだけマイナスになる部分があり、最終的に打ち消し合います。
+            </p>
+            <div class="answer"><strong>結論: ③ I = 0</strong></div>
+        </section>
+
+        <section id="problem-d">
+            <h2>(d) 非保存場と複雑な閉経路</h2>
+            <h4>問題の状況</h4>
+            <p>原点を中心に反時計回りに渦を巻くベクトル場（非保存場）の中を、(c)と同じ複雑な経路で一周する。</p>
+            <h4>解説</h4>
+            <p>経路を4つの部分に分けて考えます。</p>
+            <ol>
+                <li><strong>外側の円弧（反時計回り）:</strong> 流れと同じ方向なので、寄与は<span class="important">正</span>。</li>
+                <li><strong>中心に向かう直線:</strong> 流れと直角なので、寄与は<span class="important">ゼロ</span>。</li>
+                <li><strong>内側の円弧（時計回り）:</strong> 流れと逆方向なので、寄与は<span class="important">負</span>。</li>
+                <li><strong>中心から遠ざかる直線:</strong> 流れと直角なので、寄与は<span class="important">ゼロ</span>。</li>
+            </ol>
+            <p>ベクトル場の強さは原点からの距離に比例するため、半径の大きい外側の円弧での「正の寄与」は、半径の小さい内側の円弧での「負の寄与」よりも大きくなります。結果として、全体の積分値は正になります。</p>
+            <div class="answer"><strong>結論: ① I &gt; 0</strong></div>
+        </section>
+    </main>
+
+    <!-- 共通フッター -->
+    <footer>
+        <p>© 2025 総合解説プラットフォーム. All rights reserved.</p>
+    </footer>
+
+    <!-- トップへ戻るボタン -->
+    <button id="scrollTopBtn" title="トップへ戻る">⇧</button>
+
+    <!-- 外部JavaScriptの読み込み (順序が重要) -->
+    <script src="../js/article-list.js"></script>
+    <script src="../js/common.js"></script>
+</body>
+
+</html>

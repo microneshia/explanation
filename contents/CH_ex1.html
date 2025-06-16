@@ -1,0 +1,406 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>計算機ハードウェア 試験予想問題</title>
+    <meta name="article-number" content="000009"> <!-- 新しい連番を割り当て -->
+    <meta name="description" content="計算機ハードウェアの理解度を確認するための試験予想問題です。">
+
+    <!-- Google FontsとナビゲーションCSSの読み込み -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../css/nav-menu.css">
+
+    <!-- このページ固有のスタイル -->
+    <style>
+        :root {
+            --primary-color: #4a69bd;
+            --secondary-color: #1e3799;
+            --light-bg: #f1f2f6;
+            --dark-text: #2f3542;
+            --light-text: #ffffff;
+            --correct-color: #2ed573;
+            --incorrect-color: #ff4757;
+            --neutral-color: #747d8c;
+            --border-color: #ced6e0;
+        }
+
+        body {
+            font-family: 'Noto Sans JP', sans-serif;
+            background-color: var(--light-bg);
+            color: var(--dark-text);
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            /* 中央揃え */
+        }
+
+        /* --- レイアウトコンテナの修正 --- */
+        .exam-container {
+            width: 100%;
+            /* 画面幅いっぱいに広げる */
+            max-width: 800px;
+            /* ただし最大幅は800pxに制限 */
+            min-height: 100vh;
+            /* 最低でも画面の高さを持つ */
+            background-color: var(--light-text);
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+            /* コンテナに影をつける */
+        }
+
+        .exam-header {
+            background: var(--primary-color);
+            color: var(--light-text);
+            padding: 10px 20px;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .progress-text {
+            font-size: 0.9em;
+            margin: 0;
+            white-space: nowrap;
+            margin-right: 15px;
+        }
+
+        .progress-bar-container {
+            width: 100%;
+        }
+
+        .progress-bar-bg {
+            background-color: rgba(255, 255, 255, 0.3);
+            border-radius: 5px;
+            height: 10px;
+            overflow: hidden;
+        }
+
+        #progress-bar {
+            width: 0%;
+            height: 100%;
+            background-color: var(--correct-color);
+            transition: width 0.3s ease-in-out;
+            border-radius: 5px;
+        }
+
+        .exam-content-wrapper {
+            padding: 20px;
+        }
+
+        .main-title {
+            text-align: center;
+            margin-bottom: 20px;
+            color: var(--secondary-color);
+        }
+
+        .questions-area {
+            padding: 0 10px 10px 10px;
+        }
+
+        .question-card {
+            margin-bottom: 25px;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 20px;
+            transition: box-shadow 0.3s;
+            background-color: #fff;
+        }
+
+        .question-card:focus-within {
+            box-shadow: 0 0 0 2px var(--primary-color);
+        }
+
+        .question-title {
+            font-weight: 700;
+            margin-bottom: 15px;
+            font-size: 1.1em;
+            line-height: 1.6;
+        }
+
+        .options-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .options-list li {
+            margin-bottom: 10px;
+        }
+
+        .options-list label {
+            display: block;
+            padding: 12px 15px;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            cursor: pointer;
+            transition: background-color 0.2s, border-color 0.2s;
+            line-height: 1.5;
+        }
+
+        .options-list label:hover {
+            background-color: #f8f9fa;
+        }
+
+        .options-list input[type="radio"] {
+            display: none;
+        }
+
+        .options-list input[type="radio"]:checked+label {
+            background-color: var(--primary-color);
+            color: var(--light-text);
+            border-color: var(--primary-color);
+        }
+
+        .button-container {
+            text-align: center;
+            padding: 10px;
+        }
+
+        #submit-btn {
+            background-color: var(--primary-color);
+            color: var(--light-text);
+            border: none;
+            padding: 15px 30px;
+            font-size: 1.2em;
+            font-weight: 700;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background-color 0.3s, transform 0.2s;
+        }
+
+        #submit-btn:hover {
+            background-color: var(--secondary-color);
+            transform: translateY(-2px);
+        }
+
+        #submit-btn:disabled {
+            background-color: var(--neutral-color);
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        #result-area {
+            padding: 10px;
+        }
+
+        .score-display {
+            text-align: center;
+            margin-bottom: 30px;
+            padding: 20px;
+            background-color: var(--light-bg);
+            border-radius: 8px;
+        }
+
+        .score-display h2 {
+            margin: 0 0 10px;
+            font-size: 1.8em;
+            color: var(--primary-color);
+        }
+
+        .score-display p {
+            margin: 0;
+            font-size: 2.5em;
+            font-weight: 700;
+        }
+
+        .score-display span {
+            font-size: 0.6em;
+            font-weight: 400;
+        }
+
+        .feedback-card {
+            margin-bottom: 20px;
+            border-radius: 8px;
+            overflow: hidden;
+            border: 1px solid var(--border-color);
+            background-color: #fff;
+        }
+
+        .feedback-card.correct {
+            border-left: 5px solid var(--correct-color);
+        }
+
+        .feedback-card.incorrect {
+            border-left: 5px solid var(--incorrect-color);
+        }
+
+        .feedback-question {
+            padding: 15px 20px;
+            background-color: #fafafa;
+        }
+
+        .feedback-details {
+            padding: 20px;
+        }
+
+        .feedback-details p {
+            margin: 0 0 15px;
+        }
+
+        .feedback-explanation {
+            background-color: #f1f2f6;
+            padding: 15px;
+            border-radius: 6px;
+            border-left: 3px solid var(--primary-color);
+            font-size: 0.95em;
+            line-height: 1.6;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- フローティングナビゲーションメニュー -->
+    <div id="menu-toggle-icon">≡</div>
+    <div id="floating-menu">
+        <a href="../index.html">トップページへ</a>
+        <a href="../contents.html">コンテンツ一覧へ</a>
+    </div>
+
+    <!-- 元のコンテンツHTML -->
+    <div class="exam-container">
+        <header class="exam-header" id="exam-header">
+            <div class="progress-text" id="progress-text">進捗: 0 / 25 問</div>
+            <div class="progress-bar-container">
+                <div class="progress-bar-bg">
+                    <div id="progress-bar"></div>
+                </div>
+            </div>
+        </header>
+
+        <div class="exam-content-wrapper">
+            <h1 class="main-title">計算機ハードウェア 試験予想問題</h1>
+            <main id="questions-area" class="questions-area"></main>
+
+            <div class="button-container">
+                <button id="submit-btn">採点する</button>
+            </div>
+
+            <div id="result-area" class="result-area" style="display: none;"></div>
+        </div>
+    </div>
+
+    <!-- 統合されたJavaScript -->
+    <script>
+        // ナビゲーションメニューのロジック
+        document.addEventListener('DOMContentLoaded', () => {
+            const menuToggleIcon = document.getElementById('menu-toggle-icon');
+            const floatingMenu = document.getElementById('floating-menu');
+            if (menuToggleIcon && floatingMenu) {
+                menuToggleIcon.addEventListener('click', (event) => {
+                    event.stopPropagation();
+                    floatingMenu.classList.toggle('show');
+                });
+                document.addEventListener('click', (event) => {
+                    if (floatingMenu.classList.contains('show')) {
+                        if (!menuToggleIcon.contains(event.target) && !floatingMenu.contains(event.target)) {
+                            floatingMenu.classList.remove('show');
+                        }
+                    }
+                });
+            }
+        });
+
+        // コンテンツ固有のロジック (DOMContentLoadedで囲む)
+        document.addEventListener('DOMContentLoaded', () => {
+            const questions = [
+                { question: "1. コンピュータの5大機能に含まれないものは次のうちどれか？", options: ["演算機能 (ALU)", "記憶機能 (Memory)", "制御機能 (Control)", "通信機能 (Network)", "出力機能 (Output)"], answer: "通信機能 (Network)", explanation: "コンピュータの5大機能は「入力」「出力」「記憶」「演算」「制御」です。MAICO（Memory, ALU, Input, Control, Output）と覚えることができます。通信機能は現代では重要ですが、古典的な5大機能には含まれません。" },
+                { question: "2. ジョン・フォン・ノイマンが提唱した「ノイマン型コンピュータ」の最も顕著な特徴は何か？", options: ["命令用バスとデータ用バスを物理的に分離している", "プログラムとデータを同じ記憶装置に格納し、共通のバスでアクセスする", "CPU内部に多数のキャッシュメモリを搭載している", "すべての演算を2の補数を用いて行う", "シリアル転送のみで構成されている"], answer: "プログラムとデータを同じ記憶装置に格納し、共通のバスでアクセスする", explanation: "ノイマン型アーキテクチャの最大の特徴は、プログラム（命令）とデータを区別せず、同じ主記憶装置に格納する「プログラム内蔵方式」です。" },
+                { question: "3. CPUの制御装置に含まれる「プログラムカウンタ（PC）」の役割として正しいものはどれか？", options: ["実行中の命令そのものを一時的に保持する", "演算結果の状態（ゼロ、桁上がりなど）を保持する", "次に実行すべき命令が格納されているメモリアドレスを保持する", "命令を解読して必要な制御信号を生成する", "演算対象のデータを一時的に保持する汎用的な記憶領域である"], answer: "次に実行すべき命令が格納されているメモリアドレスを保持する", explanation: "プログラムカウンタ（PC）は、CPUが次にフェッチして実行する命令のアドレスを指し示しています。命令が実行されるたびに、PCの値は自動的に次の命令のアドレスに更新されます。" },
+                { question: "4. システムの信頼性を向上させるための「デュプレックスシステム」に関する説明として、最も適切なものはどれか？", options: ["2つのCPUで並列処理を行い、処理能力を向上させる", "同一構成のシステムを二重化し、障害発生時に待機系が処理を引き継ぐ", "複数のプロセッサを直列に接続し、処理を分担する", "メモリとI/Oをすべてのプロセッサで共有する対称型の構成である", "独立したプロセッサが通信で連携する疎結合型の構成である"], answer: "同一構成のシステムを二重化し、障害発生時に待機系が処理を引き継ぐ", explanation: "デュプレックスシステムは、主系（現用系）と従系（待機系）の二重構成を取り、主系に障害が発生した際に従系に切り替えることで、システムの停止時間を最小限に抑え、高可用性を実現します。" },
+                { question: "5. 10進数の「-10」を、5ビットの「2の補数」で表現したものはどれか？", options: ["01010", "10101", "10110", "11010", "11011"], answer: "10110", explanation: "10進数「10」を5ビットで表すと「01010」です。2の補数は、全ビットを反転させ（10101）、1を加えることで得られます。よって、10101 + 1 = 10110 となります。" },
+                { question: "6. 2進数の「01011010」を16進数に変換したものはどれか？", options: ["5A", "5B", "6A", "6B", "A5"], answer: "5A", explanation: "2進数から16進数への変換は、下位から4桁ずつ区切ります。「0101 1010」と区切り、それぞれを16進数に変換します。0101は5、1010はAです。よって、5Aとなります。" },
+                { question: "7. 主にCPUと他のデバイスの間で、アクセス先の場所を指定するために使用されるバスはどれか？", options: ["データバス", "アドレスバス", "コントロールバス", "シリアルバス", "内部バス"], answer: "アドレスバス", explanation: "アドレスバスは、CPUが読み書きしたいメモリの番地（アドレス）やI/Oポートを指定するための信号線です。バスのビット幅が、直接アクセスできるメモリ空間の広さを決定します。" },
+                { question: "8. 複数の入力信号の中から1つを選択して出力する組み合わせ回路はどれか？", options: ["デコーダ", "エンコーダ", "マルチプレクサ", "デマルチプレクサ", "全加算器"], answer: "マルチプレクサ", explanation: "マルチプレクサ（Multiplexer）は、データセレクタとも呼ばれ、複数の入力ラインの中から選択信号によって指定された1つの入力ラインのデータを出力ラインに接続する回路です。" },
+                { question: "9. メモリに関する記述として、誤っているものはどれか？", options: ["SRAMはフリップフロップ回路で構成され、リフレッシュ動作が不要である", "DRAMはキャパシタに電荷を蓄えることで情報を記憶し、定期的なリフレッシュが必要である", "キャッシュメモリには、一般的に高速なSRAMが使用される", "ROMは電源を切っても内容が消えない不揮発性メモリである", "DRAMはSRAMよりも高速で、セルあたりの面積が大きい"], answer: "DRAMはSRAMよりも高速で、セルあたりの面積が大きい", explanation: "一般的に、SRAMはDRAMよりも高速ですが、回路構成が複雑なため高価です。DRAMは構造が単純で安価なため、主記憶装置に広く利用されます。" },
+                { question: "10. 1ビットの全加算器（Full Adder）が持つ入力の総数はいくつか？", options: ["1", "2", "3", "4", "5"], answer: "3", explanation: "1ビットの全加算器は、加算される2つの入力ビット（A, B）と、下位の桁からの桁上がり（Cin）の合計3つの入力を持ちます。" },
+                { question: "11. 論理回路において、ゲートの信号伝搬遅延によって、入力が変化した直後に一時的に意図しない出力が発生する現象を何と呼ぶか？", options: ["ハザード", "デッドロック", "ラッチアップ", "クロストーク", "オーバーフロー"], answer: "ハザード", explanation: "ハザードは、論理回路内の複数の信号経路で伝搬遅延に差がある場合に発生する、一時的な出力の乱れ（グリッチ）です。" },
+                { question: "12. 「半導体の集積度は2年で2倍になる」という経験則を提唱した人物の名を冠した法則は何か？", options: ["ノイマンの法則", "チューリングの法則", "アンペールの法則", "ムーアの法則", "オームの法則"], answer: "ムーアの法則", explanation: "ムーアの法則は、インテル社の共同創業者ゴードン・ムーアが1965年に提唱した経験則です。" },
+                { question: "13. CPUがメモリやI/Oデバイスにアクセスする際、アドレスバス上のアドレス情報を解読して、特定のデバイスを選択するための信号を生成する回路は何か？", options: ["バスバッファ", "アドレスデコーダ", "マルチプレクサ", "シフタ", "アキュムレータ"], answer: "アドレスデコーダ", explanation: "アドレスデコーダは、CPUから送られてきたアドレスを解読し、目的のメモリチップやI/Oデバイスを選択するためのチップセレクト信号などを生成します。" },
+                { question: "14. nビットのリップルキャリー型加算器において、最上位ビットの和とキャリーが確定するまでの遅延が最も大きい。この遅延の主な原因は何か？", options: ["デコーダの処理時間", "最下位ビットからのキャリー（桁上がり）が順次伝播していくため", "CPUのクロック周波数が低いため", "データバスの帯域幅が不足しているため", "命令フェッチに時間がかかるため"], answer: "最下位ビットからのキャリー（桁上がり）が順次伝播していくため", explanation: "リップルキャリー型加算器は、各桁の計算がその一つ下の桁のキャリー出力を待つ必要があるため、キャリーが波紋のように順々に伝播していく遅延が発生します。" },
+                { question: "15. データ転送方式に関する記述として正しいものはどれか？", options: ["シリアル転送は複数の信号線でデータを一括して送るため高速である", "パラレル転送は信号線間の干渉（クロストーク）が問題になりにくく、高クロック化に適している", "USBやPCIeは、パラレル転送の代表的な規格である", "パラレル転送は、クロックを上げずにデータ転送量を確保できる利点がある", "シリアル転送はケーブルが複雑になるが、最大伝送距離は短い"], answer: "パラレル転送は、クロックを上げずにデータ転送量を確保できる利点がある", explanation: "パラレル転送は、複数の信号線で一度にデータを送るため、クロック周波数を上げなくても転送量を稼げます。一方、USBやPCIeなどの高速な規格はシリアル転送を採用しています。" },
+                { question: "16. メモリのアドレス線が32本あり、データバスのデータ幅が64ビットの場合、このシステムのメモリ容量は何GByteになるか？", options: ["4GB", "8GB", "16GB", "32GB", "64GB"], answer: "32GB", explanation: "メモリ容量は「アドレス空間の広さ × データバス幅」で求められます。アドレス線32本でアドレス空間は 2^32 = 4G通り。データバス幅は64ビット = 8バイト。よって、4G × 8 Byte = 32GByte となります。" },
+                { question: "17. CPUと主記憶装置（メインメモリ）の間に置かれ、両者の速度差を埋めるために使用される高速な記憶装置は何か？", options: ["レジスタ", "SSD", "キャッシュメモリ", "フラッシュメモリ", "仮想メモリ"], answer: "キャッシュメモリ", explanation: "キャッシュメモリは、CPUと主記憶装置の間に位置し、頻繁に利用するデータを一時的に保持することで、システム全体の性能を向上させます。" },
+                { question: "18. アドレスデコードが完全に行われていないシステムで、本来意図していない別のアドレスで同じデバイスにアクセスできてしまう現象を何と呼ぶか？", options: ["エイリアシング", "ミラーリング", "ゴーストアドレス", "イメージアドレス", "シャドウメモリ"], answer: "イメージアドレス", explanation: "イメージアドレスは、アドレスバスの一部のビットがデコードに使われない場合に発生し、複数のアドレスが同じ物理メモリを指してしまいます。" },
+                { question: "19. 2の補数表現を用いることで、コンピュータ内部の演算回路においてどのような利点があるか？", options: ["乗算を足し算の繰り返しで実現できる", "浮動小数点数の精度を向上させることができる", "減算を、減数の符号を反転させた加算として処理できる", "すべての演算を1クロックで完了できる", "回路の消費電力を大幅に削減できる"], answer: "減算を、減数の符号を反転させた加算として処理できる", explanation: "2の補数表現の最大の利点は、減算（A - B）を「A + (Bの2の補数)」という加算処理で実現できることです。これにより、演算回路の構成を簡素化できます。" },
+                { question: "20. HDD（ハードディスクドライブ）の記録方式において、磁化の向きをディスク面に対して垂直にすることで、記録密度を大幅に向上させた方式はどれか？", options: ["水平磁気記録方式", "垂直磁気記録方式", "光学磁気記録方式", "熱アシスト磁気記録方式", "瓦記録方式（SMR）"], answer: "垂直磁気記録方式", explanation: "垂直磁気記録方式は、磁性体を垂直方向に磁化させることで、磁区同士が安定し、より小さな面積に多くの情報を記録することを可能にしました。" },
+                { question: "21. メモリ階層において、CPUからのアクセス速度が最も速く、容量が最も小さい記憶装置は一般的にどれか？", options: ["主記憶 (DRAM)", "L2キャッシュ", "L1キャッシュ", "レジスタ", "SSD"], answer: "レジスタ", explanation: "メモリ階層は、CPUに近いほど高速・小容量・高コストになります。CPU内部に存在するレジスタが最速です。" },
+                { question: "22. MOSFETを2つ組み合わせたCMOSインバータ（NOT回路）において、入力が'H' (High) のとき、出力はどうなるか。また、そのとき導通しているトランジスタはどれか？", options: ["出力は'H'、PMOSが導通", "出力は'H'、NMOSが導通", "出力は'L' (Low)、PMOSが導通", "出力は'L' (Low)、NMOSが導通", "出力はハイインピーダンス、両方とも非導通"], answer: "出力は'L' (Low)、NMOSが導通", explanation: "CMOSインバータでは、入力が'H'の場合、PMOSはオフになり、NMOSはオンになります。その結果、出力はGNDに接続され、'L'レベルになります。" },
+                { question: "23. 演算装置（ALU）が行う処理として、適切でないものはどれか？", options: ["2つの数値の加算", "ビットごとの論理積（AND）演算", "命令のデコード（解読）", "数値の大小比較", "ビットシフト演算"], answer: "命令のデコード（解読）", explanation: "ALUは算術論理演算ユニットの略です。命令のデコードは制御装置の役割です。" },
+                { question: "24. バスに複数のデバイスが接続されている状況で、あるデバイスだけがバスに信号を出力し、他のデバイスは信号を出力も入力もしない「ハイインピーダンス」状態にするために用いられる回路はどれか？", options: ["オープンコレクタバッファ", "シュミットトリガインバータ", "トライステートバッファ", "レベルシフタ", "フリップフロップ"], answer: "トライステートバッファ", explanation: "トライステートバッファは、'H'、'L'に加えて、出力が電気的に切り離されたハイインピーダンス状態を持つことができます。これにより、複数のデバイスでバスを共有できます。" },
+                { question: "25. 現在の入力状態だけでなく、過去の入力によって変化した「内部状態」によっても出力が決定される回路の総称は何か？", options: ["組み合わせ回路", "同期回路", "非同期回路", "演算回路", "順序回路"], answer: "順序回路", explanation: "順序回路は、内部にフリップフロップなどの記憶素子を持ち、現在の状態を記憶しています。出力は、現在の入力とこの内部状態の両方に依存して決まります。" }
+            ];
+
+            const questionsArea = document.getElementById('questions-area');
+            const submitBtn = document.getElementById('submit-btn');
+            const resultArea = document.getElementById('result-area');
+            const progressBar = document.getElementById('progress-bar');
+            const progressText = document.getElementById('progress-text');
+            const examHeader = document.getElementById('exam-header');
+            const mainTitle = document.querySelector('.main-title');
+
+            let userAnswers = {};
+
+            function updateProgress() {
+                const answeredCount = Object.keys(userAnswers).length;
+                const progressPercentage = (answeredCount / questions.length) * 100;
+                progressBar.style.width = `${progressPercentage}%`;
+                progressText.innerText = `進捗: ${answeredCount} / ${questions.length} 問`;
+            }
+
+            function renderQuestions() {
+                let questionsHTML = '';
+                questions.forEach((q, index) => {
+                    questionsHTML += `<div class="question-card" id="q-card-${index}"><p class="question-title">${q.question}</p><ul class="options-list">`;
+                    q.options.forEach((option, i) => {
+                        questionsHTML += `<li><input type="radio" name="q${index}" id="q${index}o${i}" value="${option}"><label for="q${index}o${i}">${String.fromCharCode(65 + i)}. ${option}</label></li>`;
+                    });
+                    questionsHTML += `</ul></div>`;
+                });
+                questionsArea.innerHTML = questionsHTML;
+
+                document.querySelectorAll('input[type="radio"]').forEach(radio => {
+                    radio.addEventListener('change', (event) => {
+                        userAnswers[event.target.name.replace('q', '')] = event.target.value;
+                        updateProgress();
+                    });
+                });
+            }
+
+            function calculateScore() {
+                let score = 0;
+                let feedbackHTML = `<div class="score-display"><h2>あなたの得点</h2><p><span id="score-value"></span> / 100<span>点</span></p></div><h3>解答と解説</h3>`;
+                questions.forEach((q, index) => {
+                    const userAnswer = userAnswers[index];
+                    const isAnswered = userAnswer !== undefined;
+                    if (isAnswered) {
+                        const isCorrect = userAnswer === q.answer;
+                        if (isCorrect) score += 4;
+                        const resultClass = isCorrect ? 'correct' : 'incorrect';
+                        feedbackHTML += `<div class="feedback-card ${resultClass}"><div class="feedback-question"><p class="question-title">${q.question}</p></div><div class="feedback-details"><p>あなたの解答: <strong>${userAnswer}</strong></p><p>正解: <strong>${q.answer}</strong></p><div class="feedback-explanation"><strong>解説:</strong> ${q.explanation}</div></div></div>`;
+                    }
+                });
+                mainTitle.style.display = 'none';
+                questionsArea.style.display = 'none';
+                submitBtn.parentElement.style.display = 'none';
+                examHeader.style.display = 'none';
+                resultArea.style.display = 'block';
+                resultArea.innerHTML = feedbackHTML;
+                document.getElementById('score-value').innerText = score;
+                window.scrollTo(0, 0);
+            }
+
+            renderQuestions();
+            submitBtn.addEventListener('click', calculateScore);
+        });
+    </script>
+</body>
+
+</html>

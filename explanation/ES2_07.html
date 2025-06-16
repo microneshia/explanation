@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- 記事のタイトル -->
+    <title>電機システムII 宿題7 詳細解説 - 総合解説プラットフォーム</title>
+
+    <!-- 記事の連番 -->
+    <meta name="article-number" content="000006">
+
+    <!-- 共通CSSファイルの読み込み -->
+    <link rel="stylesheet" href="../css/common.css">
+    <link rel="stylesheet" href="../css/article.css">
+
+    <!-- MathJax関連スクリプト -->
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script src="../js/mathjax-config.js"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+</head>
+
+<body>
+    <!-- 共通ヘッダー -->
+    <header>
+        <a href="../index.html" class="header-link">
+            <h1>総合解説プラットフォーム <span class="subtitle">あらゆる疑問に、明快な解答を。</span></h1>
+        </a>
+    </header>
+
+    <!-- 共通ナビゲーションバー -->
+    <nav>
+        <ul>
+            <li><a href="../index.html">トップ</a></li>
+            <li><a href="../contents.html">コンテンツ</a></li>
+            <li><a href="../tags.html">タグ検索</a></li>
+            <li><a href="../index.html#about">このサイトについて</a></li>
+        </ul>
+    </nav>
+
+    <!-- メインコンテンツ -->
+    <main class="article-container">
+        <h1>電機システムII 宿題7 詳細解説</h1>
+
+        <!-- タグはJavaScriptによってこの位置に自動挿入されます -->
+
+        <p>
+            この記事では、電機システムIIの宿題7で出題された三相誘導電動機に関する問題について、詳細な解説を行います。
+            この記事を読むことで、誘導電動機の特性計算（すべり、トルク、効率、抵抗制御など）についての理解を深めることができます。
+        </p>
+
+        <section id="problem1">
+            <h2>問題1. 巻線形誘導機の最大トルクと始動時抵抗</h2>
+            <p><strong>問題文:</strong> 4極、20kW、200V、50Hzの巻線形三相誘導機があり、二次巻線を短絡すると1380rpmで最大トルクを発生する。</p>
+            <section id="problem1-1">
+                <h3>(1-1) 最大トルクを発生するすべり</h3>
+                <p>同期速度 \(N_s = 120f/p = 120 \times 50 / 4 = 1500 \, \text{rpm}\) です。
+                    最大トルク発生時のすべり \(s_m\) は、</p>
+                <div class="math-block">
+                    $$ s_m = \frac{N_s - N_m}{N_s} = \frac{1500 - 1380}{1500} = 0.08 $$
+                </div>
+                <p><strong>解答:</strong> <span class="highlight">0.08</span></p>
+            </section>
+            <section id="problem1-2">
+                <h3>(1-2) 始動時に最大トルクを出すための外付け抵抗</h3>
+                <p>二次巻線抵抗 \(R_2 = 0.40 \, \Omega\) とします。比例推移の原理 \(s_m = R_{2,total} / X_{20}\) を利用します。</p>
+                <p>まず、二次回路の漏れリアクタンス \(X_{20}\) を求めます。</p>
+                <div class="math-block">
+                    $$ X_{20} = \frac{R_2}{s_m} = \frac{0.40 \, \Omega}{0.08} = 5.0 \, \Omega $$
+                </div>
+                <p>始動時(\(s=1\))に最大トルクを出すには、全抵抗が \(R_{2,total}' = 1 \times X_{20} = 5.0 \, \Omega\) となる必要があります。
+                    よって、必要な外付け抵抗 \(R_{ext}\) は、</p>
+                <div class="math-block">
+                    $$ R_{ext} = R_{2,total}' - R_2 = 5.0 - 0.40 = 4.6 \, \Omega $$
+                </div>
+                <p><strong>解答:</strong> <span class="highlight">4.6 Ω</span></p>
+            </section>
+        </section>
+
+        <section id="problem2">
+            <h2>問題2. 回転数比例負荷時の抵抗制御</h2>
+            <p>負荷トルクが回転数に比例 (\(T_L \propto N\))、誘導機トルクがすべりに比例 (\(T_M \propto s\)) する場合、すべりを1%から2%に変更するのに必要な二次抵抗の倍率を求めます。
+            </p>
+            <p>回転数 \(N = N_s(1-s)\) の関係から、トルクの比は \(T_2/T_1 = N_2/N_1 = (1-s_2)/(1-s_1) = 0.98/0.99\) となります。
+                抵抗一定の場合、トルクはすべりに比例するため、\(T_2/T_1 = s_{0}/s_1\) とも書けます。ここで \(s_0\) は元の抵抗でトルク \(T_2\) を出すための仮想的なすべりです。
+                よって、\(s_0 = s_1 \times (0.98/0.99) = 0.01 \times (0.98/0.99) \approx 0.0099\)。</p>
+            <p>比例推移より、同じトルクを発生させるには \(R_{2,new}/R_{2,orig} = s_2/s_0\)。</p>
+            <div class="math-block">
+                $$ \frac{R_{2,new}}{R_{2,orig}} = \frac{s_2}{s_0} = \frac{0.02}{0.0099} \approx 2.02 $$
+            </div>
+            <p><strong>解答:</strong> <span class="highlight">2.02 倍</span></p>
+        </section>
+
+        <section id="problem3">
+            <h2>問題3. 回転数二乗比例負荷時の抵抗制御</h2>
+            <p>負荷トルクが回転数の二乗に比例 (\(T_L \propto N^2\)) する以外は問題2と同じ条件です。</p>
+            <p>トルクの比は \(T_2/T_1 = (N_2/N_1)^2 = ((1-s_2)/(1-s_1))^2 = (0.98/0.99)^2\) となります。
+                仮想すべり \(s_0\) は \(s_0 = s_1 \times (0.98/0.99)^2 \approx 0.009799\)。</p>
+            <p>比例推移より、</p>
+            <div class="math-block">
+                $$ \frac{R_{2,new}}{R_{2,orig}} = \frac{s_2}{s_0} = \frac{0.02}{0.009799} \approx 2.04 $$
+            </div>
+            <p><strong>解答:</strong> <span class="highlight">2.04 倍</span></p>
+        </section>
+
+        <section id="problem4">
+            <h2>問題4. 定格負荷運転時の特性計算</h2>
+            <p>5kW, 4極, 60Hzの誘導機が定格負荷で1728rpmで運転している場合の特性を計算します。</p>
+            <p>同期速度 \(N_s=1800\,\text{rpm}\)、すべり \(s=0.04\)。二次銅損 \(P_{c2}' = P_{out} \frac{s}{1-s} \approx
+                208\,\text{W}\)。
+                抵抗比より一次銅損 \(P_{c1} = P_{c2}'/2 = 104\,\text{W}\)。無負荷損 \(P_{noload}=200\,\text{W}\)。
+                一次入力 \(P_{in} = P_{out} + P_{c1} + P_{c2}' + P_{noload} = 5000+104+208+200=5512\,\text{W}\)。</p>
+            <p><strong>効率 \(\eta\):</strong></p>
+            <div class="math-block">$$ \eta = \frac{P_{out}}{P_{in}} = \frac{5000}{5512} \approx 0.907 \rightarrow
+                90.7\% $$</div>
+            <p><strong>トルク \(T_{out}\):</strong></p>
+            <div class="math-block">$$ T_{out} = \frac{P_{out}}{\omega_r} = \frac{5000}{2\pi \times 1728/60} \approx
+                27.6 \, \text{Nm} $$</div>
+            <p><strong>解答:</strong> 効率 <span class="highlight">90.7 %</span>、トルク <span class="highlight">27.6 Nm</span>
+            </p>
+        </section>
+
+        <section id="problem5">
+            <h2>問題5. かご形誘導機の拘束試験</h2>
+            <p>拘束試験 (\(s=1\)) のデータから定格電圧印加時の始動トルクを推定します。</p>
+            <p>一次抵抗 \(R_1 = 0.212/2 = 0.106\,\Omega\)。一次銅損 \(P_{c1,br} = 3 \times 60^2 \times 0.106 = 1145\,\text{W}\)。
+                二次入力 \(P_{ag,br} = 3200 - 1145 = 2055\,\text{W}\)。
+                同期角速度 \(\omega_s = 2\pi(1000/60) \approx 104.7\,\text{rad/s}\)。</p>
+            <p><strong>拘束試験時のトルク \(T_{br}\):</strong></p>
+            <div class="math-block">$$ T_{br} = \frac{P_{ag,br}}{\omega_s} = \frac{2055}{104.7} \approx 19.6 \,
+                \text{Nm} $$</div>
+            <p><strong>定格電圧印加時の始動トルク \(T_{start}\):</strong></p>
+            <p>トルクは電圧の二乗に比例します。</p>
+            <div class="math-block">$$ T_{start} = T_{br} \times \left(\frac{440}{60}\right)^2 \approx 19.6 \times 53.78
+                \approx 1055 \, \text{Nm} $$</div>
+            <p><strong>解答:</strong> <span class="highlight">1055 Nm</span></p>
+        </section>
+
+        <section id="problem6">
+            <h2>問題6. 誘導機の逆相制動運転</h2>
+            <p>12極、60Hzの誘導機が逆方向に400rpmで回転している場合。</p>
+            <p>同期速度 \(N_s = 120 \times 60 / 12 = 600\,\text{rpm}\)。
+                逆相制動時のすべり \(s = (N_s - (-N_r)) / N_s = (600 - (-400))/600 = 1000/600 \approx 1.67\)。</p>
+            <p>機械的入力 \(P_{m,abs} = Wgv\)。一次入力 \(P_1\) はギャップパワー \(P_{ag}\) に等しく、\(P_{m,dev} = P_{ag}(1-s)\)。
+                ここで \(P_{m,dev} = -P_{m,abs}\) なので、</p>
+            <div class="math-block">$$ -Wgv = P_{ag}(1 - 1.67) = P_{ag}(-0.67) \implies P_1 = P_{ag} \approx 1.5 Wgv $$
+            </div>
+            <p>二次銅損 \(P_{c2}' = s \times P_{ag} \approx 1.67 \times 1.5 Wgv \approx 2.5 Wgv\)。</p>
+            <p><strong>解答:</strong> 一次入力 <span class="highlight">1.5 Wgv</span>, 二次銅損 <span class="highlight">2.5
+                    Wgv</span></p>
+        </section>
+    </main>
+
+    <!-- 共通フッター -->
+    <footer>
+        <p>© 2025 総合解説プラットフォーム. All rights reserved.</p>
+    </footer>
+
+    <!-- トップへ戻るボタン -->
+    <button id="scrollTopBtn" title="トップへ戻る">⇧</button>
+
+    <!-- 外部JavaScriptの読み込み (順序が重要) -->
+    <script src="../js/article-list.js"></script>
+    <script src="../js/common.js"></script>
+</body>
+
+</html>

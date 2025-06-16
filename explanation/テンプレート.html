@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+    <!--
+        ================================================================================
+        AIコンテンツ生成ガイド
+        ================================================================================
+        このHTMLファイルは、ウェブサイトに掲載する新しい解説記事を生成するためのテンプレートです。
+        以下の指示に従って、指定された箇所を具体的な内容で埋めてください。
+
+        ■■■ ステップ1: メタ情報の編集 (2箇所) ■■■
+        1. 下の title タグ内の「【記事のタイトル】」を、記事の正式なタイトルに書き換えてください。
+           例: ラグランジアンの基本原理 - 総合解説プラットフォーム
+
+        2. 下の meta name="article-number" タグの content="xxxxxx" 部分を、他の記事と重複しない6桁の連番に書き換えてください。
+           例: content="000012"
+        
+        ■■■ ステップ2: 記事本文の執筆 (mainタグ内) ■■■
+        - h1 タグに記事のメインタイトルを記述してください。
+        - 最初の p タグに、記事全体の概要（トップページの記事カードに表示される100～150字程度の文章）を記述してください。
+        - 記事の構成に合わせて、h2 や h3 などで見出しを作成し、各セクションを section タグで囲んでください。
+        - 各セクションには、ページ内リンクのためにユニークなid属性を付与することを推奨します。(例: section id="introduction")
+
+        ■■■ ステップ3: タグの登録 (外部ファイル) ■■■
+        - この記事に関連するタグは、このファイルではなく、js/article-list.js ファイルに登録してください。
+
+        ■■■ 利用可能なスタイルクラスと要素 ■■■
+        記事をより分かりやすく、見やすくするために、以下の定義済みスタイルを積極的に活用してください。
+
+        【数式】
+        - ブロック数式: div class="math-block" で数式を囲みます。
+        - インライン数式: 文中の数式は $...$ で囲みます。
+
+        【テキストの強調】
+        - 重要語句 (赤系の太字): span class="important" で囲みます。
+        - ハイライト (黄色マーカー): span class="highlight" で囲みます。
+
+        【コード】
+        - インラインコード: code タグで短いコードを囲みます。
+        - コードブロック: pre タグと code タグで複数行のコードを囲みます。
+
+        【その他】
+        - 引用: blockquote タグで囲みます。
+        - リスト: ul (順序なし), ol (順序あり), li (項目) を使用します。
+        - 表: table, thead, tbody, tr, th, td を使用した標準的な表は自動でスタイリングされます。
+
+        ================================================================================
+    -->
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>【記事のタイトル】 - 総合解説プラットフォーム</title>
+
+    <meta name="article-number" content="xxxxxx">
+
+    <link rel="stylesheet" href="../css/common.css">
+    <link rel="stylesheet" href="../css/article.css">
+
+    <!-- MathJax関連スクリプト -->
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script src="../js/mathjax-config.js"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+</head>
+
+<body>
+    <header>
+        <a href="../index.html" class="header-link">
+            <h1>総合解説プラットフォーム <span class="subtitle">あらゆる疑問に、明快な解答を。</span></h1>
+        </a>
+    </header>
+
+    <nav>
+        <ul>
+            <li><a href="../index.html">トップ</a></li>
+            <li><a href="../contents.html">コンテンツ</a></li>
+            <li><a href="../tags.html">タグ検索</a></li>
+            <li><a href="../index.html#about">このサイトについて</a></li>
+        </ul>
+    </nav>
+
+    <main class="article-container">
+        <h1>【記事のメインタイトルをここに記述】</h1>
+
+        <!-- タグはJavaScriptによってこの位置に自動挿入されます -->
+
+        <p>
+            【記事全体の概要や目的をここに記述します。この文章がトップページの記事カードに表示されます。】
+        </p>
+
+        <section id="section1">
+            <h2>1. 【セクション1のタイトル】</h2>
+            <p>【セクション1の本文】</p>
+        </section>
+
+        <section id="conclusion">
+            <h2>まとめ</h2>
+            <p>【記事全体のまとめ】</p>
+        </section>
+    </main>
+
+    <footer>
+        <p>© 2025 総合解説プラットフォーム. All rights reserved.</p>
+    </footer>
+
+    <button id="scrollTopBtn" title="トップへ戻る">⇧</button>
+
+    <script src="../js/article-list.js"></script>
+    <script src="../js/common.js"></script>
+</body>
+
+</html>

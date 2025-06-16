@@ -1,0 +1,2462 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>Webシンセサイザー</title>
+    <!-- ▼▼▼ 新しい連番とdescriptionを追加 ▼▼▼ -->
+    <meta name="article-number" content="000013">
+    <meta name="description" content="ブラウザ上で動作する高機能なWebシンセサイザーです。">
+    
+    <!-- ▼▼▼ 外部CSSの読み込みを追加 ▼▼▼ -->
+    <link rel="stylesheet" href="../css/nav-menu.css">
+    <style>
+        /* CSSカスタムプロパティ (変数定義) */
+        /* UI要素のサイズや間隔を管理するための変数 */
+        :root {
+            /* アナライザー表示エリアの高さ設定 */
+            --analyzer-height-pc: 10vh; /* PCでのアナライザーの推奨高さ */
+            
+            /* 鍵盤エリアの固定高さ設定 */
+            --keyboard-fixed-height-pc: 30vh;    /* PCでの鍵盤の固定高さ */
+            --keyboard-fixed-height-mobile: 25vh; /* モバイルでの鍵盤の固定高さ */
+            --keyboard-fixed-height-tiny: 20vh;  /* 非常に小さい画面での鍵盤の固定高さ */
+
+            /* コントロールエリアの高さ設定 */
+            --controls-area-min-height-pc: 20vh; /* PCでのコントロールエリアの最小高 */
+
+            /* パネル共通のパディング設定 */
+            --panel-padding-vertical: 1.5vh;   /* 上下パディング */
+            --panel-padding-horizontal: 1.5vw; /* 左右パディング */
+
+            /* コントロールグループ内の要素間隔設定 */
+            --control-group-gap: 1.5vh;      /* コントロールパネル内のグループ間の垂直間隔 */
+            --control-elements-gap: 0.8vh;   /* コントロールグループ内の要素間の間隔 */
+            --control-group-padding: 1vh;    /* コントロールグループの内部パディング */
+
+            /* ラベルと数値表示の幅設定 */
+            --label-width-pc: 30px;    /* PCでのラベルの最小幅 */
+            --label-width-mobile: 40px; /* モバイルでのラベルの最小幅 */
+            --label-width-tiny: 35px;  /* 非常に小さい画面でのラベルの最小幅 */
+            --value-display-width: 45px; /* 数値表示の幅 */
+        }
+
+        /* ====================
+           基本設定・全体レイアウトのリセット
+           ==================== */
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: #222; /* 全体の背景色 */
+            display: flex;
+            flex-direction: column; /* 要素を縦方向に並べる */
+            justify-content: flex-start; /* 要素を上揃えにする */
+            align-items: center;   /* 要素を水平中央に配置する */
+            height: 100vh; /* ビューポートの高さ全体を使用 */
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            overflow: hidden; /* 全体スクロールバーを非表示にする */
+            touch-action: manipulation; /* タッチデバイスでのスクロールやズームジェスチャーを無効化 */
+            -webkit-user-select: none; /* iOSでのテキスト選択を無効化 */
+            user-select: none; /* その他のブラウザでのテキスト選択を無効化 */
+        }
+
+        /* ====================
+           アナライザー表示エリアのスタイル
+           ==================== */
+        #analyzer-container {
+            width: 98vw; /* ビューポート幅の98% */
+            height: 10vh; /* デフォルト高さをビューポート高さの10%に設定 */
+            max-height: var(--analyzer-height-pc); /* PCでの最大高 */
+            min-height: 40px; /* 絶対的な最小高 */
+            background-color: #444;
+            border-radius: 8px;
+            box-shadow: inset 0 0 8px rgba(0,0,0,0.3); /* 内側の影 */
+            margin-top: 1vh;
+            margin-bottom: 1vh;
+            overflow: hidden;
+            position: relative;
+            flex-shrink: 0; /* 親コンテナが縮小されても自身は縮まない */
+            flex-grow: 0; /* 親コンテナが拡大しても自身は伸びない */
+        }
+
+        #analyzer-canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none; /* Canvas上のイベントを透過させる */
+            z-index: 1;
+            opacity: 0.9;
+        }
+        #analyzer-text {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%); /* 中央配置 */
+            color: rgba(255, 255, 255, 0.3);
+            font-size: 1.2em;
+            pointer-events: none; /* テキスト上のイベントを透過させる */
+            z-index: 0;
+        }
+
+        /* ====================
+           シンセサイザー（鍵盤）コンテナのスタイル
+           ==================== */
+        #synth-container {
+            position: relative;
+            width: 98vw;
+            /* 鍵盤エリアの高さを固定 */
+            height: var(--keyboard-fixed-height-pc);
+            min-height: 80px; /* 絶対的な最小高さをpxで設定 */
+            background-color: #333;
+            border-radius: 15px;
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.6); /* 外部影 */
+            display: flex;
+            flex-direction: column;
+            padding: var(--panel-padding-vertical) var(--panel-padding-horizontal);
+            box-sizing: border-box; /* パディングを幅・高さに含める */
+            border: 2px solid #555;
+            flex-shrink: 0; /* 親コンテナが縮小されても自身は縮まない */
+            /* flex-grow は削除 (高さを固定するため) */
+            margin-bottom: 1vh;
+        }
+        
+        /* ====================
+           鍵盤レイアウトのスタイル
+           ==================== */
+        #keyboard {
+            display: flex;
+            height: 100%;
+            width: 100%;
+            position: relative;
+            overflow: hidden; /* 鍵盤がはみ出さないように隠す */
+            border-radius: 8px;
+            background-color: #444;
+            flex-grow: 1;
+        }
+
+        .key {
+            position: absolute; /* 黒鍵を白鍵の上に重ねるために必要 */
+            box-sizing: border-box;
+            border-radius: 0 0 8px 8px; /* 下部のみ角丸 */
+            cursor: pointer;
+            user-select: none;
+            -webkit-tap-highlight-color: transparent; /* タップ時のハイライトを無効化 */
+            transition: background-color 0.1s, transform 0.05s, box-shadow 0.05s; /* 押下時のアニメーション */
+        }
+
+        .key-label {
+            position: absolute;
+            bottom: 5px; /* 鍵盤の下部に配置 */
+            left: 50%;
+            transform: translateX(-50%); /* 中央揃え */
+            font-size: 0.9em;
+            color: rgba(0, 0, 0, 0.6); /* 白鍵のラベル色 */
+            font-weight: bold;
+            pointer-events: none; /* クリックイベントを透過 */
+            white-space: nowrap; /* 折り返しを禁止 */
+            overflow: hidden; /* はみ出しを隠す */
+            text-overflow: clip; /* はみ出しをクリップ */
+            padding: 0 2px; /* 左右に少しパディング */
+        }
+
+        .white-key {
+            height: 100%;
+            background-color: #f0f0f0;
+            border: 1px solid #aaa;
+            border-top: none;
+            z-index: 1; /* 白鍵を黒鍵の下に配置 */
+            box-shadow: inset 0 -5px 10px rgba(0, 0, 0, 0.2);
+            left: 0; /* JSで動的に設定される */
+            width: 0; /* JSで動的に設定される */
+        }
+        /* 白鍵のアクティブ状態スタイル */
+        .white-key.active {
+            background-color: #ddd;
+        }
+        /* 白鍵のラベル */
+        .white-key .key-label {
+            color: rgba(0, 0, 0, 0.6);
+        }
+
+        .black-key {
+            height: 65%; /* 白鍵の高さに対する比率 */
+            background-color: #222;
+            border: 1px solid #000;
+            border-top: none;
+            z-index: 2; /* 黒鍵を白鍵の上に配置 */
+            box-shadow: inset 0 -3px 8px rgba(0, 0, 0, 0.5);
+            left: 0; /* JSで動的に設定される */
+            width: 0; /* JSで動的に設定される */
+        }
+        /* 黒鍵のアクティブ状態スタイル */
+        .black-key.active {
+            background-color: #000;
+        }
+        /* 黒鍵のラベル */
+        .black-key .key-label {
+            color: rgba(255, 255, 255, 0.8); /* 黒鍵のラベル色 */
+            font-size: 0.6em; /* 黒鍵はスペースが狭いのでさらに小さく */
+            bottom: 8px; /* 黒鍵の表示位置を少し上に */
+            line-height: 1; /* 行の高さを詰める */
+            box-sizing: border-box; /* パディングを幅に含める */
+            text-align: center;
+            padding: 0; /* パディングを削除して、文字間隔を詰める余地を増やす */
+            letter-spacing: -0.5px; /* 文字間隔を詰める */
+        }
+
+        /* 鍵盤押下時のアクティブ状態スタイル */
+        .key.active {
+            box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.3);
+            transform: translateY(2px); /* わずかに下に移動 */
+        }
+
+
+        /* ====================
+           コントロールエリアのスタイル (スライダー、ボタンなどの設定パネル)
+           ==================== */
+        #controls-area {
+            width: 98vw;
+            max-width: 1280px; /* PCでのコントロールエリアの最大幅 */
+            background-color: #333;
+            border-radius: 15px;
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.6);
+            padding: var(--panel-padding-vertical) var(--panel-padding-horizontal);
+            box-sizing: border-box;
+            display: flex;
+            flex-wrap: wrap; /* 子要素を折り返す */
+            justify-content: center; /* 子要素を水平中央に配置 */
+            align-items: flex-start; /* 子要素を上揃えにする */
+            gap: var(--control-group-gap); /* コントロールグループ間の間隔 */
+            overflow-y: auto; /* 縦方向のコンテンツが多い場合にスクロールを許可 */
+            flex-grow: 1; /* 残りの垂直スペースを埋める */
+            margin-bottom: 1vh;
+            min-height: var(--controls-area-min-height-pc); /* コントロールエリア自体の最小高さを確保 */
+            /* 最大高さを計算して、鍵盤やアナライザーが隠れないように調整 */
+            max-height: calc(100vh - (var(--analyzer-height-pc) + 1vh + 1vh) - var(--keyboard-fixed-height-pc) - (1vh + 1vh) - (var(--panel-padding-vertical) * 2));
+        }
+
+        /* 各コントロールパネルの共通スタイル（例: ADSR, Filter, LFOなど） */
+        .control-panel {
+            background-color: #444;
+            border-radius: 10px;
+            padding: var(--panel-padding-vertical);
+            width: 100%; /* 親（controls-area）の幅に合わせる */
+            max-width: 600px; /* PCでの最大幅 */
+            box-sizing: border-box;
+            display: flex;
+            flex-wrap: wrap; /* 内部要素を折り返す */
+            justify-content: center;
+            align-items: flex-start;
+            gap: var(--control-group-gap);
+            box-shadow: inset 0 0 8px rgba(0,0,0,0.3);
+        }
+
+        /* 個々のコントロールグループ（例: ラベル＋スライダー＋数値表示） */
+        .control-group {
+            display: flex;
+            flex-direction: row; /* 要素を横方向に並べる */
+            flex-wrap: nowrap; /* 行内での折り返しはしない */
+            justify-content: space-between; /* 要素を両端に配置し、間にスペースを空ける */
+            align-items: center; /* 要素を垂直中央に揃える */
+            gap: var(--control-elements-gap);
+            color: #eee;
+            font-size: 0.75em;
+            white-space: nowrap; /* テキストの折り返しを禁止 */
+            padding: var(--control-group-padding);
+            border-radius: 5px;
+            background-color: #555;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+            border: 1px solid #666;
+            /* PCでは2列表示、モバイルでは1列表示になるように幅を調整 */
+            flex-basis: calc(50% - var(--control-group-gap) / 2); /* 50% - 半分のギャップ */
+            min-width: 150px; /* PCでのコントロールグループの最小幅 */
+            box-sizing: border-box;
+        }
+        /* 幅全体を占めるコントロールグループ用 */
+        .control-group.full-width {
+            flex-basis: 100%;
+        }
+
+        .control-group label {
+            font-weight: bold;
+            flex-shrink: 0; /* 縮小しない */
+            width: auto;
+            min-width: var(--label-width-pc); /* PCでのラベル最小幅 */
+            text-align: left;
+        }
+
+        /* 数値表示用 spanのスタイル */
+        .value-display {
+            display: inline-block;
+            min-width: var(--value-display-width); /* 幅を固定 */
+            text-align: right;
+            font-size: 0.9em;
+            color: #00bcd4; /* アクア系の色 */
+            flex-shrink: 0; /* 縮小しない */
+            vertical-align: middle; /* スライダーと高さを合わせる */
+        }
+
+        /* Selectボックス、ボタン、スライダーの共通スタイル */
+        .control-panel select,
+        .control-panel button,
+        .control-panel input[type="range"] {
+            background-color: #666;
+            color: #eee;
+            border: 1px solid #777;
+            padding: 0.8vh 1vw;
+            border-radius: 6px;
+            font-size: 0.8em;
+            cursor: pointer;
+            appearance: none; /* デフォルトのブラウザスタイルをリセット */
+            -webkit-appearance: none; /* Webkitブラウザ用 */
+            box-sizing: border-box;
+            height: 3.5vh; /* 高さもvhで相対的に */
+            min-height: 25px; /* 絶対的な最小高さをpxで指定 */
+            max-height: 35px; /* 絶対的な最大高さをpxで指定 */
+            box-shadow: inset 0 1px 3px rgba(0,0,0,0.3);
+        }
+
+        /* フォーカス時のスタイル */
+        .control-panel select:focus,
+        .control-panel button:focus,
+        .control-panel input[type="range"]:focus {
+            outline: none;
+            border-color: #00bcd4;
+            box-shadow: 0 0 0 2px rgba(0,188,212,0.5); /* フォーカスリング */
+        }
+
+        /* スライダーの個別のスタイル */
+        .control-panel input[type="range"] {
+            /* スライダーの幅を計算: 親幅からラベルと数値表示、ギャップを引く */
+            width: calc(100% - var(--label-width-pc) - var(--value-display-width) - var(--control-elements-gap) * 2); 
+            max-width: 250px; /* PCでのスライダーの最大幅 */
+            height: 1.2vh; /* スライダーバーの高さ */
+            min-height: 8px; /* 絶対的な最小高さをpxで指定 */
+            max-height: 10px; /* 絶対的な最大高さをpxで指定 */
+            border-radius: 5px;
+            /* スライダーの背景色をグラデーションで表示（つまみの位置を示す） */
+            background: linear-gradient(to right, #00bcd4 0%, #00bcd4 var(--value, 50%), #888 var(--value, 50%), #888 100%);
+            outline: none;
+            padding: 0;
+            transition: background 0.2s ease-in-out;
+        }
+
+        /* スライダーのつまみのスタイル（Webkitブラウザ用） */
+        .control-panel input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 2.5vh;
+            height: 2.5vh;
+            min-width: 20px; /* 絶対的な最小高さをpxで指定 */
+            min-height: 20px;
+            max-width: 22px; /* 絶対的な最大高さをpxで指定 */
+            max-height: 22px;
+            border-radius: 50%; /* 円形 */
+            background: #fff;
+            cursor: grab; /* ドラッグ可能なカーソル */
+            border: 2px solid #00bcd4;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.4);
+            margin-top: calc(-1.25vh + 0.6vh); /* スライダーバーの中央に配置 */
+        }
+        /* スライダーのつまみのスタイル（Firefox用） */
+        .control-panel input[type="range"]::-moz-range-thumb {
+            width: 2.5vh;
+            height: 2.5vh;
+            min-width: 20px;
+            min-height: 20px;
+            max-width: 22px;
+            max-height: 22px;
+            border-radius: 50%;
+            background: #fff;
+            cursor: grab;
+            border: 2px solid #00bcd4;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.4);
+        }
+
+        /* スライダーのつまみアクティブ時（ドラッグ中）のスタイル */
+        .control-panel input[type="range"]:active::-webkit-slider-thumb {
+            cursor: grabbing; /* ドラッグ中のカーソル */
+        }
+        .control-panel input[type="range"]:active::-moz-range-thumb {
+            cursor: grabbing;
+        }
+
+        /* オクターブ設定ボタンと表示のスタイル */
+        .octave-controls {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            padding: var(--control-group-padding);
+            border-radius: 5px;
+            background-color: #555;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+            border: 1px solid #666;
+            flex-basis: calc(50% - var(--control-group-gap) / 2); /* 2列表示 */
+            min-width: 150px;
+            box-sizing: border-box;
+            white-space: nowrap;
+        }
+        .octave-controls label {
+             font-weight: bold;
+             flex-shrink: 0;
+             width: auto;
+             min-width: var(--label-width-pc);
+             text-align: left;
+        }
+        .octave-control-buttons {
+            display: flex;
+            gap: 5px;
+            align-items: center;
+        }
+        .octave-control-buttons button {
+            padding: 0.5vh 0.8vw; /* ボタンのパディング調整 */
+            font-size: 1.2em;
+            height: 3vh;
+            min-height: 25px; /* 絶対的な最小高さをpxで指定 */
+            max-height: 35px; /* 絶対的な最大高さをpxで指定 */
+            width: 30px; /* 固定幅をpxで指定 */
+            text-align: center;
+            line-height: 1;
+            box-sizing: border-box;
+            flex-shrink: 0;
+        }
+        #current-octave-display {
+            font-size: 1em;
+            min-width: 1.5em; /* 数字に合わせて幅を調整 */
+            text-align: center;
+            color: #eee;
+            flex-shrink: 0;
+        }
+
+        /* MIDI開始ボタンのスタイル */
+        #midi-start-button {
+            transition: background-color 0.3s;
+        }
+        #midi-start-button.connected {
+            background-color: #4CAF50; /* 緑色（接続済み） */
+        }
+        #midi-start-button.error {
+            background-color: #f44336; /* 赤色（エラー） */
+        }
+
+        /* ====================
+           モバイル向け調整（画面幅768px以下）
+           ==================== */
+        @media (max-width: 768px) {
+            #analyzer-container {
+                height: 8vh; /* モバイルでのアナライザー高さを調整 */
+                margin-top: 0.5vh;
+                margin-bottom: 0.5vh;
+            }
+            #synth-container {
+                height: var(--keyboard-fixed-height-mobile); /* モバイルでの鍵盤固定高さ */
+                min-height: 80px; /* 絶対的な最小高さ */
+                margin-bottom: 0.5vh;
+                padding: 1vh;
+            }
+            #controls-area {
+                padding: 1vh;
+                gap: 0.8vh;
+                /* max-heightを調整し、鍵盤が適切に表示されるように */
+                max-height: calc(100vh - 40px - 1vh - 1vh - var(--keyboard-fixed-height-mobile) - 0.5vh - 0.5vh - (1vh * 2)); /* analyzer min-height + its margins + synth fixed height + its margins + controls area paddings */
+                min-height: min(150px, var(--controls-area-min-height-pc)); /* 絶対的な最小高さとvhのminで決定 */
+            }
+            .control-panel {
+                padding: 0.8vh;
+                gap: 0.8vh;
+                flex-basis: 100%; /* 1列表示を基本に */
+            }
+            .control-group {
+                font-size: 0.75em;
+                padding: 0.6vh;
+                flex-basis: 100%; /* 1列表示 */
+            }
+            .control-group label {
+                min-width: var(--label-width-mobile);
+            }
+            .control-panel input[type="range"] {
+                width: calc(100% - var(--label-width-mobile) - var(--value-display-width) - var(--control-elements-gap) * 2);
+                max-width: 180px;
+            }
+            #midi-start-button {
+                padding: 0.8vh 1vw;
+            }
+            /* オクターブコントロールのモバイル調整 */
+            .octave-controls {
+                 flex-basis: 100%; /* 1列表示 */
+            }
+            .octave-control-buttons button {
+                padding: 0.4vh 0.7vw; /* ボタンのパディング調整 */
+                font-size: 1.1em;
+                width: 28px;
+            }
+            #current-octave-display {
+                 font-size: 0.9em;
+            }
+            /* モバイルでの鍵盤ラベル調整 */
+            .key-label {
+                font-size: 0.65em; /* 基本のフォントサイズを小さく */
+                bottom: 3px;
+            }
+            .black-key .key-label {
+                font-size: 0.55em; /* 黒鍵のフォントサイズをさらに小さく */
+                bottom: 5px;
+            }
+        }
+
+        /* 非常に小さい画面向け（画面幅480px以下） */
+        @media (max-width: 480px) {
+            #analyzer-container {
+                height: 7vh; /* さらに高さを制限 */
+            }
+            #synth-container {
+                height: var(--keyboard-fixed-height-tiny); /* さらに固定高さを制限 */
+                min-height: 80px; /* さらに最小高さを制限 */
+            }
+            #controls-area {
+                padding: 0.8vh;
+                gap: 0.6vh;
+                max-height: calc(100vh - 40px - 1vh - 1vh - var(--keyboard-fixed-height-tiny) - 0.5vh - 0.5vh - (1vh * 2));
+                min-height: 120px;
+            }
+            .control-panel {
+                padding: 0.6vh;
+                gap: 0.6vh;
+            }
+            .control-group {
+                font-size: 0.7em;
+                padding: 0.5vh;
+            }
+            .control-group label {
+                min-width: var(--label-width-tiny);
+            }
+            .control-panel select,
+            .control-panel button,
+            .control-panel input[type="range"] {
+                font-size: 0.7em;
+                height: 3vh;
+                min-height: 22px;
+                padding: 0.5vh 0.8vw;
+            }
+            .control-panel input[type="range"] {
+                width: calc(100% - var(--label-width-tiny) - var(--value-display-width) - var(--control-elements-gap) * 2);
+                max-width: 120px;
+            }
+            .octave-control-buttons button {
+                padding: 0.3vh 0.5vw;
+                font-size: 0.8em;
+                width: 22px;
+            }
+            #current-octave-display {
+                 font-size: 0.8em;
+            }
+            /* 非常に小さい画面での鍵盤ラベル調整 */
+            .key-label {
+                font-size: 0.55em; /* さらに小さく */
+                bottom: 2px;
+            }
+            .black-key .key-label {
+                font-size: 0.45em; /* 黒鍵のフォントサイズをさらに小さく */
+                bottom: 4px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- フローティングナビゲーションメニュー -->
+    <div id="menu-toggle-icon">≡</div>
+    <div id="floating-menu">
+        <a href="../index.html">トップページへ</a>
+        <a href="../contents.html">コンテンツ一覧へ</a>
+    </div>
+    <!-- 画面上部に波形表示エリア -->
+    <div id="analyzer-container">
+        <canvas id="analyzer-canvas"></canvas>
+        <div id="analyzer-text">Waveform Display</div>
+    </div>
+
+    <!-- 鍵盤がメインのシンセサイザーコンテナ -->
+    <div id="synth-container">
+        <div id="keyboard">
+            <!-- 鍵盤はJavaScriptで動的に生成されます -->
+        </div>
+    </div>
+
+    <!-- 各設定ボタンとスライダーを収めるコントロールエリア -->
+    <div id="controls-area">
+        <!-- プリセット選択パネル -->
+        <div class="control-panel">
+            <div class="control-group full-width">
+                <label for="preset-select">Preset:</label>
+                <div class="control-elements">
+                    <select id="preset-select">
+                        <!-- オプションはJavaScriptで動的に生成されます -->
+                    </select>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 波形・オクターブ設定パネル -->
+        <div id="waveform-panel" class="control-panel">
+            <div class="control-group">
+                <label for="waveform-select">Wave Type:</label>
+                <div class="control-elements">
+                    <select id="waveform-select">
+                        <option value="sine">Sine</option>
+                        <option value="square">Square</option>
+                        <option value="sawtooth">Sawtooth</option>
+                        <option value="triangle">Triangle</option>
+                    </select>
+                </div>
+            </div>
+            <div class="control-group">
+                <label>Octave Range:</label>
+                <div class="control-elements octave-controls"> <!-- 表示オクターブ数コントロール -->
+                    <button id="octave-range-down-button">-</button>
+                    <span id="current-octave-range-display">2</span> <!-- 表示オクターブ数 -->
+                    <button id="octave-range-up-button">+</button>
+                </div>
+            </div>
+            <div class="control-group">
+                <label>Base Octave:</label>
+                <div class="control-elements octave-control-buttons"> <!-- 基準オクターブコントロール -->
+                    <button id="octave-down-button">-</button>
+                    <span id="current-base-octave-display">4</span> <!-- 基準オクターブ表示 -->
+                    <button id="octave-up-button">+</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- ADSR エンベロープ設定パネル -->
+        <div id="adsr-panel" class="control-panel">
+            <div class="control-group">
+                <label for="attack-range">Attack:</label>
+                <div class="control-elements">
+                    <input type="range" id="attack-range" min="0.01" max="1.5" value="0.02" step="0.01">
+                    <span class="value-display" data-target="attack-range"></span>
+                </div>
+            </div>
+            <div class="control-group">
+                <label for="decay-range">Decay:</label>
+                <div class="control-elements">
+                    <input type="range" id="decay-range" min="0.01" max="1.5" value="0.3" step="0.01">
+                    <span class="value-display" data-target="decay-range"></span>
+                </div>
+            </div>
+            <div class="control-group">
+                <label for="sustain-range">Sustain:</label>
+                <div class="control-elements">
+                    <input type="range" id="sustain-range" min="0.01" max="1" value="0.7" step="0.01">
+                    <span class="value-display" data-target="sustain-range"></span>
+                </div>
+            </div>
+            <div class="control-group">
+                <label for="release-range">Release:</label>
+                <div class="control-elements">
+                    <input type="range" id="release-range" min="0.01" max="2" value="0.1" step="0.01">
+                    <span class="value-display" data-target="release-range"></span>
+                </div>
+            </div>
+            <div class="control-group full-width">
+                <label for="master-volume-range">Master Volume:</label>
+                <div class="control-elements">
+                    <input type="range" id="master-volume-range" min="0" max="1" value="0.5" step="0.01">
+                    <span class="value-display" data-target="master-volume-range"></span>
+                </div>
+            </div>
+        </div>
+
+        <!-- フィルター設定パネル -->
+        <div id="filter-panel" class="control-panel">
+            <div class="control-group">
+                <label for="filter-type-select">Filter Type:</label>
+                <div class="control-elements">
+                    <select id="filter-type-select">
+                        <option value="lowpass" selected>LPF</option>
+                        <option value="highpass">HPF</option>
+                        <option value="bandpass">BPF</option>
+                        <option value="notch">Notch</option>
+                        <option value="allpass">Allpass</option>
+                    </select>
+                </div>
+            </div>
+            <div class="control-group">
+                <label for="filter-freq-range">Filter Freq:</label>
+                <div class="control-elements">
+                    <input type="range" id="filter-freq-range" min="50" max="20000" value="20000" step="50">
+                    <span class="value-display" data-target="filter-freq-range"></span>
+                </div>
+            </div>
+            <div class="control-group">
+                <label for="filter-q-range">Filter Q:</label>
+                <div class="control-elements">
+                    <input type="range" id="filter-q-range" min="0.1" max="10" value="1" step="0.1">
+                    <span class="value-display" data-target="filter-q-range"></span>
+                </div>
+            </div>
+        </div>
+
+        <!-- LFO (Low Frequency Oscillator) 設定パネル -->
+        <div id="lfo-panel" class="control-panel">
+            <div class="control-group">
+                <label for="lfo-target-select">LFO Target:</label>
+                <div class="control-elements">
+                    <select id="lfo-target-select">
+                        <option value="none">Off</option>
+                        <option value="pitch">Pitch</option>
+                        <option value="filter">Filter</option>
+                    </select>
+                </div>
+            </div>
+            <div class="control-group">
+                <label for="lfo-freq-range">LFO Freq:</label>
+                <div class="control-elements">
+                    <input type="range" id="lfo-freq-range" min="0.1" max="10" value="1" step="0.1">
+                    <span class="value-display" data-target="lfo-freq-range"></span>
+                </div>
+            </div>
+            <div class="control-group">
+                <label for="lfo-amount-range">LFO Amount:</label>
+                <div class="control-elements">
+                    <input type="range" id="lfo-amount-range" min="0" max="100" value="0" step="1"> <!-- 最大100セント（1半音） -->
+                    <span class="value-display" data-target="lfo-amount-range"></span>
+                </div>
+            </div>
+            <!-- 新しい Detune (デチューン) コントロール -->
+            <div class="control-group">
+                <label for="detune-range">Detune:</label>
+                <div class="control-elements">
+                    <input type="range" id="detune-range" min="-100" max="100" value="0" step="1"> <!-- ±100セント -->
+                    <span class="value-display" data-target="detune-range"></span>
+                </div>
+            </div>
+            <!-- 新しい Portamento (ポルタメント) コントロール -->
+            <div class="control-group">
+                <label for="portamento-range">Portamento:</label>
+                <div class="control-elements">
+                    <input type="range" id="portamento-range" min="0" max="1" value="0" step="0.01">
+                    <span class="value-display" data-target="portamento-range"></span>
+                </div>
+            </div>
+        </div>
+
+        <!-- ディレイエフェクト設定パネル -->
+        <div id="delay-panel" class="control-panel">
+            <div class="control-group">
+                <label for="delay-time-range">Delay Time:</label>
+                <div class="control-elements">
+                    <input type="range" id="delay-time-range" min="0" max="1.5" value="0" step="0.01">
+                    <span class="value-display" data-target="delay-time-range"></span>
+                </div>
+            </div>
+            <div class="control-group">
+                <label for="delay-feedback-range">Delay Fbk:</label>
+                <div class="control-elements">
+                    <input type="range" id="delay-feedback-range" min="0" max="0.9" value="0" step="0.01">
+                    <span class="value-display" data-target="delay-feedback-range"></span>
+                </div>
+            </div>
+            <div class="control-group">
+                <label for="delay-mix-range">Delay Mix:</label>
+                <div class="control-elements">
+                    <input type="range" id="delay-mix-range" min="0" max="1" value="0" step="0.01">
+                    <span class="value-display" data-target="delay-mix-range"></span>
+                </div>
+            </div>
+        </div>
+
+        <!-- リバーブエフェクト設定パネル -->
+        <div id="reverb-panel" class="control-panel">
+            <div class="control-group full-width">
+                <label for="reverb-mix-range">Reverb Mix:</label>
+                <div class="control-elements">
+                    <input type="range" id="reverb-mix-range" min="0" max="1" value="0" step="0.01">
+                    <span class="value-display" data-target="reverb-mix-range"></span>
+                </div>
+            </div>
+        </div>
+
+        <!-- コーラス/フランジャーエフェクト設定パネル -->
+        <div id="chorus-panel" class="control-panel">
+            <div class="control-group">
+                <label for="chorus-depth-range">Chorus Depth:</label>
+                <div class="control-elements">
+                    <input type="range" id="chorus-depth-range" min="0" max="0.02" value="0" step="0.0001">
+                    <span class="value-display" data-target="chorus-depth-range"></span>
+                </div>
+            </div>
+            <div class="control-group">
+                <label for="chorus-rate-range">Chorus Rate:</label>
+                <div class="control-elements">
+                    <input type="range" id="chorus-rate-range" min="0.1" max="5" value="0.5" step="0.1">
+                    <span class="value-display" data-target="chorus-rate-range"></span>
+                </div>
+            </div>
+        </div>
+
+        <!-- MIDI開始ボタン（コントロールパネル外に直接配置） -->
+        <button id="midi-start-button" class="full-width">Start MIDI (Optional)</button>
+    </div>
+
+    <script>
+            // --- ナビゲーションメニューのロジック ---
+            document.addEventListener('DOMContentLoaded', () => {
+                const menuToggleIcon = document.getElementById('menu-toggle-icon');
+                const floatingMenu = document.getElementById('floating-menu');
+                if (menuToggleIcon && floatingMenu) {
+                    menuToggleIcon.addEventListener('click', (event) => {
+                        event.stopPropagation();
+                        floatingMenu.classList.toggle('show');
+                    });
+                    document.addEventListener('click', (event) => {
+                        if (floatingMenu.classList.contains('show')) {
+                            if (!menuToggleIcon.contains(event.target) && !floatingMenu.contains(event.target)) {
+                                floatingMenu.classList.remove('show');
+                            }
+                        }
+                    });
+                }
+            });
+        // ====================
+        // グローバル定数定義
+        // ====================
+        const noteNames = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B']; // 12音階のノート名
+        // PCキーボードと音符のマッピング
+        const KEYBOARD_MAP = {
+            'z': { note: 'C', octaveOffset: 0 }, 's': { note: 'C#', octaveOffset: 0 },
+            'x': { note: 'D', octaveOffset: 0 }, 'd': { note: 'D#', octaveOffset: 0 },
+            'c': { note: 'E', octaveOffset: 0 }, 'v': { note: 'F', octaveOffset: 0 },
+            'g': { note: 'F#', octaveOffset: 0 }, 'b': { note: 'G', octaveOffset: 0 },
+            'h': { note: 'G#', octaveOffset: 0 }, 'n': { note: 'A', octaveOffset: 0 },
+            'j': { note: 'A#', octaveOffset: 0 }, 'm': { note: 'B', octaveOffset: 0 },
+            'q': { note: 'C', octaveOffset: 1 }, '2': { note: 'C#', octaveOffset: 1 },
+            'w': { note: 'D', octaveOffset: 1 }, '3': { note: 'D#', octaveOffset: 1 },
+            'e': { note: 'E', octaveOffset: 1 }, 'r': { note: 'F', octaveOffset: 1 },
+            '5': { note: 'F#', octaveOffset: 1 }, 't': { note: 'G', octaveOffset: 1 },
+            '6': { note: 'G#', octaveOffset: 1 }, 'y': { note: 'A', octaveOffset: 1 },
+            '7': { note: 'A#', octaveOffset: 1 }, 'u': { note: 'B', octaveOffset: 1 },
+            'i': { note: 'C', octaveOffset: 2 }, '9': { note: 'C#', octaveOffset: 2 },
+            'o': { note: 'D', octaveOffset: 2 }, '0': { note: 'D#', octaveOffset: 2 },
+            'p': { note: 'E', octaveOffset: 2 }, '[': { note: 'F', octaveOffset: 2 },
+            '=': { note: 'F#', octaveOffset: 2 }, ']': { note: 'G', octaveOffset: 2 },
+            '\\': { note: 'G#', octaveOffset: 2 }
+        };
+        const MIN_BASE_OCTAVE = 0; /* 基準オクターブの最小値 */
+        const MAX_BASE_OCTAVE = 8; /* 基準オクターブの最大値 */
+        const MIN_DISPLAYED_OCTAVES = 1; /* 表示オクターブ数の最小値 */
+        const MAX_DISPLAYED_OCTAVES = 4; /* 表示オクターブ数の最大値 */
+        // 高品質なインパルス応答ファイルのURL (Web Audio APIのサンプルから)
+        const DEFAULT_REVERB_IR_URL = 'https://webaudioapi.com/samples/audio-param/impulse-responses/ir-small-room.wav';
+
+        // ====================
+        // ヘルパー関数群
+        // ====================
+        /**
+         * 指定された音名とオクターブから周波数を計算する。
+         * @param {string} noteNameBase - ノート名（例: 'C', 'C#', 'A'）
+         * @param {number} octave - オクターブ番号（例: 4）
+         * @returns {number} 計算された周波数（Hz）
+         */
+        function getFrequency(noteNameBase, octave) {
+            const baseMidiNote = 69; // MIDIノート番号 69 は A4 (440Hz)
+            const baseFreq = 440; // A4の周波数
+            const noteIndex = noteNames.indexOf(noteNameBase); // ノート名のインデックスを取得
+            const midiNote = (octave + 1) * 12 + noteIndex; // MIDIノート番号を計算
+            return baseFreq * Math.pow(2, (midiNote - baseMidiNote) / 12); // 周波数計算式
+        }
+
+        /**
+         * MIDIノート番号から人間が読める音名（例: C4, A#3）に変換する。
+         * @param {number} midiNoteNumber - MIDIノート番号
+         * @returns {string} 音名とオクターブの組み合わせ文字列
+         */
+        function getNoteNameFromMidi(midiNoteNumber) {
+            const octave = Math.floor(midiNoteNumber / 12) - 1;
+            const noteIndex = noteNames[midiNoteNumber % 12];
+            return noteIndex + octave;
+        }
+
+        /**
+         * 簡易的なリバーブ用インパルス応答（IR）を生成する。
+         * （外部IRファイル読み込み失敗時のフォールバック用）
+         * @param {AudioContext} audioContext - オーディオコンテキスト
+         * @param {number} duration - IRの長さ（秒）
+         * @param {number} decay - 減衰率
+         * @returns {AudioBuffer} 生成されたオーディオバッファ
+         */
+        function generateSimpleReverbImpulseResponse(audioContext, duration = 2, decay = 2) {
+            const sampleRate = audioContext.sampleRate;
+            const length = sampleRate * duration;
+            const audioBuffer = audioContext.createBuffer(2, length, sampleRate); // 2チャンネル
+
+            for (let channel = 0; channel < audioBuffer.numberOfChannels; channel++) {
+                const nowBuffering = audioBuffer.getChannelData(channel);
+                for (let i = 0; i < length; i++) {
+                    let noise = (Math.random() * 2 - 1); // -1から1のランダムノイズ
+                    noise *= Math.pow(1 - (i / length), decay); // 時間と共に減衰させる
+                    nowBuffering[i] = noise;
+                }
+            }
+            return audioBuffer;
+        }
+
+        // ====================
+        // SynthEngine クラス: Web Audio APIのオーディオ処理を管理
+        // ====================
+        class SynthEngine {
+            /**
+             * SynthEngineのコンストラクタ。オーディオグラフのノードを初期化・接続する。
+             * @param {AudioContext} audioContext - アプリケーションのオーディオコンテキスト
+             */
+            constructor(audioContext) {
+                this.audioContext = audioContext;
+                // 現在アクティブな音符を管理するMap: key -> { oscillator, gainNode, lfoDetuneConnected, lastFrequency }
+                this.activeNotes = new Map(); 
+
+                // メインオーディオグラフのノード作成
+                this.masterGainNode = this.audioContext.createGain();
+                this.filterNode = this.audioContext.createBiquadFilter();
+                this.lfoNode = this.audioContext.createOscillator();
+                this.lfoGainNode = this.audioContext.createGain();
+
+                // ディレイエフェクト用ノード
+                this.delayNode = this.audioContext.createDelay();
+                this.delayFeedbackGain = this.audioContext.createGain();
+                this.delayWetGain = this.audioContext.createGain(); // ウェット信号（エフェクト音）のゲイン
+                this.delayDryGain = this.audioContext.createGain(); // ドライ信号（原音）のゲイン
+                this.delayMixer = this.audioContext.createGain(); // ドライ/ウェットミックスの出力
+
+                // リバーブエフェクト用ノード
+                this.convolverNode = this.audioContext.createConvolver();
+                this.reverbWetGain = this.audioContext.createGain();
+                this.reverbDryGain = this.audioContext.createGain();
+                this.reverbMixer = this.audioContext.createGain();
+                this.loadReverbImpulseResponse(DEFAULT_REVERB_IR_URL); // デフォルトのリバーブIRを読み込む
+
+                // コーラスエフェクト用ノード
+                this.chorusDelay = this.audioContext.createDelay();
+                this.chorusLFO = this.audioContext.createOscillator(); // コーラスのLFO
+                this.chorusLFOGain = this.audioContext.createGain(); // コーラスLFOの適用量
+                this.chorusBaseDelay = this.audioContext.createConstantSource(); // コーラスの基準ディレイタイム
+                this.chorusMixGain = this.audioContext.createGain(); // コーラスウェット信号のゲイン
+                this.chorusMixer = this.audioContext.createGain(); // コーラスのドライ/ウェットミックスの出力
+
+                // アナライザーノード（波形表示用）
+                this.analyzerNode = this.audioContext.createAnalyser();
+                this.analyzerNode.fftSize = 2048; // FFTサイズを設定
+
+                // LFOの初期設定と開始
+                this.lfoNode.type = 'sine';
+                this.lfoNode.frequency.setValueAtTime(1, this.audioContext.currentTime);
+                this.lfoGainNode.gain.setValueAtTime(0, this.audioContext.currentTime);
+                this.lfoNode.start(0);
+
+                // コーラスLFOの初期設定と開始
+                this.chorusLFO.type = 'sine';
+                this.chorusLFO.frequency.setValueAtTime(0.5, this.audioContext.currentTime);
+                this.chorusLFO.start(0);
+                this.chorusBaseDelay.offset.setValueAtTime(0.005, this.audioContext.currentTime); // 5msの基準ディレイ
+                this.chorusBaseDelay.start(0);
+
+                // ====================
+                // オーディオグラフの接続順序
+                // ====================
+                // 1. オシレーターとゲインノード（ADSR）は、音符再生時に動的に作成・接続される
+                // 2. ADSRゲインノード -> フィルターノード
+                // 3. フィルターノード -> ディレイのドライ信号とディレイ入力
+                this.filterNode.connect(this.delayDryGain);
+                this.filterNode.connect(this.delayNode);
+
+                // 4. ディレイループ: ディレイ出力 -> フィードバックゲイン -> ディレイ入力
+                this.delayNode.connect(this.delayFeedbackGain);
+                this.delayFeedbackGain.connect(this.delayNode);
+
+                // 5. ディレイのウェット信号パス
+                this.delayNode.connect(this.delayWetGain);
+
+                // 6. ディレイミキサー (ドライ信号 + ウェット信号)
+                this.delayDryGain.connect(this.delayMixer);
+                this.delayWetGain.connect(this.delayMixer);
+
+                // 7. ディレイミキサー -> リバーブのドライ信号とリバーブ入力
+                this.delayMixer.connect(this.reverbDryGain);
+                this.delayMixer.connect(this.convolverNode);
+
+                // 8. リバーブのウェット信号パス
+                this.convolverNode.connect(this.reverbWetGain);
+
+                // 9. リバーブミキサー (ドライ信号 + ウェット信号)
+                this.reverbDryGain.connect(this.reverbMixer);
+                this.reverbWetGain.connect(this.reverbMixer);
+                
+                // 10. リバーブミキサー -> コーラスのドライ信号とコーラス入力
+                this.reverbMixer.connect(this.chorusMixer); // ドライ信号はchorusMixerに直接接続
+                this.reverbMixer.connect(this.chorusDelay); // ウェット信号はchorusDelayへ
+
+                // 11. コーラスのディレイタイム変調: LFO -> LFOゲイン -> コーラスディレイタイム
+                this.chorusLFO.connect(this.chorusLFOGain);
+                this.chorusLFOGain.connect(this.chorusDelay.delayTime);
+                this.chorusBaseDelay.connect(this.chorusDelay.delayTime); // 基準ディレイタイムも接続
+
+                // 12. コーラスのウェット信号パス
+                this.chorusDelay.connect(this.chorusMixGain);
+
+                // 13. コーラスミキサー (ドライ信号 + ウェット信号)
+                this.chorusMixGain.connect(this.chorusMixer); // コーラスウェット信号もミキサーへ
+
+                // 14. 最終接続: コーラスミキサー -> アナライザー -> マスターゲイン -> 最終出力
+                this.chorusMixer.connect(this.analyzerNode);
+                this.analyzerNode.connect(this.masterGainNode);
+                this.masterGainNode.connect(this.audioContext.destination);
+
+                // 初期パラメータをデフォルト値に設定（プリセットにより上書きされる）
+                this.setMasterVolume(0.5);
+                this.setFilter('lowpass', 20000, 1);
+                this.setLFO('none', 1, 0); 
+                this.setDelay(0, 0, 0);
+                this.setReverbMix(0);
+                this.setChorus(0, 0.5);
+            }
+
+            /**
+             * 指定された音符を演奏する。AudioContextの状態をチェックし、必要なら再開する。
+             * @param {string} noteNameBase - 音符のベース名 (例: 'C', 'D#')
+             * @param {number} octave - 音符のオクターブ
+             */
+            async playNote(noteNameBase, octave) {
+                // AudioContextが停止状態の場合、再開を試みる
+                if (this.audioContext.state === 'suspended') {
+                    console.log('AudioContext is suspended. Attempting to resume...');
+                    try {
+                        await this.audioContext.resume();
+                        console.log('AudioContext resumed successfully before playing note.');
+                    } catch (e) {
+                        console.error('Failed to resume AudioContext on note play:', e);
+                        // contextがresumeできない場合でも、音が出ないまま処理を続行させる
+                        // ただし、closed状態になっていれば再作成が必要
+                        if (this.audioContext.state === 'closed') {
+                             console.warn('AudioContext is closed, attempting to recreate.');
+                             // 強制的に再初期化を試みる
+                             this.app.initAudioContextAndModules(); // Appインスタンスへの参照が必要
+                             return; // 再作成が完了するまで音を鳴らさない
+                        }
+                    }
+                }
+                
+                // 初回の音切れ問題への対策：
+                // AudioContextが再開された直後（currentTimeがほぼ0）の場合、
+                // オーディオハードウェアのバッファが完全に確立されるのを少しだけ待つ。
+                // これにより、エンベロープの開始タイミングと実際の音出しのズレを軽減する。
+                if (this.audioContext.state === 'running' && this.audioContext.currentTime < 0.05) { // currentTimeがほぼ0の場合（再開直後）
+                    await new Promise(resolve => setTimeout(resolve, 20)); // 20ms待機し、次のイベントループで処理を続行
+                }
+                
+                // コンテキストが実行中になったことを確認後、内部的に音符を演奏
+                this._playNoteInternal(noteNameBase, octave);
+            }
+
+            /**
+             * 音符を実際に演奏する内部メソッド。
+             * @param {string} noteNameBase - 音符のベース名
+             * @param {number} octave - 音符のオクターブ
+             */
+            _playNoteInternal(noteNameBase, octave) {
+                const fullNoteName = noteNameBase + octave;
+                
+                const prevNoteData = this.activeNotes.get(fullNoteName);
+                if (prevNoteData) {
+                    // 同じ音符が既に演奏中の場合、一度停止して新しい音符を再生（モノフォニック動作のシミュレーション、または新しいエンベロープ適用）
+                    this.stopNote(fullNoteName); 
+                }
+
+                const frequency = getFrequency(noteNameBase, octave);
+                if (!frequency) return; // 周波数が無効な場合は何もしない
+
+                const oscillator = this.audioContext.createOscillator();
+                const gainNode = this.audioContext.createGain();
+
+                // UI要素からADSRパラメータと波形タイプを取得
+                const attackTime = parseFloat(document.getElementById('attack-range').value);
+                const decayTime = parseFloat(document.getElementById('decay-range').value);
+                const sustainLevel = parseFloat(document.getElementById('sustain-range').value);
+                const waveformType = document.getElementById('waveform-select').value;
+                const detuneValue = parseFloat(document.getElementById('detune-range').value); // Detune値を取得
+                const portamentoTime = parseFloat(document.getElementById('portamento-range').value); // Portamento値を取得
+
+                oscillator.type = waveformType;
+                
+                // ポルタメントの適用
+                // 前の音符の周波数から新しい音符の周波数へ滑らかに変化
+                const startTime = this.audioContext.currentTime;
+                if (portamentoTime > 0 && prevNoteData && prevNoteData.lastFrequency) {
+                    // ポルタメントが有効で、かつ前の音符のデータが存在する場合
+                    oscillator.frequency.setValueAtTime(prevNoteData.lastFrequency, startTime);
+                    oscillator.frequency.linearRampToValueAtTime(frequency, startTime + portamentoTime);
+                } else {
+                    // ポルタメントが無効、または最初の音符の場合
+                    oscillator.frequency.setValueAtTime(frequency, startTime);
+                }
+
+                // デチューン値の適用
+                oscillator.detune.setValueAtTime(detuneValue, startTime);
+
+                // ADSRエンベロープの適用
+                gainNode.gain.cancelScheduledValues(startTime); // 現在スケジュールされているゲイン値をキャンセル
+                gainNode.gain.setValueAtTime(0, startTime);     // 現在時刻のゲインを0に設定
+                gainNode.gain.linearRampToValueAtTime(1, startTime + attackTime); // アタック
+                gainNode.gain.linearRampToValueAtTime(sustainLevel, startTime + attackTime + decayTime); // ディケイ
+
+                // オシレーターとゲインノードの接続
+                oscillator.connect(gainNode);
+
+                // LFOのピッチ変調接続
+                const lfoTarget = document.getElementById('lfo-target-select').value;
+                let lfoDetuneConnected = false;
+                if (lfoTarget === 'pitch') {
+                    // LFOゲインノードをこのオシレーターのデチューン（ピッチ）に接続
+                    // detuneは相対値なので、lfoAmountをdetuneに直接加算できる
+                    this.lfoGainNode.connect(oscillator.detune);
+                    lfoDetuneConnected = true;
+                } 
+
+                // ゲインノードをフィルターノードに接続
+                gainNode.connect(this.filterNode);
+                
+                oscillator.start(startTime); // オシレーターの開始
+                // アクティブな音符として記録
+                this.activeNotes.set(fullNoteName, { oscillator, gainNode, lfoDetuneConnected, lastFrequency: frequency });
+            }
+
+            /**
+             * 指定された音符の演奏を停止する。
+             * @param {string} fullNoteName - 停止する音符の完全な名前（例: 'C4', 'A#3'）
+             */
+            stopNote(fullNoteName) {
+                const noteData = this.activeNotes.get(fullNoteName);
+                if (noteData) {
+                    const { oscillator, gainNode, lfoDetuneConnected } = noteData;
+                    const releaseTime = parseFloat(document.getElementById('release-range').value);
+
+                    // リリースエンベロープの適用
+                    gainNode.gain.cancelScheduledValues(this.audioContext.currentTime);
+                    const currentGain = gainNode.gain.value; // 現在のゲイン値を取得
+                    gainNode.gain.setValueAtTime(currentGain, this.audioContext.currentTime); // 現在のゲインからスタート
+                    gainNode.gain.linearRampToValueAtTime(0, this.audioContext.currentTime + releaseTime); // ゲインを0へ減衰
+
+                    // リリース時間経過後にオシレーターを停止
+                    const stopTime = this.audioContext.currentTime + releaseTime + 0.05; // わずかなバッファ時間
+                    oscillator.stop(stopTime); 
+                    
+                    // オシレーターとゲインノードを切断し、リソースを解放
+                    setTimeout(() => {
+                        if (lfoDetuneConnected) {
+                             this.lfoGainNode.disconnect(oscillator.detune); // LFOが接続されていれば切断
+                        }
+                        oscillator.disconnect();
+                        gainNode.disconnect();
+                    }, Math.max(0, (stopTime - this.audioContext.currentTime) * 1000)); // タイムアウト時間が負にならないように
+
+                    this.activeNotes.delete(fullNoteName); // アクティブな音符リストから削除
+                }
+            }
+            
+            /**
+             * 全ての音符の演奏を強制的に停止する。
+             * （例: AudioContextがsuspendedになった時や、鍵盤が再描画される時）
+             */
+            stopAllActiveNotes() {
+                // Mapのコピーを作成し、イテレーション中にMapが変更されるのを防ぐ
+                const notesToStop = new Map(this.activeNotes); 
+                notesToStop.forEach((_, fullNoteName) => {
+                    this.stopNote(fullNoteName); // 各アクティブな音符を停止
+                });
+                // UI上のアクティブな鍵盤表示もクリア
+                document.querySelectorAll('.key.active').forEach(keyEl => {
+                    keyEl.classList.remove('active');
+                });
+                this.activeNotes.clear(); // アクティブな音符リストをクリア
+            }
+
+            /**
+             * 波形タイプを設定する。
+             * （既に再生中の音符には影響せず、新たに再生される音符に適用される）
+             * @param {string} type - 波形タイプ ('sine', 'square', 'sawtooth', 'triangle')
+             */
+            setWaveform(type) {
+                // 現在再生中のオシレーターの波形は変更されない
+                // 新しい音符がこのタイプで作成される
+            }
+
+            /**
+             * マスターボリュームを設定する。
+             * @param {number} volume - 音量値（0.0〜1.0）
+             */
+            setMasterVolume(volume) {
+                this.masterGainNode.gain.setValueAtTime(volume, this.audioContext.currentTime);
+            }
+
+            /**
+             * フィルターを設定する。
+             * @param {string} type - フィルタータイプ
+             * @param {number} frequency - カットオフ周波数（Hz）
+             * @param {number} q - Q値（レゾナンス）
+             */
+            setFilter(type, frequency, q) {
+                this.filterNode.type = type;
+                // 周波数スライダーが対数スケールになるように変換
+                const filterFreqRange = document.getElementById('filter-freq-range');
+                const minLog = Math.log(parseFloat(filterFreqRange.min));
+                const maxLog = Math.log(parseFloat(filterFreqRange.max));
+                const normalizedValue = (frequency - parseFloat(filterFreqRange.min)) / (parseFloat(filterFreqRange.max) - parseFloat(filterFreqRange.min)); 
+                const scaledLogValue = minLog + normalizedValue * (maxLog - minLog);
+                this.filterNode.frequency.linearRampToValueAtTime(Math.exp(scaledLogValue), this.audioContext.currentTime + 0.01);
+                this.filterNode.Q.linearRampToValueAtTime(q, this.audioContext.currentTime + 0.01);
+            }
+
+            /**
+             * LFO（低周波オシレーター）を設定する。
+             * @param {string} target - LFOのターゲット ('none', 'pitch', 'filter')
+             * @param {number} frequency - LFO周波数（Hz）
+             * @param {number} amount - LFOの適用量
+             */
+            setLFO(target, frequency, amount) {
+                this.lfoNode.frequency.setValueAtTime(frequency, this.audioContext.currentTime);
+                
+                // グローバルノード（フィルター周波数）からのLFOゲインの接続を一度切断
+                // 各オシレーターのデチューンへの接続は、playNote/stopNoteで個別管理される
+                this.lfoGainNode.disconnect(); 
+
+                if (target === 'none') {
+                    this.lfoGainNode.gain.setValueAtTime(0, this.audioContext.currentTime); // LFOゲインを0に
+                } else {
+                    this.lfoGainNode.gain.setValueAtTime(amount, this.audioContext.currentTime);
+                    this.lfoNode.connect(this.lfoGainNode); // LFOをゲインノードに接続
+                    if (target === 'filter') {
+                        this.lfoGainNode.connect(this.filterNode.frequency); // フィルター周波数に接続
+                    }
+                    // 'pitch'ターゲットの場合は、各オシレーターのdetuneに個別に接続される
+                }
+            }
+
+            /**
+             * ディレイエフェクトを設定する。
+             * @param {number} time - ディレイタイム（秒）
+             * @param {number} feedback - フィードバック量（0.0〜1.0）
+             * @param {number} mix - ドライ/ウェットミックス量（0.0〜1.0）
+             */
+            setDelay(time, feedback, mix) {
+                this.delayNode.delayTime.setValueAtTime(time, this.audioContext.currentTime);
+                this.delayFeedbackGain.gain.setValueAtTime(feedback, this.audioContext.currentTime);
+                this.delayWetGain.gain.setValueAtTime(mix, this.audioContext.currentTime);
+                this.delayDryGain.gain.setValueAtTime(1 - mix, this.audioContext.currentTime);
+            }
+
+            /**
+             * リバーブ用のインパルス応答ファイルを非同期で読み込む。
+             * @param {string} url - インパルス応答ファイルのURL
+             */
+            async loadReverbImpulseResponse(url) {
+                try {
+                    const response = await fetch(url);
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    }
+                    const arrayBuffer = await response.arrayBuffer();
+                    this.convolverNode.buffer = await this.audioContext.decodeAudioData(arrayBuffer);
+                    console.log('Reverb impulse response loaded successfully.');
+                } catch (error) {
+                    console.error('Error loading reverb impulse response:', error);
+                    console.warn('Using simple generated reverb IR as fallback.');
+                    this.convolverNode.buffer = generateSimpleReverbImpulseResponse(this.audioContext);
+                }
+            }
+
+            /**
+             * リバーブエフェクトのドライ/ウェットミックス量を設定する。
+             * @param {number} mix - ミックス量（0.0〜1.0）
+             */
+            setReverbMix(mix) {
+                this.reverbWetGain.gain.setValueAtTime(mix, this.audioContext.currentTime);
+                this.reverbDryGain.gain.setValueAtTime(1 - mix, this.audioContext.currentTime);
+            }
+
+            /**
+             * コーラスエフェクトを設定する。
+             * @param {number} depth - コーラスの深さ
+             * @param {number} rate - コーラスの速さ（Hz）
+             */
+            setChorus(depth, rate) {
+                if (depth === 0) {
+                    this.chorusLFOGain.gain.setValueAtTime(0, this.audioContext.currentTime);
+                    this.chorusMixGain.gain.setValueAtTime(0, this.audioContext.currentTime);
+                } else {
+                    this.chorusLFOGain.gain.setValueAtTime(depth / 2, this.audioContext.currentTime); // LFOは基準ディレイの半分で振動
+                    this.chorusLFO.frequency.setValueAtTime(rate, this.audioContext.currentTime);
+                    this.chorusMixGain.gain.setValueAtTime(0.5, this.audioContext.currentTime); // コーラスのミックスは固定値
+                }
+            }
+            
+            /**
+             * アプリケーションのコアモジュールを再初期化する
+             * （AudioContextがclosed状態になった場合など、完全に状態をリセットする必要がある時に呼ばれる）
+             */
+            reinitializeModules() {
+                console.log('Reinitializing AudioContext and modules...');
+                // 既存のAudioContextを閉じる（可能であれば）
+                if (this.audioContext && this.audioContext.state !== 'closed') {
+                    this.audioContext.close().then(() => console.log('Previous AudioContext closed.')).catch(e => console.warn('Error closing previous AudioContext:', e));
+                }
+
+                // 新しいAudioContextを作成
+                this.audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                // SynthEngineの再初期化（新しいAudioContextを渡す）
+                this.synthEngine = new SynthEngine(this.audioContext);
+                // UIControllerはDOMに直接アクセスするため、既存のインスタンスを再利用し、内部のsynthEngine参照を更新
+                this.uiController.synthEngine = this.synthEngine;
+                // PresetManagerも既存のインスタンスを再利用し、内部のsynthEngine参照を更新
+                this.presetManager.synthEngine = this.synthEngine;
+                // AnalyzerDisplayも再初期化
+                this.analyzerDisplay = new AnalyzerDisplay(this.synthEngine.analyzerNode, 'analyzer-canvas', 'analyzer-text');
+                this.midiHandler.synthEngine = this.synthEngine; // MIDIHandlerのsynthEngine参照も更新
+
+                // AudioContextの状態監視を再設定
+                this.setupAudioContextStateHandling();
+                // AnalyzerDisplayの再描画を開始
+                this.analyzerDisplay.start(this.synthEngine);
+                // プリセットを再適用してUIとシンセの内部状態を同期させる
+                this.presetManager.applyPreset(this.presetManager.presetSelect.value); // 現在選択されているプリセットを再適用
+                console.log('Modules reinitialized successfully.');
+            }
+        }
+
+        // ====================
+        // UIController クラス: DOM要素の操作とユーザー入力の処理を管理
+        // ====================
+        class UIController {
+            /**
+             * UIControllerのコンストラクタ。DOM要素への参照を取得し、状態を初期化する。
+             * @param {SynthEngine} synthEngine - 関連するSynthEngineインスタンス
+             */
+            constructor(synthEngine) {
+                this.synthEngine = synthEngine;
+                this.keyboardEl = document.getElementById('keyboard');
+                this.activeTouchNotes = new Map(); // タッチID -> 演奏中の音符名
+                this.activeKeys = new Set();       // 押されているキーボードキーのセット
+
+                // 各種DOM要素への参照を取得
+                this.domElements = {
+                    waveformSelect: document.getElementById('waveform-select'),
+                    attackRange: document.getElementById('attack-range'),
+                    decayRange: document.getElementById('decay-range'),
+                    sustainRange: document.getElementById('sustain-range'),
+                    releaseRange: document.getElementById('release-range'),
+                    masterVolumeRange: document.getElementById('master-volume-range'),
+                    filterTypeSelect: document.getElementById('filter-type-select'),
+                    filterFreqRange: document.getElementById('filter-freq-range'),
+                    filterQRange: document.getElementById('filter-q-range'),
+                    lfoTargetSelect: document.getElementById('lfo-target-select'),
+                    lfoFreqRange: document.getElementById('lfo-freq-range'),
+                    lfoAmountRange: document.getElementById('lfo-amount-range'),
+                    detuneRange: document.getElementById('detune-range'),       // 新しいDetuneスライダー
+                    portamentoRange: document.getElementById('portamento-range'), // 新しいPortamentoスライダー
+                    delayTimeRange: document.getElementById('delay-time-range'),
+                    delayFeedbackRange: document.getElementById('delay-feedback-range'),
+                    delayMixRange: document.getElementById('delay-mix-range'),
+                    reverbMixRange: document.getElementById('reverb-mix-range'),
+                    chorusDepthRange: document.getElementById('chorus-depth-range'),
+                    chorusRateRange: document.getElementById('chorus-rate-range'),
+                    presetSelect: document.getElementById('preset-select'),
+                    octaveDownButton: document.getElementById('octave-down-button'),
+                    octaveUpButton: document.getElementById('octave-up-button'),
+                    currentBaseOctaveDisplay: document.getElementById('current-base-octave-display'),
+                    octaveRangeDownButton: document.getElementById('octave-range-down-button'),
+                    octaveRangeUpButton: document.getElementById('octave-range-up-button'),
+                    currentOctaveRangeDisplay: document.getElementById('current-octave-range-display'),
+                    midiStartButton: document.getElementById('midi-start-button')
+                };
+
+                this.currentBaseOctave = 4;    // 現在の基準オクターブ
+                this.displayedOctaves = 2; // 表示するオクターブ数
+
+                // イベントハンドラを事前にバインドし、`this`のコンテキストを固定する
+                this.handlePointerStartBound = this.handlePointerStart.bind(this);
+                this.handlePointerMoveBound = this.handlePointerMove.bind(this);
+                this.handlePointerEndBound = this.handlePointerEnd.bind(this);
+                this.handleKeyDownBound = this.handleKeyDown.bind(this);
+                this.handleKeyUpBound = this.handleKeyUp.bind(this);
+            }
+
+            /**
+             * UIControllerの初期化処理。イベントリスナーを設定し、初期表示を更新する。
+             * @param {PresetManager} presetManager - 関連するPresetManagerインスタンス
+             */
+            init(presetManager) {
+                this.presetManager = presetManager;
+                this.setupEventListeners();
+                // 初期オクターブ表示と鍵盤の再描画
+                this.updateOctaveDisplays(); 
+            }
+
+            // --- 鍵盤UIの生成と管理 ---
+
+            /**
+             * 現在のオクターブ設定に基づいて、表示する白鍵と黒鍵のノート名リストを生成する。
+             * @returns {{whiteKeys: string[], blackKeys: (string|null)[]}} 白鍵と黒鍵のノート名配列
+             */
+            generateKeyboardNotes() {
+                const whiteKeys = [];
+                const blackKeys = [];
+                const whiteNotePattern = ['C', 'D', 'E', 'F', 'G', 'A', 'B'];
+                const blackNotePattern = ['C#', 'D#', null, 'F#', 'G#', 'A#', null];
+
+                for (let i = 0; i < this.displayedOctaves; i++) {
+                    const octaveNum = this.currentBaseOctave + i;
+                    whiteNotePattern.forEach(note => whiteKeys.push(note + octaveNum));
+                    blackNotePattern.forEach(note => blackKeys.push(note ? note + octaveNum : null));
+                }
+                return { whiteKeys, blackKeys };
+            }
+
+            /**
+             * HTMLの鍵盤要素を動的に生成し、既存の鍵盤を置き換える。
+             */
+            createKeyboard() {
+                // 鍵盤再生成前に、現在アクティブな全ての音符を停止
+                this.synthEngine.activeNotes.forEach((_, fullNoteName) => this.synthEngine.stopNote(fullNoteName));
+                this.activeTouchNotes.clear(); // タッチトラッキングをクリア
+                this.activeKeys.clear(); // キーボードキーのトラッキングをクリア
+
+                this.keyboardEl.innerHTML = ''; // 既存の鍵盤要素をクリア
+                const { whiteKeys, blackKeys } = this.generateKeyboardNotes();
+
+                const whiteKeyCount = whiteKeys.length;
+                const whiteKeyWidthPercent = 100 / whiteKeyCount;
+                const blackKeyWidthPercent = whiteKeyWidthPercent * 0.6; // 黒鍵は白鍵の約60%の幅
+
+                // 白鍵の生成
+                whiteKeys.forEach((noteData, index) => {
+                    // MIDIノート番号はC-1が0、C0が12、C1が24...なので、オクターブ値に12を足してからインデックスを足す
+                    const midiNoteNumber = (parseInt(noteData.slice(-1)) + 1) * 12 + noteNames.indexOf(noteData.slice(0, -1));
+                    const displayNoteName = getNoteNameFromMidi(midiNoteNumber);
+
+                    const whiteKey = document.createElement('div');
+                    whiteKey.classList.add('key', 'white-key');
+                    whiteKey.dataset.noteBase = noteData.slice(0, -1);
+                    whiteKey.dataset.octave = noteData.slice(-1);
+                    whiteKey.dataset.midiNote = midiNoteNumber; // MIDIノート番号もデータセットに追加
+                    whiteKey.style.left = `${index * whiteKeyWidthPercent}%`;
+                    whiteKey.style.width = `${whiteKeyWidthPercent}%`;
+                    
+                    const label = document.createElement('span');
+                    label.classList.add('key-label');
+                    label.textContent = displayNoteName; // 例: C3, D4
+                    whiteKey.appendChild(label);
+
+                    this.keyboardEl.appendChild(whiteKey);
+
+                    // 黒鍵の生成（該当する白鍵の後に）
+                    const blackNoteData = blackKeys[index];
+                    if (blackNoteData) {
+                        const blackMidiNoteNumber = (parseInt(blackNoteData.slice(-1)) + 1) * 12 + noteNames.indexOf(blackNoteData.slice(0, -1));
+                        const displayBlackNoteName = getNoteNameFromMidi(blackMidiNoteNumber);
+
+                        const blackKey = document.createElement('div');
+                        blackKey.classList.add('key', 'black-key');
+                        blackKey.dataset.noteBase = blackNoteData.slice(0, -1);
+                        blackKey.dataset.octave = blackNoteData.slice(-1);
+                        blackKey.dataset.midiNote = blackMidiNoteNumber; // MIDIノート番号もデータセットに追加
+                        // 黒鍵を白鍵の間に配置するためのleft計算
+                        blackKey.style.left = `${(index + 1) * whiteKeyWidthPercent - (blackKeyWidthPercent / 2)}%`;
+                        blackKey.style.width = `${blackKeyWidthPercent}%`;
+                        
+                        const blackLabel = document.createElement('span');
+                        blackLabel.classList.add('key-label');
+                        blackLabel.textContent = displayBlackNoteName; // 例: C#3, F#4
+                        blackKey.appendChild(blackLabel);
+
+                        this.keyboardEl.appendChild(blackKey);
+                    }
+                });
+
+                this.setupKeyboardEventListeners(); // 新しい鍵盤要素にイベントリスナーを設定
+            }
+
+            /**
+             * 指定された鍵盤要素のアクティブ（押下）状態を切り替える。
+             * @param {string} noteNameBase - 音符のベース名
+             * @param {number} octave - 音符のオクターブ
+             * @param {boolean} isActive - アクティブにするか否か
+             */
+            toggleKeyActive(noteNameBase, octave, isActive) {
+                const keyElement = this.keyboardEl.querySelector(`.key[data-note-base="${noteNameBase}"][data-octave="${octave}"]`);
+                if (keyElement) {
+                    if (isActive) {
+                        keyElement.classList.add('active');
+                    } else {
+                        keyElement.classList.remove('active');
+                    }
+                }
+            }
+
+            // --- イベントハンドラの設定 ---
+
+            /**
+             * UIの各種イベントリスナーを設定する。
+             */
+            setupEventListeners() {
+                // スライダーとセレクトボックスのイベントリスナー設定
+                for (const key in this.domElements) {
+                    const el = this.domElements[key];
+                    if (el instanceof HTMLInputElement && el.type === 'range') {
+                        el.addEventListener('input', () => this.handleSliderInput(el));
+                        this.updateSliderDisplay(el); // 初期表示の更新
+                    } else if (el instanceof HTMLSelectElement) {
+                        el.addEventListener('change', () => this.handleSelectChange(el));
+                    }
+                }
+
+                // 特定のボタンのイベントリスナー設定
+                this.domElements.octaveDownButton.addEventListener('click', () => this.changeBaseOctave(-1));
+                this.domElements.octaveUpButton.addEventListener('click', () => this.changeBaseOctave(1));
+                this.domElements.octaveRangeDownButton.addEventListener('click', () => this.changeDisplayedOctaves(-1));
+                this.domElements.octaveRangeUpButton.addEventListener('click', () => this.changeDisplayedOctaves(1));
+                this.domElements.presetSelect.addEventListener('change', (e) => this.presetManager.applyPreset(e.target.value));
+
+                // PCキーボードイベントリスナー（ドキュメント全体）
+                // 既存のリスナーを削除してから追加することで、重複登録を防ぐ
+                document.removeEventListener('keydown', this.handleKeyDownBound);
+                document.removeEventListener('keyup', this.handleKeyUpBound);
+                document.addEventListener('keydown', this.handleKeyDownBound);
+                document.addEventListener('keyup', this.handleKeyUpBound);
+
+                // ウィンドウリサイズイベントリスナーは、鍵盤の高さが固定されるため不要になりました。
+                // ただし、アナライザーのサイズ調整のため、AnalyzerDisplayクラスで引き続き処理されます。
+            }
+
+            /**
+             * 鍵盤要素（白鍵・黒鍵）へのポインターイベントリスナーを設定する。
+             */
+            setupKeyboardEventListeners() {
+                const allKeys = this.keyboardEl.querySelectorAll('.key');
+                allKeys.forEach(key => {
+                    // 既存のリスナーを削除してから追加し、重複を防ぐ
+                    key.removeEventListener('pointerdown', this.handlePointerStartBound);
+                    key.removeEventListener('pointerup', this.handlePointerEndBound);
+                    key.removeEventListener('pointercancel', this.handlePointerEndBound);
+
+                    key.addEventListener('pointerdown', this.handlePointerStartBound, { passive: false });
+                    key.addEventListener('pointerup', this.handlePointerEndBound);
+                    key.addEventListener('pointercancel', this.handlePointerEndBound);
+                });
+                // 鍵盤コンテナ全体にpointermoveリスナーを設定し、連続的なタッチトラッキングを可能にする
+                this.keyboardEl.removeEventListener('pointermove', this.handlePointerMoveBound);
+                this.keyboardEl.addEventListener('pointermove', this.handlePointerMoveBound, { passive: false });
+            }
+
+            /**
+             * 指定された座標にある鍵盤要素を取得する。
+             * @param {number} clientX - イベントのX座標
+             * @param {number} clientY - イベントのY座標
+             * @returns {HTMLElement|null} 鍵盤要素、またはnull
+             */
+            getKeyElementAtPoint(clientX, clientY) {
+                const rect = this.keyboardEl.getBoundingClientRect();
+                // 座標が鍵盤コンテナ内にあるか確認
+                if (clientX >= rect.left && clientX <= rect.right &&
+                    clientY >= rect.top && clientY <= rect.bottom) {
+                    const element = document.elementFromPoint(clientX, clientY);
+                    return element ? element.closest('#keyboard .key') : null; // 最も近い鍵盤要素を返す
+                }
+                return null;
+            }
+            
+            /**
+             * ポインター（マウス、タッチ）が鍵盤上で押された時のハンドラ。
+             * @param {PointerEvent} e - ポインターイベントオブジェクト
+             */
+            handlePointerStart(e) {
+                const targetKey = this.getKeyElementAtPoint(e.clientX, e.clientY);
+                if (!targetKey) return;
+                e.preventDefault(); // デフォルトのブラウザジェスチャー（スクロール/ズーム）を防止
+
+                const pointerId = (e.pointerType === 'touch') ? e.pointerId : 'mouse';
+                const noteBase = targetKey.dataset.noteBase;
+                const octave = parseInt(targetKey.dataset.octave);
+                const fullNoteName = noteBase + octave;
+
+                // 同じポインターIDで既に別の音符が演奏中の場合、その音符を停止する
+                if (this.activeTouchNotes.has(pointerId)) {
+                    const oldNoteName = this.activeTouchNotes.get(pointerId);
+                    if (oldNoteName !== fullNoteName) { 
+                        this.synthEngine.stopNote(oldNoteName);
+                        this.toggleKeyActive(oldNoteName.slice(0,-1), oldNoteName.slice(-1), false);
+                    }
+                }
+                this.synthEngine.playNote(noteBase, octave);
+                this.toggleKeyActive(noteBase, octave, true);
+                this.activeTouchNotes.set(pointerId, fullNoteName);
+            }
+
+            /**
+             * ポインターが鍵盤上で移動した時のハンドラ（マルチタッチ対応）。
+             * @param {PointerEvent} e - ポインターイベントオブジェクト
+             */
+            handlePointerMove(e) {
+                const pointerId = (e.pointerType === 'touch') ? e.pointerId : 'mouse';
+                if (!this.activeTouchNotes.has(pointerId)) return; // 鍵盤上で開始されていないポインターは無視
+                e.preventDefault(); // デフォルトのブラウザジェスチャーを防止
+
+                const oldNoteName = this.activeTouchNotes.get(pointerId);
+                const targetKey = this.getKeyElementAtPoint(e.clientX, e.clientY);
+
+                if (targetKey) {
+                    const newNoteBase = targetKey.dataset.noteBase;
+                    const newOctave = parseInt(targetKey.dataset.octave);
+                    const newFullNoteName = newNoteBase + newOctave;
+
+                    // 移動先の鍵盤が異なる場合、古い音符を停止し、新しい音符を再生
+                    if (newFullNoteName !== oldNoteName) {
+                        this.synthEngine.stopNote(oldNoteName);
+                        this.toggleKeyActive(oldNoteName.slice(0,-1), oldNoteName.slice(-1), false);
+                        
+                        this.synthEngine.playNote(newNoteBase, newOctave);
+                        this.toggleKeyActive(newNoteBase, newOctave, true);
+                        this.activeTouchNotes.set(pointerId, newFullNoteName);
+                    }
+                } else if (oldNoteName) { // 鍵盤エリア外に移動した場合
+                    this.synthEngine.stopNote(oldNoteName);
+                    this.toggleKeyActive(oldNoteName.slice(0,-1), oldNoteName.slice(-1), false);
+                    this.activeTouchNotes.delete(pointerId); // トラッキングから削除
+                }
+            }
+
+            /**
+             * ポインターが鍵盤上から離れた時（またはキャンセルされた時）のハンドラ。
+             * @param {PointerEvent} e - ポインターイベントオブジェクト
+             */
+            handlePointerEnd(e) {
+                const pointerId = (e.pointerType === 'touch') ? e.pointerId : 'mouse';
+                if (this.activeTouchNotes.has(pointerId)) {
+                    const fullNoteName = this.activeTouchNotes.get(pointerId);
+                    this.synthEngine.stopNote(fullNoteName);
+                    this.toggleKeyActive(fullNoteName.slice(0,-1), fullNoteName.slice(-1), false);
+                    this.activeTouchNotes.delete(pointerId);
+                }
+            }
+
+            /**
+             * PCキーボードのキーが押された時のハンドラ。
+             * @param {KeyboardEvent} e - キーボードイベントオブジェクト
+             */
+            handleKeyDown(e) {
+                if (e.repeat) return; // キーリピート（押しっぱなし）は無視
+                const keyInfo = KEYBOARD_MAP[e.key.toLowerCase()]; // 小文字に変換してマッピングを検索
+                if (keyInfo) {
+                    const playOctave = this.currentBaseOctave + keyInfo.octaveOffset;
+                    const fullNoteName = keyInfo.note + playOctave;
+                    
+                    if (!this.activeKeys.has(e.key.toLowerCase())) { // キーがまだアクティブでない場合のみ演奏
+                        this.synthEngine.playNote(keyInfo.note, playOctave);
+                        this.toggleKeyActive(keyInfo.note, playOctave, true);
+                        this.activeKeys.add(e.key.toLowerCase()); // アクティブなキーとして記録
+                    }
+                }
+            }
+
+            /**
+             * PCキーボードのキーが離された時のハンドラ。
+             * @param {KeyboardEvent} e - キーボードイベントオブジェクト
+             */
+            handleKeyUp(e) {
+                const keyInfo = KEYBOARD_MAP[e.key.toLowerCase()];
+                if (keyInfo) {
+                    const playOctave = this.currentBaseOctave + keyInfo.octaveOffset;
+                    const fullNoteName = keyInfo.note + playOctave;
+
+                    if (this.activeKeys.has(e.key.toLowerCase())) { // キーがアクティブだった場合のみ停止
+                        this.synthEngine.stopNote(fullNoteName);
+                        this.toggleKeyActive(keyInfo.note, playOctave, false);
+                        this.activeKeys.delete(e.key.toLowerCase()); // アクティブなキーから削除
+                    }
+                }
+            }
+
+            // --- UIの更新処理 ---
+
+            /**
+             * スライダーの値を表示し、背景のグラデーションを更新する。
+             * @param {HTMLInputElement} slider - 対象のスライダー要素
+             */
+            updateSliderDisplay(slider) {
+                const valueDisplay = slider.nextElementSibling; // スライダーの次の要素が数値表示
+                // スライダーの現在の値に基づいて、グラデーションのパーセンテージを計算
+                const value = (parseFloat(slider.value) - parseFloat(slider.min)) / (parseFloat(slider.max) - parseFloat(slider.min)) * 100;
+                slider.style.setProperty('--value', `${value}%`); // CSSカスタムプロパティを更新
+
+                if (valueDisplay && valueDisplay.classList.contains('value-display')) {
+                    let displayValue = parseFloat(slider.value);
+                    let unit = '';
+
+                    // スライダーのIDに基づいて表示形式と単位を決定
+                    switch(slider.id) {
+                        case 'attack-range':
+                        case 'decay-range':
+                        case 'release-range':
+                        case 'delay-time-range':
+                        case 'portamento-range': // Portamentoも秒単位
+                            unit = 's'; // 秒
+                            displayValue = displayValue.toFixed(2);
+                            break;
+                        case 'chorus-depth-range':
+                            unit = 's'; // 秒
+                            displayValue = displayValue.toFixed(4); // 小さい値のためより詳細な桁数
+                            break;
+                        case 'master-volume-range':
+                        case 'sustain-range':
+                        case 'delay-mix-range':
+                        case 'reverb-mix-range':
+                            unit = '%'; // パーcentage (0-1を0-100に変換)
+                            displayValue = (displayValue * 100).toFixed(0);
+                            break;
+                        case 'filter-freq-range':
+                            unit = 'Hz';
+                            displayValue = Math.round(displayValue);
+                            break;
+                        case 'lfo-freq-range':
+                        case 'chorus-rate-range':
+                            unit = 'Hz';
+                            displayValue = displayValue.toFixed(1);
+                            break;
+                        case 'lfo-amount-range':
+                        case 'detune-range': // Detuneもセント単位
+                            unit = 'cent'; // セント（ピッチ変調用）
+                            displayValue = Math.round(displayValue);
+                            break;
+                        case 'filter-q-range':
+                        case 'delay-feedback-range':
+                            unit = ''; // 単位なし
+                            displayValue = displayValue.toFixed(1); 
+                            break;
+                        default:
+                            displayValue = displayValue.toFixed(2);
+                    }
+                    valueDisplay.textContent = `${displayValue}${unit}`; // 数値表示を更新
+                }
+            }
+
+            // --- コントロール変更ハンドラ ---
+
+            /**
+             * スライダー入力があった時のハンドラ。SynthEngineの対応するパラメータを更新する。
+             * @param {HTMLInputElement} slider - 変更されたスライダー要素
+             */
+            handleSliderInput(slider) {
+                this.updateSliderDisplay(slider); // 表示の更新
+                const value = parseFloat(slider.value); // スライダーの値を数値として取得
+
+                switch (slider.id) {
+                    case 'attack-range': 
+                    case 'decay-range':
+                    case 'sustain-range':
+                    case 'release-range':
+                        // ADSR値はplayNote/stopNote時に直接UIから読み込まれるため、ここでの個別更新は不要
+                        break; 
+                    case 'master-volume-range':
+                        this.synthEngine.setMasterVolume(value);
+                        break;
+                    case 'filter-freq-range':
+                    case 'filter-q-range':
+                        // フィルター関連のスライダーが動いたら、両方の値を使ってフィルターを設定
+                        this.synthEngine.setFilter(this.domElements.filterTypeSelect.value, parseFloat(this.domElements.filterFreqRange.value), parseFloat(this.domElements.filterQRange.value));
+                        break;
+                    case 'lfo-freq-range':
+                    case 'lfo-amount-range':
+                        // LFO関連のスライダーが動いたら、両方の値を使ってLFOを設定
+                        this.synthEngine.setLFO(this.domElements.lfoTargetSelect.value, parseFloat(this.domElements.lfoFreqRange.value), parseFloat(this.domElements.lfoAmountRange.value));
+                        break;
+                    case 'detune-range':
+                    case 'portamento-range':
+                        // DetuneとPortamentoはplayNote時にUIから直接読み込まれるため、ここでの個別更新は不要
+                        // 必要であれば、既に鳴っている音にも即座に反映させるロジックを追加することもできるが、
+                        // シンセサイザーの挙動としてはplayNote時に適用されるのが一般的。
+                        break;
+                    case 'delay-time-range':
+                    case 'delay-feedback-range':
+                    case 'delay-mix-range':
+                        // ディレイ関連のスライダーが動いたら、全てのディレイ値を使ってディレイを設定
+                        this.synthEngine.setDelay(
+                            parseFloat(this.domElements.delayTimeRange.value),
+                            parseFloat(this.domElements.delayFeedbackRange.value),
+                            parseFloat(this.domElements.delayMixRange.value)
+                        );
+                        break;
+                    case 'reverb-mix-range':
+                        this.synthEngine.setReverbMix(value);
+                        break;
+                    case 'chorus-depth-range':
+                    case 'chorus-rate-range':
+                        // コーラス関連のスライダーが動いたら、両方の値を使ってコーラスを設定
+                        this.synthEngine.setChorus(
+                            parseFloat(this.domElements.chorusDepthRange.value),
+                            parseFloat(this.domElements.chorusRateRange.value)
+                        );
+                        break;
+                }
+            }
+
+            /**
+             * セレクトボックスの選択が変更された時のハンドラ。SynthEngineの対応するパラメータを更新する。
+             * @param {HTMLSelectElement} select - 変更されたセレクトボックス要素
+             */
+            handleSelectChange(select) {
+                const value = select.value;
+                switch (select.id) {
+                    case 'waveform-select':
+                        this.synthEngine.setWaveform(value);
+                        break;
+                    case 'filter-type-select':
+                        // フィルタータイプが変更されたら、現在の周波数とQ値でフィルターを再設定
+                        this.synthEngine.setFilter(value, parseFloat(this.domElements.filterFreqRange.value), parseFloat(this.domElements.filterQRange.value));
+                        break;
+                    case 'lfo-target-select':
+                        // LFOターゲットが変更されたら、現在の周波数とアモウントでLFOを再設定
+                        this.synthEngine.setLFO(value, parseFloat(this.domElements.lfoFreqRange.value), parseFloat(this.domElements.lfoAmountRange.value));
+                        break;
+                }
+            }
+
+            /**
+             * 基準オクターブを変更する。
+             * @param {number} delta - 変更量（+1または-1）
+             */
+            changeBaseOctave(delta) {
+                const newOctave = this.currentBaseOctave + delta;
+                // オクターブ範囲の制約をチェック
+                if (newOctave >= MIN_BASE_OCTAVE && newOctave <= MAX_BASE_OCTAVE) {
+                    this.currentBaseOctave = newOctave;
+                    this.updateOctaveDisplays(); // 表示更新と鍵盤の再生成をトリガー
+                }
+            }
+
+            /**
+             * 表示オクターブ数を変更する。
+             * @param {number} delta - 変更量（+1または-1）
+             */
+            changeDisplayedOctaves(delta) {
+                const newRange = this.displayedOctaves + delta;
+                // 表示オクターブ数の範囲の制約をチェック
+                // 論理エラーを修正: 「MAX_DISPLAYED_OCTAVES以下」であるべき
+                if (newRange >= MIN_DISPLAYED_OCTAVES && newRange <= MAX_DISPLAYED_OCTAVES) {
+                    this.displayedOctaves = newRange;
+                    this.updateOctaveDisplays(); // 表示更新と鍵盤の再生成をトリガー
+                }
+            }
+
+            /**
+             * オクターブ表示（基準オクターブ、表示オクターブ数）を更新し、鍵盤を再生成する。
+             */
+            updateOctaveDisplays() {
+                this.domElements.currentBaseOctaveDisplay.textContent = this.currentBaseOctave;
+                this.domElements.currentOctaveRangeDisplay.textContent = this.displayedOctaves;
+                this.createKeyboard(); // 鍵盤要素を再生成
+            }
+            
+            /**
+             * プリセット設定をUI要素に適用し、表示を更新する。
+             * @param {object} settings - 適用するプリセット設定オブジェクト
+             */
+            setUIValues(settings) {
+                // 波形とオクターブ設定の適用
+                this.domElements.waveformSelect.value = settings.waveform;
+                this.currentBaseOctave = settings.baseOctave;
+                this.displayedOctaves = settings.displayedOctaves;
+                this.updateOctaveDisplays(); // 鍵盤の再描画をトリガー
+
+                // ADSRパラメータの適用
+                this.domElements.attackRange.value = settings.attack;
+                this.domElements.decayRange.value = settings.decay;
+                this.domElements.sustainRange.value = settings.sustain;
+                this.domElements.releaseRange.value = settings.release;
+                this.domElements.masterVolumeRange.value = settings.volume;
+
+                // Filter
+                this.domElements.filterTypeSelect.value = settings.filterType;
+                this.domElements.filterFreqRange.value = settings.filterFreq;
+                this.domElements.filterQRange.value = settings.filterQ;
+
+                // LFO
+                this.domElements.lfoTargetSelect.value = settings.lfoTarget;
+                this.domElements.lfoFreqRange.value = settings.lfoFreq;
+                this.domElements.lfoAmountRange.value = settings.lfoAmount;
+                // 新しいDetuneとPortamentoのUI適用
+                this.domElements.detuneRange.value = settings.detune;
+                this.domElements.portamentoRange.value = settings.portamento;
+
+                // Delay
+                this.domElements.delayTimeRange.value = settings.delayTime;
+                this.domElements.delayFeedbackRange.value = settings.delayFeedback;
+                this.domElements.delayMixRange.value = settings.delayMix;
+
+                // Reverb
+                this.domElements.reverbMixRange.value = settings.reverbMix;
+
+                // Chorus
+                this.domElements.chorusDepthRange.value = settings.chorusDepth;
+                this.domElements.chorusRateRange.value = settings.chorusRate;
+
+                // 全てのスライダー表示を更新し、UIと内部値が一致するようにする
+                document.querySelectorAll('input[type="range"]').forEach(slider => this.updateSliderDisplay(slider));
+            }
+        }
+
+        // ====================
+        // PresetManager クラス: プリセットの管理と適用
+        // ====================
+        class PresetManager {
+            /**
+             * PresetManagerのコンストラクタ。プリセットデータを初期化する。
+             * @param {object} presets - プリセット定義オブジェクト
+             */
+            constructor(presets) {
+                this.presets = presets;
+                this.presetSelect = document.getElementById('preset-select');
+            }
+
+            /**
+             * PresetManagerの初期化処理。プリセットをドロップダウンに読み込み、デフォルトを適用する。
+             * @param {UIController} uiController - 関連するUIControllerインスタンス
+             * @param {SynthEngine} synthEngine - 関連するSynthEngineインスタンス
+             */
+            init(uiController, synthEngine) {
+                this.uiController = uiController;
+                this.synthEngine = synthEngine;
+                this.populatePresets(); // プリセットをドロップダウンに投入
+                this.applyPreset('Default'); // 初期ロード時にデフォルトプリセットを適用
+            }
+
+            /**
+             * プリセット選択ドロップダウンにオプションを生成して追加する。
+             */
+            populatePresets() {
+                for (const name in this.presets) {
+                    const option = document.createElement('option');
+                    option.value = name;
+                    option.textContent = name;
+                    this.presetSelect.appendChild(option);
+                }
+            }
+
+            /**
+             * 指定された名前のプリセットを読み込み、UIとシンセエンジンに適用する。
+             * @param {string} presetName - 適用するプリセットの名前
+             */
+            applyPreset(presetName) {
+                const preset = this.presets[presetName];
+                if (!preset) {
+                    console.warn(`Preset "${presetName}" not found.`);
+                    return;
+                }
+
+                // UIController経由でUI要素の値を更新（これにより鍵盤の再描画やスライダー表示も更新される）
+                this.uiController.setUIValues(preset);
+
+                // SynthEngineのパラメータを直接更新
+                // UIControllerによって既に一部更新されているが、明示的に呼び出すことで確実に適用する
+                this.synthEngine.setMasterVolume(preset.volume);
+                this.synthEngine.setFilter(preset.filterType, preset.filterFreq, preset.filterQ);
+                this.synthEngine.setLFO(preset.lfoTarget, preset.lfoFreq, preset.lfoAmount);
+                this.synthEngine.setDelay(preset.delayTime, preset.delayFeedback, preset.delayMix);
+                this.synthEngine.setReverbMix(preset.reverbMix);
+                this.synthEngine.setChorus(preset.chorusDepth, preset.chorusRate);
+
+                console.log(`Preset "${presetName}" applied.`);
+            }
+        }
+
+        // ====================
+        // AnalyzerDisplay クラス: 波形表示を管理
+        // ====================
+        class AnalyzerDisplay {
+            /**
+             * AnalyzerDisplayのコンストラクタ。キャンバスとアナライザーノードを初期化する。
+             * @param {AnalyserNode} analyzerNode - Web Audio APIのアナライザーノード
+             * @param {string} canvasId - 波形描画用キャンバスのID
+             * @param {string} textId - 波形非表示時に表示するテキスト要素のID
+             */
+            constructor(analyzerNode, canvasId, textId) {
+                this.analyzerNode = analyzerNode;
+                this.canvas = document.getElementById(canvasId);
+                this.canvasCtx = this.canvas.getContext('2d');
+                this.textElement = document.getElementById(textId);
+                this.bufferLength = analyzerNode.fftSize; // FFTサイズからデータバッファ長を取得
+                this.dataArray = new Uint8Array(this.bufferLength); // 波形データ格納用配列
+                this.animationFrameId = null; // requestAnimationFrameのID
+                this.audioContextState = 'suspended'; // AudioContextの現在の状態を追跡
+
+                window.addEventListener('resize', () => this.resize()); // ウィンドウリサイズ時にキャンバスサイズを調整
+                this.resize(); // 初期表示時のキャンバスサイズ設定
+            }
+
+            /**
+             * キャンバスのサイズを親コンテナに合わせて調整する。
+             */
+            resize() {
+                const container = this.canvas.parentElement;
+                this.canvas.width = container.clientWidth;
+                this.canvas.height = container.clientHeight;
+            }
+
+            /**
+             * 波形描画のループを開始する。
+             * @param {SynthEngine} synthEngine - 関連するSynthEngineインスタンス
+             */
+            start(synthEngine) {
+                this.synthEngine = synthEngine; 
+                const draw = () => {
+                    this.animationFrameId = requestAnimationFrame(draw); // 次のフレームで再描画を予約
+
+                    this.analyzerNode.getByteTimeDomainData(this.dataArray); // 波形データを取得
+                    this.canvasCtx.clearRect(0, 0, this.canvas.width, this.canvas.height); // キャンバスをクリア
+                    this.canvasCtx.lineWidth = 2;
+                    this.canvasCtx.strokeStyle = 'rgb(0, 188, 212)'; // 描画色
+                    this.canvasCtx.beginPath(); // 描画パスを開始
+
+                    const sliceWidth = this.canvas.width * 1.0 / this.bufferLength;
+                    let x = 0;
+
+                    // 波形データを描画
+                    for (let i = 0; i < this.bufferLength; i++) {
+                        const v = this.dataArray[i] / 128.0; // 0-255を0-2の範囲に正規化
+                        const y = v * this.canvas.height / 2; // Y座標を計算
+
+                        if (i === 0) {
+                            this.canvasCtx.moveTo(x, y);
+                        } else {
+                            this.canvasCtx.lineTo(x, y);
+                        }
+                        x += sliceWidth;
+                    }
+                    this.canvasCtx.lineTo(this.canvas.width, this.canvas.height / 2); // 最後の点を中央に繋ぐ
+                    this.canvasCtx.stroke(); // 描画を実行
+                    
+                    // 音が鳴っているか、AudioContextが実行中であればテキストを非表示にする
+                    this.updateText(this.synthEngine.activeNotes.size > 0 || this.audioContextState === 'running');
+                };
+                draw(); // 初回描画の開始
+            }
+
+            /**
+             * 波形描画ループを停止する。
+             */
+            stop() {
+                cancelAnimationFrame(this.animationFrameId);
+                this.animationFrameId = null;
+            }
+            
+            /**
+             * AudioContextの現在の状態をAnalyzerDisplayに伝える。
+             * @param {string} state - AudioContextの状態 ('suspended', 'running', 'closed')
+             */
+            setAudioContextState(state) {
+                this.audioContextState = state;
+            }
+
+            /**
+             * 波形表示テキストの表示/非表示を切り替える。
+             * @param {boolean} hasSound - 音が鳴っているか、またはAudioContextが実行中か
+             */
+            updateText(hasSound) {
+                this.textElement.style.display = hasSound ? 'none' : 'block';
+            }
+        }
+
+        // ====================
+        // MIDIHandler クラス: Web MIDI APIを介したMIDI入力の処理を管理
+        // ====================
+        class MIDIHandler {
+            /**
+             * MIDIHandlerのコンストラクタ。
+             * @param {SynthEngine} synthEngine - 関連するSynthEngineインスタンス
+             */
+            constructor(synthEngine) {
+                this.synthEngine = synthEngine;
+                this.midiAccess = null; // MIDIAccessオブジェクト
+                // イベントハンドラを事前にバインド
+                this.boundGetMIDIMessage = this.getMIDIMessage.bind(this);
+                this.boundOnStateChange = this.onStateChange.bind(this);
+            }
+
+            /**
+             * MIDIハンドラの初期化処理。MIDI開始ボタンにイベントリスナーを設定する。
+             * @param {HTMLElement} midiStartButton - MIDI開始ボタン要素
+             */
+            init(midiStartButton) {
+                this.midiStartButton = midiStartButton;
+                this.midiStartButton.addEventListener('click', () => this.requestMIDIAccess());
+            }
+
+            /**
+             * Web MIDI APIへのアクセスを要求する。
+             */
+            requestMIDIAccess() {
+                if (navigator.requestMIDIAccess) {
+                    navigator.requestMIDIAccess({ sysex: false }) // SYSEXメッセージの許可はしない
+                        .then(midi => this.onMIDISuccess(midi), () => this.onMIDIFailure());
+                } else {
+                    this.midiStartButton.textContent = "MIDI Not Supported";
+                    this.midiStartButton.classList.add('error');
+                    this.midiStartButton.classList.remove('connected');
+                    this.midiStartButton.disabled = true;
+                    console.warn("Web MIDI API is not supported in this browser.");
+                }
+            }
+
+            /**
+             * MIDIアクセスが許可された時のコールバック。
+             * @param {MIDIAccess} midi - MIDIAccessオブジェクト
+             */
+            onMIDISuccess(midi) {
+                this.midiAccess = midi;
+                console.log('MIDI access granted!');
+                this.updateButtonState(); // ボタンの状態を更新
+                
+                // MIDIデバイスの接続/切断イベントを監視するリスナーを設定
+                this.midiAccess.onstatechange = this.boundOnStateChange;
+                this.setupInputs(this.midiAccess.inputs); // 現在接続されているMIDI入力デバイスを設定
+            }
+
+            /**
+             * MIDIアクセスが拒否された時のコールバック。
+             */
+            onMIDIFailure() {
+                console.warn("Could not access your MIDI devices.");
+                this.midiStartButton.textContent = "MIDI unavailable";
+                this.midiStartButton.classList.add('error');
+                this.midiStartButton.classList.remove('connected');
+                this.midiStartButton.disabled = true;
+            }
+
+            /**
+             * MIDI入力デバイスを設定し、メッセージリスナーをアタッチする。
+             * @param {MIDIInputMap} inputs - 利用可能な MIDI入力デバイスのマップ
+             */
+            setupInputs(inputs) {
+                inputs.forEach(input => {
+                    console.log(`MIDI Input: ${input.name} (ID: ${input.id}) - State: ${input.state}`);
+                    // 各入力デバイスにmidiメッセージリスナーをアタッチ
+                    // 既存のリスナーを削除してから追加し、重複登録を防ぐ
+                    input.removeEventListener('midimessage', this.boundGetMIDIMessage); 
+                    input.addEventListener('midimessage', this.boundGetMIDIMessage);
+                });
+            }
+
+            /**
+             * MIDIデバイスの状態が変更された時のハンドラ。
+             * （例: デバイスの接続/切断）
+             * @param {MIDIConnectionEvent} event - MIDI接続イベントオブジェクト
+             */
+            onStateChange(event) {
+                console.log(`MIDI ${event.port.type} "${event.port.name}" ${event.port.state}`);
+                if (event.port.type === 'input') {
+                    this.setupInputs(this.midiAccess.inputs); // 入力デバイスのリストを再確認・再設定
+                    this.updateButtonState(); // ボタンの状態を更新
+                }
+            }
+
+            /**
+             * MIDI開始ボタンの表示状態を更新する。
+             */
+            updateButtonState() {
+                if (this.midiAccess && this.midiAccess.inputs.size > 0) {
+                    this.midiStartButton.textContent = 'MIDI Connected';
+                    this.midiStartButton.classList.add('connected');
+                    this.midiStartButton.classList.remove('error');
+                    this.midiStartButton.disabled = true; // 接続済みならボタンを無効化
+                } else {
+                    this.midiStartButton.textContent = 'Start MIDI (Optional)';
+                    this.midiStartButton.classList.remove('connected');
+                    this.midiStartButton.classList.remove('error');
+                    this.midiStartButton.disabled = false; // 未接続ならボタンを有効化
+                }
+            }
+
+            /**
+             * 受信したMIDIメッセージを処理する。
+             * @param {MIDIMessageEvent} message - MIDIメッセージイベントオブジェクト
+             */
+            getMIDIMessage(message) {
+                const command = message.data[0] & 0xF0; // メッセージのコマンド部分（例: Note On, Note Off）
+                const midiNoteNumber = message.data[1]; // MIDIノート番号
+                const velocity = message.data.length > 2 ? message.data[2] : 0; // ベロシティ（音量）
+
+                const fullNoteName = getNoteNameFromMidi(midiNoteNumber);
+                const noteBase = fullNoteName.slice(0, -1);
+                const octave = parseInt(fullNoteName.slice(-1));
+
+                switch (command) {
+                    case 0x90: // Note On (またはベロシティ0のNote Off)
+                        if (velocity > 0) {
+                            this.synthEngine.playNote(noteBase, octave);
+                        } else { // ベロシティ0はNote Offとして扱う
+                            this.synthEngine.stopNote(fullNoteName);
+                        }
+                        break;
+                    case 0x80: // 明示的なNote Off
+                        this.synthEngine.stopNote(fullNoteName);
+                        break;
+                }
+            }
+        }
+
+        // ====================
+        // App クラス: アプリケーション全体の初期化と管理
+        // ====================
+        class App {
+            /**
+             * Appクラスのコンストラクタ。主要なモジュールを初期化する。
+             */
+            constructor() {
+                // AudioContextとモジュールの初期化はinitAudioContextAndModulesメソッドに委譲
+                this.audioContext = null;
+                this.synthEngine = null;
+                this.uiController = null;
+                this.presetManager = null;
+                this.analyzerDisplay = null;
+                this.midiHandler = null;
+
+                // シンセサイザーのプリセット定義
+                this.presets = {
+                    'Default': {
+                        waveform: 'sine', baseOctave: 4, displayedOctaves: 2,
+                        attack: 0.01, decay: 0.3, sustain: 0.7, release: 0.1,
+                        volume: 0.5,
+                        filterType: 'lowpass', filterFreq: 20000, filterQ: 1,
+                        lfoTarget: 'pitch', lfoFreq: 0.3, lfoAmount: 2,
+                        detune: 0, portamento: 0, // 新しいパラメータ
+                        delayTime: 0.1, delayFeedback: 0.1, delayMix: 0.05,
+                        reverbMix: 0.1,
+                        chorusDepth: 0, chorusRate: 0.5
+                    },
+                    'Soft Pad': {
+                        waveform: 'sawtooth', baseOctave: 4, displayedOctaves: 2,
+                        attack: 0.6, decay: 0.8, sustain: 0.7, release: 1.5,
+                        volume: 0.45,
+                        filterType: 'lowpass', filterFreq: 6000, filterQ: 2,
+                        lfoTarget: 'filter', lfoFreq: 0.5, lfoAmount: 250, // LFOの適用量（フィルター用）
+                        detune: 10, portamento: 0.2, // 新しいパラメータ
+                        delayTime: 0.4, delayFeedback: 0.6, delayMix: 0.4,
+                        reverbMix: 0.7,
+                        chorusDepth: 0.007, chorusRate: 0.5
+                    },
+                    'Lead Synth': {
+                        waveform: 'square', baseOctave: 4, displayedOctaves: 2,
+                        attack: 0.01, decay: 0.2, sustain: 0.9, release: 0.2,
+                        volume: 0.7,
+                        filterType: 'lowpass', filterFreq: 7000, filterQ: 0.5,
+                        lfoTarget: 'pitch', lfoFreq: 6, lfoAmount: 75, // 75セント
+                        detune: 5, portamento: 0.05, // 新しいパラメータ
+                        delayTime: 0.2, delayFeedback: 0.4, delayMix: 0.25,
+                        reverbMix: 0.3,
+                        chorusDepth: 0.0015, chorusRate: 2.5
+                    },
+                    'Bass': {
+                        waveform: 'sawtooth', baseOctave: 2, displayedOctaves: 2,
+                        attack: 0.01, decay: 0.1, sustain: 0.9, release: 0.1,
+                        volume: 0.9,
+                        filterType: 'lowpass', filterFreq: 800, filterQ: 4,
+                        lfoTarget: 'none', lfoFreq: 1, lfoAmount: 0,
+                        detune: 3, portamento: 0.02, // 新しいパラメータ
+                        delayTime: 0, delayFeedback: 0, delayMix: 0,
+                        reverbMix: 0.05,
+                        chorusDepth: 0, chorusRate: 0.5
+                    },
+                    'Pluck': {
+                        waveform: 'triangle', baseOctave: 4, displayedOctaves: 2,
+                        attack: 0.01, decay: 0.4, sustain: 0.05, release: 0.8,
+                        volume: 0.6,
+                        filterType: 'lowpass', filterFreq: 5000, filterQ: 1.5,
+                        lfoTarget: 'none', lfoFreq: 1, lfoAmount: 0,
+                        detune: 2, portamento: 0, // 新しいパラメータ
+                        delayTime: 0.3, delayFeedback: 0.6, delayMix: 0.5,
+                        reverbMix: 0.3,
+                        chorusDepth: 0.0005, chorusRate: 0.6
+                    },
+                    'Organ': {
+                        waveform: 'sine', baseOctave: 3, displayedOctaves: 2,
+                        attack: 0.005, decay: 0.1, sustain: 1.0, release: 0.03,
+                        volume: 0.7,
+                        filterType: 'lowpass', filterFreq: 8000, filterQ: 0.5,
+                        lfoTarget: 'pitch', lfoFreq: 4, lfoAmount: 8,
+                        detune: 0, portamento: 0, // 新しいパラメータ
+                        delayTime: 0, delayFeedback: 0, delayMix: 0,
+                        reverbMix: 0.4,
+                        chorusDepth: 0.006, chorusRate: 0.8
+                    },
+                    'Brite Synth': {
+                        waveform: 'square', baseOctave: 4, displayedOctaves: 2,
+                        attack: 0.01, decay: 0.3, sustain: 0.8, release: 0.2,
+                        volume: 0.7,
+                        filterType: 'highpass', filterFreq: 600, filterQ: 1.5,
+                        lfoTarget: 'pitch', lfoFreq: 0.8, lfoAmount: 30, // 30セント
+                        detune: 12, portamento: 0.03, // 新しいパラメータ
+                        delayTime: 0.3, delayFeedback: 0.7, delayMix: 0.5,
+                        reverbMix: 0.5,
+                        chorusDepth: 0.003, chorusRate: 1.8
+                    },
+                    'Bell': {
+                        waveform: 'triangle', baseOctave: 5, displayedOctaves: 2,
+                        attack: 0.01, decay: 1.2, sustain: 0.0, release: 0.8,
+                        volume: 0.7,
+                        filterType: 'bandpass', filterFreq: 2500, filterQ: 5.0,
+                        lfoTarget: 'none', lfoFreq: 1, lfoAmount: 0,
+                        detune: 0, portamento: 0, // 新しいパラメータ
+                        delayTime: 0.6, delayFeedback: 0.8, delayMix: 0.6,
+                        reverbMix: 0.8,
+                        chorusDepth: 0, chorusRate: 0.5
+                    }
+                };
+            }
+
+            /**
+             * AudioContextおよび主要なモジュールを初期化または再初期化する。
+             * これは、ページの初回ロード時と、AudioContextが閉鎖された場合に呼び出される。
+             */
+            initAudioContextAndModules() {
+                // 既存のAudioContextがあれば閉じる
+                if (this.audioContext && this.audioContext.state !== 'closed') {
+                    this.audioContext.close().then(() => console.log('Previous AudioContext closed cleanly.')).catch(e => console.warn('Error closing previous AudioContext:', e));
+                }
+
+                this.audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                // SynthEngineにAppインスタンス自身を渡すことで、SynthEngineがreinitializeModulesを呼び出せるようにする
+                this.synthEngine = new SynthEngine(this.audioContext);
+                this.synthEngine.app = this; // 相互参照を設定
+
+                // UIController, PresetManager, AnalyzerDisplay, MIDIHandlerのインスタンスを初期化または再利用
+                if (!this.uiController) {
+                    this.uiController = new UIController(this.synthEngine);
+                } else {
+                    this.uiController.synthEngine = this.synthEngine; // 既存インスタンスの参照を更新
+                }
+
+                if (!this.presetManager) {
+                    this.presetManager = new PresetManager(this.presets);
+                } else {
+                    this.presetManager.synthEngine = this.synthEngine; // 既存インスタンスの参照を更新
+                }
+                
+                if (!this.analyzerDisplay) {
+                    this.analyzerDisplay = new AnalyzerDisplay(this.synthEngine.analyzerNode, 'analyzer-canvas', 'analyzer-text');
+                } else {
+                    this.analyzerDisplay.analyzerNode = this.synthEngine.analyzerNode; // 既存インスタンスのアナライザーノードを更新
+                    this.analyzerDisplay.bufferLength = this.synthEngine.analyzerNode.fftSize;
+                    this.analyzerDisplay.dataArray = new Uint8Array(this.analyzerDisplay.bufferLength);
+                    this.analyzerDisplay.stop(); // 既存の描画ループを停止
+                }
+
+                if (!this.midiHandler) {
+                    this.midiHandler = new MIDIHandler(this.synthEngine);
+                } else {
+                    this.midiHandler.synthEngine = this.synthEngine; // 既存インスタンスの参照を更新
+                    // MIDIアクセスは再作成時に自動的に再要求される可能性があるので、特に何もしない
+                }
+
+                this.setupAudioContextStateHandling(); // AudioContextの状態管理を再設定
+                this.analyzerDisplay.start(this.synthEngine); // アナライザー表示を再開
+
+                // プリセットとUIの初期化/同期
+                this.presetManager.init(this.uiController, this.synthEngine); 
+                this.uiController.init(this.presetManager);
+                console.log('App modules initialized/reinitialized.');
+            }
+
+            /**
+             * アプリケーションの初期化エントリポイント。
+             */
+            init() {
+                this.initAudioContextAndModules(); // 全てのモジュールを初期化
+            }
+
+            /**
+             * ブラウザのオーディオ自動再生ポリシーとバックグラウンド/フォアグラウンドの状態を管理する。
+             * これにより、ユーザーの操作に応じてAudioContextを適切に再開/一時停止する。
+             */
+            setupAudioContextStateHandling() {
+                /** AudioContextを再開する試み */
+                const resumeContext = () => {
+                    // AudioContextがsuspended状態の場合のみ再開を試みる
+                    if (this.audioContext.state === 'suspended') {
+                        console.log('Attempting to resume AudioContext...');
+                        this.audioContext.resume().then(() => {
+                            console.log('AudioContext resumed successfully.');
+                            // AudioContextが正常に再開されたら、アクティブな音符を全て停止する
+                            // これにより、suspended中に鳴り続けていた可能性のある音や、
+                            // 再開時のリソースの不整合による音の破綻を防ぐ。
+                            this.synthEngine.stopAllActiveNotes(); 
+                            this.analyzerDisplay.setAudioContextState('running');
+                        }).catch(error => {
+                            console.error('Failed to resume AudioContext:', error);
+                            // resumeに失敗し、closed状態になった場合は再初期化を試みる
+                            if (this.audioContext.state === 'closed') {
+                                console.warn('AudioContext failed to resume and is now closed. Reinitializing modules...');
+                                this.reinitializeModules();
+                            }
+                        });
+                    }
+                };
+
+                /** AudioContextを一時停止する試み */
+                const suspendContext = () => {
+                    // AudioContextがrunning状態の場合のみ一時停止を試みる
+                    if (this.audioContext.state === 'running') {
+                        console.log('Attempting to suspend AudioContext...');
+                        this.audioContext.suspend().then(() => {
+                            console.log('AudioContext suspended successfully.');
+                            this.synthEngine.stopAllActiveNotes(); // 音を全て停止する
+                            this.analyzerDisplay.setAudioContextState('suspended');
+                        }).catch(error => {
+                            console.error('Failed to suspend AudioContext:', error);
+                        });
+                    }
+                };
+
+                // AudioContextの状態変更イベントリスナーを一度だけ設定 (再初期化時も設定し直される)
+                this.audioContext.onstatechange = () => {
+                    console.log('AudioContext state changed to: ' + this.audioContext.state);
+                    this.analyzerDisplay.setAudioContextState(this.audioContext.state);
+                    // アナライザーテキストの表示は、音符がアクティブか、またはAudioContextがrunning状態かに基づく
+                    this.analyzerDisplay.updateText(this.synthEngine.activeNotes.size > 0 || this.audioContext.state === 'running');
+
+                    // AudioContextがclosedになった場合、全てを再初期化するトリガー
+                    if (this.audioContext.state === 'closed') {
+                        console.warn('AudioContext is now closed. Initiating full reinitialization.');
+                        this.reinitializeModules();
+                    }
+                };
+
+                // 初回のユーザーインタラクション時にAudioContextを再開する（自動再生ポリシー対応）
+                // これにより、再初期化後も最初のユーザー操作でオーディオが有効になる
+                document.body.removeEventListener('pointerdown', resumeContext); // 重複登録防止
+                document.body.addEventListener('pointerdown', resumeContext, { once: true });
+
+                // タブの表示状態が変更された時（例: アプリがバックグラウンドになった時）にAudioContextを管理
+                document.removeEventListener('visibilitychange', () => { /* remove previous anonymous fn */ }); // 匿名関数は削除できないため、一旦コメントアウト
+                document.addEventListener('visibilitychange', () => {
+                    if (document.visibilityState === 'hidden') {
+                        suspendContext(); // タブが非表示になったら一時停止
+                    } else if (document.visibilityState === 'visible') {
+                        resumeContext(); // タブが再表示されたら再開
+                    }
+                });
+            }
+        }
+
+        // DOMContentLoadedイベントでアプリケーションを初期化する
+        document.addEventListener('DOMContentLoaded', () => {
+            const app = new App();
+            app.init();
+        });
+    </script>
+</body>
+</html>
