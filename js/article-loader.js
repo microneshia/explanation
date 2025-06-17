@@ -96,8 +96,8 @@ function renderPagination() {
     let html = '';
     
     if (currentPage > 1) {
-        html += `<span class="pagination-first-last" data-page="1">« 最初へ</span>`;
-        html += `<span class="pagination-btn" data-page="${currentPage - 1}">« 前へ</span>`;
+        html += `<span class="pagination-first-last" data-page="1">«</span>`;
+        html += `<span class="pagination-btn" data-page="${currentPage - 1}">&lt;</span>`;
     }
 
     const pages = [];
@@ -120,8 +120,8 @@ function renderPagination() {
     });
 
     if (currentPage < totalPages) {
-        html += `<span class="pagination-btn" data-page="${currentPage + 1}">次へ »</span>`;
-        html += `<span class="pagination-first-last" data-page="${totalPages}">最後へ »</span>`;
+        html += `<span class="pagination-btn" data-page="${currentPage + 1}">&gt;</span>`;
+        html += `<span class="pagination-first-last" data-page="${totalPages}">»</span>`;
     }
 
     paginationContainerElement.innerHTML = html;
