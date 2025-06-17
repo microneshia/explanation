@@ -1,0 +1,505 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>日帰りドライブ旅行のしおり</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@400;700;800&family=Noto+Sans+JP:wght@400;700&display=swap');
+
+        :root {
+            --primary-color: #0d6efd;
+            --secondary-color: #0dcaf0;
+            --accent-color: #ffc107;
+            --text-color: #212529;
+            --bg-light: #f8f9fa;
+            --bg-white: #ffffff;
+        }
+
+        body {
+            font-family: 'Noto Sans JP', sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: var(--bg-light);
+            color: var(--text-color);
+            line-height: 1.7;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 15px;
+        }
+
+        .header {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            padding: 30px 20px;
+            text-align: center;
+            border-radius: 12px;
+            margin-bottom: 25px;
+            box-shadow: 0 4px 15px rgba(0, 123, 255, 0.2);
+        }
+
+        .header h1 {
+            font-family: 'M PLUS Rounded 1c', sans-serif;
+            font-weight: 800;
+            font-size: 2.2em;
+            margin: 0;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+        }
+
+        .header p {
+            font-size: 1.1em;
+            margin-top: 8px;
+            opacity: 0.9;
+        }
+
+        .section {
+            background-color: var(--bg-white);
+            padding: 20px;
+            margin-bottom: 25px;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        }
+
+        h2 {
+            font-family: 'M PLUS Rounded 1c', sans-serif;
+            font-weight: 700;
+            font-size: 1.7em;
+            padding-bottom: 10px;
+            border-bottom: 3px solid var(--primary-color);
+            margin-top: 0;
+            display: flex;
+            align-items: center;
+        }
+        h2 i { margin-right: 12px; }
+
+        h3 {
+            font-family: 'M PLUS Rounded 1c', sans-serif;
+            font-weight: 700;
+            font-size: 1.3em;
+            background-color: #eef7ff;
+            padding: 10px 15px;
+            border-radius: 8px;
+            margin-top: 25px;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+        }
+        h3 i { margin-right: 10px; }
+
+        .plan-selector {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 15px;
+        }
+
+        .plan-card {
+            border: 1px solid #ddd;
+            border-radius: 10px;
+            padding: 20px;
+            text-align: center;
+            transition: transform 0.3s, box-shadow 0.3s;
+            background: var(--bg-white);
+        }
+        .plan-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+        .plan-card .icon-main {
+            font-size: 2.5em;
+            color: var(--primary-color);
+            margin-bottom: 10px;
+        }
+        .plan-card h4 {
+            margin: 0 0 10px 0;
+            font-size: 1.2em;
+            color: var(--text-color);
+        }
+        .plan-card .tag {
+            background-color: var(--accent-color);
+            color: var(--text-color);
+            padding: 3px 8px;
+            border-radius: 5px;
+            font-size: 0.8em;
+            font-weight: bold;
+        }
+        .plan-card a.button {
+            display: inline-block;
+            margin-top: 15px;
+            padding: 8px 16px;
+            background-color: var(--primary-color);
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+            font-weight: bold;
+            transition: background-color 0.3s;
+        }
+        .plan-card a.button:hover {
+            background-color: #0b5ed7;
+        }
+
+        /* Timeline Styles */
+        .timeline { list-style: none; padding: 0; position: relative; }
+        .timeline::before {
+            content: '';
+            position: absolute;
+            top: 15px;
+            bottom: 15px;
+            left: 20px;
+            width: 4px;
+            background: #e9ecef;
+            border-radius: 2px;
+        }
+        .timeline li { position: relative; margin-bottom: 15px; padding-left: 50px; min-height: 50px; }
+        .timeline .icon {
+            position: absolute;
+            left: 0;
+            top: 50%;
+            transform: translateY(-50%);
+            background: var(--primary-color);
+            color: white;
+            width: 42px;
+            height: 42px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2em;
+            z-index: 1;
+        }
+        .timeline .content {
+            position: relative;
+            padding: 10px 15px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            padding-bottom: 40px; /* time-infoのスペースを確保 */
+        }
+        .timeline .content h4 { 
+            margin: 0 0 5px 0; 
+            font-family: 'M PLUS Rounded 1c', sans-serif;
+            font-size: 1.1em;
+            display: flex;
+            align-items: center;
+        }
+        .timeline .content h4 i { margin-right: 8px; }
+        .timeline .content p { margin: 0 0 5px 0; font-size: 0.9em; }
+
+        .timeline .time-info {
+            position: absolute;
+            right: 15px;
+            bottom: 10px;
+            font-size: 0.8em;
+            color: #6c757d;
+            font-weight: bold;
+            background: #e9ecef;
+            padding: 2px 8px;
+            border-radius: 5px;
+        }
+        .timeline .card-links {
+            margin-top: 8px;
+        }
+
+        .gourmet-options {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 15px;
+            margin-top: 15px;
+        }
+        .gourmet-card, .spot-card {
+            background: #fff9e6;
+            border: 2px dashed var(--accent-color);
+            padding: 15px;
+            border-radius: 8px;
+        }
+        .spot-card {
+            background: #eef7ff;
+            border-color: var(--primary-color);
+        }
+
+        .gourmet-card h5, .spot-card h5 { margin: 0 0 10px 0; font-size: 1.1em; display: flex; align-items: center; }
+        .gourmet-card h5 i, .spot-card h5 i { margin-right: 8px; color: #d9480f; }
+        .spot-card h5 i { color: var(--primary-color); }
+        .gourmet-card p, .spot-card p { margin: 0 0 8px 0; font-size: 0.9em; }
+        
+        .card-links a {
+            text-decoration: none;
+            font-weight: bold;
+            font-size: 0.9em;
+        }
+        .card-links span {
+            color: #ccc;
+            margin: 0 5px;
+        }
+        .card-links a:hover {
+            text-decoration: underline;
+        }
+        .card-links .map-link { color: #d9480f; }
+        .spot-card .map-link { color: var(--primary-color); }
+        .card-links .site-link { color: #00796b; }
+
+
+        .route-map-container {
+            border-radius: 8px;
+            overflow: hidden;
+            margin-top: 15px;
+            border: 1px solid #ddd;
+        }
+        .route-map-container iframe {
+            width: 100%;
+            height: 300px;
+            border: 0;
+        }
+
+        .info-box {
+            background: #e0f7fa;
+            border-left: 5px solid #00acc1;
+            padding: 15px;
+            border-radius: 0 8px 8px 0;
+            margin-top: 15px;
+        }
+        .route-list {
+            list-style: none;
+            padding-left: 0;
+        }
+        .route-list li {
+            position: relative;
+            padding-left: 25px;
+            margin-bottom: 5px;
+        }
+        .route-list li i {
+            position: absolute;
+            left: 0;
+            top: 5px;
+            color: var(--primary-color);
+        }
+
+        @media (max-width: 600px) {
+            .header h1 { font-size: 1.8em; }
+            .container { padding: 10px; }
+            .section, .header { padding: 15px; }
+            h2 { font-size: 1.5em; }
+            h3 { font-size: 1.2em; }
+            .timeline .time-info { font-size: 0.7em; }
+        }
+    </style>
+    <!-- Font Awesome for Icons (Latest Version) -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+</head>
+<body>
+
+    <div class="container">
+        <header class="header">
+            <h1>日帰りドライブ旅行のしおり</h1>
+        </header>
+
+        <section class="section">
+            <h2><i class="fa-solid fa-clipboard-list"></i>旅のプラン概要</h2>
+            <ul>
+                <li><strong>日程:</strong> 2025年6月某日（日帰り）</li>
+                <li><strong>時間:</strong> 9:30 ～ 21:30 </li>
+                <li><strong>予算 (1人あたり):</strong>
+                    <ul>
+                        <li><strong>車関連費: 1,500円以内</strong> (レンタカー代:2,970円 + ガソリン代)</li>
+                        <li><strong>食費:</strong> 2,000円〜3,000円程度 (昼食+夕食+α)</li>
+                    </ul>
+                </li>
+            </ul>
+        </section>
+
+        <section class="section">
+            <h2><i class="fa-solid fa-map"></i>プランを選ぼう！</h2>
+            <div class="plan-selector">
+                <div class="plan-card">
+                    <div class="icon-main"><i class="fa-solid fa-mountain-sun"></i></div>
+                    <span class="tag">兵庫プラン</span>
+                    <h4>天空の高原ドライブ</h4>
+                    <p>絶景の高原を駆け抜け、播州グルメを味わうアクティブコース！</p>
+                    <a href="#hyogo" class="button">このプランを見る</a>
+                </div>
+                <div class="plan-card">
+                    <div class="icon-main"><i class="fa-solid fa-bridge-water"></i></div>
+                    <span class="tag">奈良プラン</span>
+                    <h4>秘境スリル体験</h4>
+                    <p>日本一の吊り橋で度胸試し！冒険心くすぐるワイルドコース！</p>
+                    <a href="#nara" class="button">このプランを見る</a>
+                </div>
+                <div class="plan-card">
+                    <div class="icon-main"><i class="fa-solid fa-leaf"></i></div>
+                    <span class="tag">京都プラン</span>
+                    <h4>癒やしの茶畑風景</h4>
+                    <p>"じゃない方"の京都へ。茶畑の絶景とグルメに癒されるチルコース！</p>
+                    <a href="#kyoto" class="button">このプランを見る</a>
+                </div>
+            </div>
+        </section>
+
+        <!-- 兵庫プラン -->
+        <section id="hyogo" class="section">
+            <h2><i class="fa-solid fa-mountain-sun"></i>【兵庫プラン】天空の高原ドライブ</h2>
+            
+            <h3><i class="fa-solid fa-route"></i> 主なルート</h3>
+            <ul class="route-list">
+                <li><i class="fa-solid fa-circle-dot"></i>大阪市内</li>
+                <li><i class="fa-solid fa-arrow-down"></i>国道176号線 → 中国自動車道側道</li>
+                <li><i class="fa-solid fa-location-dot"></i>西脇市・多可町エリア（昼食）</li>
+                <li><i class="fa-solid fa-arrow-down"></i>県道8号線</li>
+                <li><i class="fa-solid fa-star"></i>砥峰高原（目的地）</li>
+            </ul>
+            <div class="route-map-container">
+                <iframe src="https://www.google.com/maps/embed?pb=!1m28!1m12!1m3!1d837426.631954673!2d134.43797084155696!3d34.92657638212251!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!4m13!3e0!4m5!1s0x6000e6553406e2e1%3A0xc55bc16ee46a2fe7!2z5aSn6Ziq5bqc5aSn6Ziq5biC!3m2!1d34.6937249!2d135.5022535!4m5!1s0x35556a9ab336af05%3A0xeefe222dcc42f1f8!2z5YW15bqr55yM56We5rKz55S65bed5LiK56Cl5bOw6auY5Y6f!3m2!1d35.1522445!2d134.68968619999998!5e0!3m2!1sja!2sjp!4v1749772205355!5m2!1sja!2sjp" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+            </div>
+            
+            <h3><i class="fa-regular fa-clock"></i> タイムスケジュール</h3>
+            <ul class="timeline">
+                <li><div class="icon"><i class="fa-solid fa-key"></i></div><div class="content"><h4><i class="fa-solid fa-car"></i> 9:30 レンタカー出発</h4><p>仲間をピックアップして旅の始まり！</p><span class="time-info">所要: 約1時間</span></div></li>
+                <li><div class="icon"><i class="fa-solid fa-road"></i></div><div class="content"><h4><i class="fa-solid fa-music"></i> 10:30 ドライブタイム</h4><p>BGMをかけて兵庫へ！会話を楽しもう。</p><span class="time-info">移動: 約2.5時間</span></div></li>
+                <li><div class="icon"><i class="fa-solid fa-utensils"></i></div><div class="content"><h4><i class="fa-solid fa-bowl-food"></i> 13:00 昼食</h4><p>西脇・多可エリアで播州グルメを堪能！</p><span class="time-info">滞在: 約1時間</span></div></li>
+                <li><div class="icon"><i class="fa-solid fa-mountain"></i></div><div class="content"><h4><i class="fa-solid fa-camera-retro"></i> 砥峰高原</h4><p>絶景をバックに写真撮影＆散策！</p><div class="card-links"><a class="site-link" href="https://www.kamikawa-navi.jp/guide/spot/795" target="_blank">🌐公式サイト</a></div><span class="time-info">滞在: 約1.5時間</span></div></li>
+                <li><div class="icon"><i class="fa-solid fa-arrow-left"></i></div><div class="content"><h4><i class="fa-solid fa-mug-hot"></i> 16:00 帰路へ</h4><p>道の駅で休憩しつつ、大阪方面へ。</p><span class="time-info">移動: 約3時間</span></div></li>
+                <li><div class="icon"><i class="fa-solid fa-burger"></i></div><div class="content"><h4><i class="fa-solid fa-comments"></i> 19:00 夕食</h4><p>宝塚や池田周辺で旅の思い出を語りながらガッツリ飯。</p><span class="time-info">滞在: 約1.5時間</span></div></li>
+                <li><div class="icon"><i class="fa-solid fa-flag-checkered"></i></div><div class="content"><h4><i class="fa-solid fa-moon"></i> 21:30 レンタカー返却</h4><p>友人を送り届けて解散。お疲れ様！</p></div></li>
+            </ul>
+
+            <h3><i class="fa-solid fa-lightbulb"></i> 立ち寄りスポット案</h3>
+            <div class="gourmet-options">
+                <div class="spot-card"><h5><i class="fa-solid fa-water"></i> 銀山湖</h5><p>砥峰高原から少し足を延らせば、静かで美しいダム湖が。ダムの迫力も一見の価値あり。</p><div class="card-links"><a class="map-link" href="https://www.google.com/maps/search/?api=1&query=銀山湖" target="_blank">📍場所をチェック</a><span>|</span><a class="site-link" href="https://www.asabura.jp/sspot/807" target="_blank">🌐公式サイト</a></div></div>
+                <div class="spot-card"><h5><i class="fa-solid fa-road-bridge"></i> 道の駅 いながわ</h5><p>帰り道の休憩に最適。地元の新鮮な野菜や特産品が並ぶ。そばが有名。</p><div class="card-links"><a class="map-link" href="https://www.google.com/maps/search/?api=1&query=道の駅+いながわ" target="_blank">📍場所をチェック</a><span>|</span><a class="site-link" href="https://michinoeki-inagawa.com/" target="_blank">🌐公式サイト</a></div></div>
+            </div>
+
+            <h3><i class="fa-solid fa-utensils"></i> 選べる！絶品ランチ</h3>
+            <div class="gourmet-options">
+                <div class="gourmet-card"><h5><i class="fa-solid fa-cow"></i>案① 神戸ステーキランド</h5><p>予算: ¥2,000前後<br>神戸まで足を延ばす価値アリ！手頃な価格で本格神戸牛ステーキを堪能できる超人気店。</p><div class="card-links"><a class="map-link" href="https://www.google.com/maps/search/?api=1&query=ステーキランド+神戸店" target="_blank">📍場所をチェック</a><span>|</span><a class="site-link" href="https://steakland-kobe.jp/smarts/index/22/#block56" target="_blank">🌐公式サイト</a></div></div>
+                <div class="gourmet-card"><h5><i class="fa-solid fa-bowl-food"></i>案② 西脇大橋ラーメン</h5><p>予算: 〜¥1,000<br>播州ラーメンの代表格。甘めの醤油スープがクセになる！</p><div class="card-links"><a class="map-link" href="https://www.google.com/maps/search/?api=1&query=西脇大橋ラーメン" target="_blank">📍場所をチェック</a><span>|</span><a class="site-link" href="https://tabelog.com/hyogo/A2804/A280404/28001391/" target="_blank">🌐食べログ</a></div></div>
+                <div class="gourmet-card"><h5><i class="fa-solid fa-egg"></i>案③ 但熊 弐番館</h5><p>予算: 〜¥1,000<br>新鮮卵食べ放題のTKG定食。シンプル is a BEST！</p><div class="card-links"><a class="map-link" href="https://www.google.com/maps/search/?api=1&query=但熊+弐番館" target="_blank">📍場所をチェック</a><span>|</span><a class="site-link" href="https://www.eonet.ne.jp/~tankuma/" target="_blank">🌐公式サイト</a></div></div>
+            </div>
+
+            <h3><i class="fa-solid fa-burger"></i> 選べる！旅の締めくくり夕食</h3>
+            <div class="gourmet-options">
+                <div class="gourmet-card"><h5><i class="fa-solid fa-fire"></i>案① ステーキガスト</h5><p>サラダバー付きでがっつり食べたい時に最適。</p><div class="card-links"><a class="map-link" href="https://www.google.com/maps/search/?api=1&query=ステーキガスト" target="_blank">📍近くの店を探す</a><span>|</span><a class="site-link" href="https://www.skylark.co.jp/steak_gusto/menu/index.html" target="_blank">🌐公式サイト</a></div></div>
+                <div class="gourmet-card"><h5><i class="fa-solid fa-bowl-rice"></i>案② 町中華</h5><p>宝塚周辺には昔ながらの中華料理店が点在。炒飯と餃子の黄金コンビで締め！</p><div class="card-links"><a class="map-link" href="https://www.google.com/maps/search/?api=1&query=宝塚+中華料理" target="_blank">📍検索してみる</a></div></div>
+                <div class="gourmet-card"><h5><i class="fa-solid fa-drumstick-bite"></i>案③ とんかつ かつや</h5><p>国道沿いで見つけやすい。サクサクのカツ丼や定食で手軽に満足。</p><div class="card-links"><a class="map-link" href="https://www.google.com/maps/search/?api=1&query=とんかつ+かつや" target="_blank">📍近くの店を探す</a><span>|</span><a class="site-link" href="https://www.arclandservice.co.jp/katsuya/menu/" target="_blank">🌐公式サイト</a></div></div>
+            </div>
+
+            <div class="info-box" style="margin-top:20px;">
+                <strong><i class="fa-solid fa-gas-pump"></i> ドライブ情報</strong>
+                <p><strong>推定走行距離:</strong> 約220km | <strong>ガソリン代目安:</strong> 約1,900円 (燃費20km/L, 170円/L)</p>
+            </div>
+        </section>
+
+        <!-- 奈良プラン -->
+        <section id="nara" class="section">
+            <h2><i class="fa-solid fa-bridge-water"></i>【奈良プラン】秘境スリル体験</h2>
+
+            <h3><i class="fa-solid fa-route"></i> 主なルート</h3>
+            <ul class="route-list">
+                <li><i class="fa-solid fa-circle-dot"></i>大阪市内</li>
+                <li><i class="fa-solid fa-arrow-down"></i>国道25号線 → 国道168号線</li>
+                <li><i class="fa-solid fa-location-dot"></i>香芝・五條エリア（昼食）</li>
+                <li><i class="fa-solid fa-arrow-down"></i>国道168号線（山道）</li>
+                <li><i class="fa-solid fa-star"></i>谷瀬の吊り橋（目的地）</li>
+            </ul>
+            <div class="route-map-container">
+                <iframe src="https://www.google.com/maps/embed?pb=!1m28!1m12!1m3!1d955567.3128900876!2d134.95459053292498!3d34.30944613882941!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!4m13!3e0!4m5!1s0x6000e6553406e2e1%3A0xc55bc16ee46a2fe7!2z5aSn6Ziq5bqc5aSn6Ziq5biC!3m2!1d34.6937249!2d135.5022535!4m5!1s0x6006ef6f4a66237b%3A0x1c4379ea6638341c!2z44CSNjM3LTExMDYg5aWI6Imv55yM5ZCJ6YeO6YOh5Y2B5rSl5bed5p2R5LiK6YeO5Zyw77yW77yV4oiS77ySIOiwt-eArOOBruWQiuOCiuapiw!3m2!1d34.1012249!2d135.7628019!5e0!3m2!1sja!2sjp!4v1749773419176!5m2!1sja!2sjp" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+            </div>
+
+            <h3><i class="fa-regular fa-clock"></i> タイムスケジュール</h3>
+            <ul class="timeline">
+                <li><div class="icon"><i class="fa-solid fa-key"></i></div><div class="content"><h4><i class="fa-solid fa-car"></i> 9:30 レンタカー出発</h4><p>仲間をピックアップ！冒険の始まりだ！</p><span class="time-info">所要: 約1時間</span></div></li>
+                <li><div class="icon"><i class="fa-solid fa-road"></i></div><div class="content"><h4><i class="fa-solid fa-city"></i> 10:30 アドベンチャードライブ</h4><p>国道168号線を南下。徐々に景色が変わるのを楽しもう。</p><span class="time-info">移動: 約2時間</span></div></li>
+                <li><div class="icon"><i class="fa-solid fa-utensils"></i></div><div class="content"><h4><i class="fa-solid fa-drumstick-bite"></i> 12:30 昼食</h4><p>奈良のデカ盛り＆名物ランチでエネルギーチャージ！</p><span class="time-info">滞在: 約1時間</span></div></li>
+                <li><div class="icon"><i class="fa-solid fa-person-walking"></i></div><div class="content"><h4><i class="fa-solid fa-bridge-water"></i> 谷瀬の吊り橋</h4><p>日本一の吊り橋で度胸試し！最高の写真＆動画を撮ろう。</p><div class="card-links"><a class="site-link" href="https://www.vill.totsukawa.lg.jp/traveling_guide/" target="_blank">🌐公式サイト</a></div><span class="time-info">滞在: 約1.5時間</span></div></li>
+                <li><div class="icon"><i class="fa-solid fa-arrow-left"></i></div><div class="content"><h4><i class="fa-solid fa-mug-hot"></i> 16:00 帰路へ</h4><p>道の駅で休憩しつつ、来た道を戻る。</p><span class="time-info">移動: 約3.5時間</span></div></li>
+                <li><div class="icon"><i class="fa-solid fa-burger"></i></div><div class="content"><h4><i class="fa-solid fa-comments"></i> 19:30 夕食＆打ち上げ</h4><p>大阪に戻ってから。お好み焼き、焼肉など気分で決める！</p><span class="time-info">滞在: 約1.5時間</span></div></li>
+                <li><div class="icon"><i class="fa-solid fa-flag-checkered"></i></div><div class="content"><h4><i class="fa-solid fa-moon"></i> 21:30 レンタカー返却</h4><p>友人を送り届けて解散。お疲れ様！</p></div></li>
+            </ul>
+
+            <h3><i class="fa-solid fa-lightbulb"></i> 立ち寄りスポット案</h3>
+            <div class="gourmet-options">
+                <div class="spot-card"><h5><i class="fa-solid fa-archway"></i> 五條新町通り</h5><p>道中の五條市にある古い町並み。江戸時代の風情が残る通りを少し散策するのも乙。</p><div class="card-links"><a class="map-link" href="https://www.google.com/maps/search/?api=1&query=五條新町通り" target="_blank">📍場所をチェック</a><span>|</span><a class="site-link" href="https://yamatoji.nara-kankou.or.jp/03history/02old_house/04south_area/shimmachidori-gojoshi/" target="_blank">🌐公式サイト</a></div></div>
+                <div class="spot-card"><h5><i class="fa-solid fa-store"></i> 道の駅 吉野路大塔</h5><p>休憩の定番。星が綺麗な村の道の駅で、地元の特産品やこんにゃくなどをチェック。</p><div class="card-links"><a class="map-link" href="https://www.google.com/maps/search/?api=1&query=道の駅+吉野路大塔" target="_blank">📍場所をチェック</a><span>|</span><a class="site-link" href="https://gojo-ltc.com/biz_item/michinoeki/" target="_blank">🌐公式サイト</a></div></div>
+            </div>
+
+            <h3><i class="fa-solid fa-utensils"></i> 選べる！漢のランチ</h3>
+            <div class="gourmet-options">
+                 <div class="gourmet-card"><h5><i class="fa-solid fa-drumstick-bite"></i>案① さかえ食堂</h5><p>予算: 〜¥1,000<br>天理の定食＆ラーメンの老舗名店 ！</p><div class="card-links"><a class="map-link" href="https://www.google.com/maps/search/?api=1&query=さかえ食堂+天理市" target="_blank">📍場所をチェック</a><span>|</span><a class="site-link" href="https://tabelog.com/nara/A2904/A290401/29002359/" target="_blank">🌐食べログ</a></div></div>
+                <div class="gourmet-card"><h5><i class="fa-solid fa-shrimp"></i>案② 洋食 Katsui</h5><p>予算: ¥1,500前後<br>デカ盛りだけじゃない。美味しい洋食でちょっとお洒落に。</p><div class="card-links"><a class="map-link" href="https://www.google.com/maps/search/?api=1&query=洋食+Katsui+葛城店" target="_blank">📍場所をチェック</a><span>|</span><a class="site-link" href="https://katsui1999.com/" target="_blank">🌐公式サイト</a></div></div>
+                <div class="gourmet-card"><h5><i class="fa-solid fa-fish-fins"></i>案③ 柿の葉寿司</h5><p>予算: 〜¥1,200<br>道中の専門店や道の駅で。奈良名物の郷土料理を味わう。</p><div class="card-links"><a class="map-link" href="https://www.google.com/maps/search/?api=1&query=五條市+柿の葉寿司" target="_blank">📍検索してみる</a></div></div>
+            </div>
+            
+            <h3><i class="fa-solid fa-burger"></i> 選べる！旅の締めくくり夕食</h3>
+            <div class="gourmet-options">
+                <div class="gourmet-card"><h5><i class="fa-solid fa-plate-wheat"></i>案① 鶴橋風月</h5><p>大阪に戻ってから。ソースの香りが旅の疲れを癒す。</p><div class="card-links"><a class="map-link" href="https://www.google.com/maps/search/?api=1&query=鶴橋風月" target="_blank">📍近くの店を探す</a><span>|</span><a class="site-link" href="https://fugetsu.jp/" target="_blank">🌐公式サイト</a></div></div>
+                <div class="gourmet-card"><h5><i class="fa-solid fa-fire-burner"></i>案② 焼肉きんぐ</h5><p>食べ放題で打ち上げ！今日の冒険を語り合おう。</p><div class="card-links"><a class="map-link" href="https://www.google.com/maps/search/?api=1&query=焼肉きんぐ" target="_blank">📍近くの店を探す</a><span>|</span><a class="site-link" href="https://www.yakiniku-king.jp/menu_all/" target="_blank">🌐公式サイト</a></div></div>
+                <div class="gourmet-card"><h5><i class="fa-solid fa-bowl-rice"></i>案③ ザ・めしや</h5><p>カフェテリア形式。各自好きなものを好きなだけ選ぶ楽しさ。</p><div class="card-links"><a class="map-link" href="https://www.google.com/maps/search/?api=1&query=ザ・めしや" target="_blank">📍近くの店を探す</a><span>|</span><a class="site-link" href="https://www.meshiya.co.jp/meshiya/menu_meshiya/" target="_blank">🌐公式サイト</a></div></div>
+            </div>
+
+            <div class="info-box" style="margin-top:20px;">
+                <strong><i class="fa-solid fa-gas-pump"></i> ドライブ情報</strong>
+                <p><strong>推定走行距離:</strong> 約200km | <strong>ガソリン代目安:</strong> 約1,700円 (燃費20km/L, 170円/L)</p>
+            </div>
+        </section>
+
+        <!-- 京都プラン -->
+        <section id="kyoto" class="section">
+            <h2><i class="fa-solid fa-leaf"></i>【京都プラン】癒やしの"じゃない方"京都</h2>
+
+            <h3><i class="fa-solid fa-route"></i> 主なルート</h3>
+            <ul class="route-list">
+                <li><i class="fa-solid fa-circle-dot"></i>大阪市内</li>
+                <li><i class="fa-solid fa-arrow-down"></i>国道1号線 → 国道307号線</li>
+                <li><i class="fa-solid fa-location-dot"></i>宇治田原・和束町エリア（昼食）</li>
+                <li><i class="fa-solid fa-arrow-down"></i>府道5号線・62号線</li>
+                <li><i class="fa-solid fa-star"></i>石寺の茶畑・みなみやましろ村（目的地）</li>
+            </ul>
+            <div class="route-map-container">
+                <iframe src="https://www.google.com/maps/embed?pb=!1m28!1m12!1m3!1d623911.7081108046!2d135.26464747872203!3d34.665684930217964!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!4m13!3e6!4m5!1s0x6000e6553406e2e1%3A0xc55bc16ee46a2fe7!2z5aSn6Ziq5bqc5aSn6Ziq5biC!3m2!1d34.6937249!2d135.5022535!4m5!1s0x60013f0a52a5bc55%3A0xa099e10a78637a25!2z5Lqs6YO95bqc5ZKM5p2f55S655-z5a-65Li45aGa5Li45aGa77yY77ySIOefs-WvuuOBruiMtueVkQ!3m2!1d34.7847639!2d135.8820592!5e0!3m2!1sja!2sjp!4v1749773736493!5m2!1sja!2sjp" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+            </div>
+            
+            <h3><i class="fa-regular fa-clock"></i> タイムスケジュール</h3>
+            <ul class="timeline">
+                <li><div class="icon"><i class="fa-solid fa-key"></i></div><div class="content"><h4><i class="fa-solid fa-car"></i> 9:30 レンタカー出発</h4><p>仲間をピックアップ！チルな旅の始まり。</p><span class="time-info">所要: 約1時間</span></div></li>
+                <li><div class="icon"><i class="fa-solid fa-road"></i></div><div class="content"><h4><i class="fa-solid fa-music"></i> 10:30 ドライブタイム</h4><p>オシャレなBGMで京都南部へ向かう。</p><span class="time-info">移動: 約2時間</span></div></li>
+                <li><div class="icon"><i class="fa-solid fa-utensils"></i></div><div class="content"><h4><i class="fa-solid fa-mug-saucer"></i> 12:30 昼食</h4><p>茶畑ビューのおしゃれなカフェ飯を堪能。</p><span class="time-info">滞在: 約1.5時間</span></div></li>
+                <li><div class="icon"><i class="fa-solid fa-leaf"></i></div><div class="content"><h4><i class="fa-solid fa-camera-retro"></i> 石寺の茶畑</h4><p>"緑の絨毯"を散策。映える写真を撮りまくろう。</p><div class="card-links"><a class="site-link" href="https://ochanokyoto.jp/spot/detail.php?sid=297" target="_blank">🌐公式サイト</a></div><span class="time-info">滞在: 約1.5時間</span></div></li>
+                <li><div class="icon"><i class="fa-solid fa-ice-cream"></i></div><div class="content"><h4><i class="fa-solid fa-store"></i> 道の駅でスイーツ</h4><p>みなみやましろ村で濃厚抹茶ソフトを味わう！</p><div class="card-links"><a class="site-link" href="https://michinoeki.kyoto.jp/" target="_blank">🌐公式サイト</a></div><span class="time-info">滞在: 約1時間</span></div></li>
+                <li><div class="icon"><i class="fa-solid fa-arrow-left"></i></div><div class="content"><h4><i class="fa-solid fa-sun"></i> 16:30 帰路へ</h4><p>夕日を見ながら大阪へドライブ。</p><span class="time-info">移動: 約2.5時間</span></div></li>
+                <li><div class="icon"><i class="fa-solid fa-burger"></i></div><div class="content"><h4><i class="fa-solid fa-comments"></i> 19:00 夕食</h4><p>国道1号線沿いで。ハンバーグ、定食など気分に合わせて。</p><span class="time-info">滞在: 約1.5時間</span></div></li>
+                <li><div class="icon"><i class="fa-solid fa-flag-checkered"></i></div><div class="content"><h4><i class="fa-solid fa-moon"></i> 21:30 レンタカー返却</h4><p>友人を送り届けて解散。お疲れ様！</p></div></li>
+            </ul>
+            
+            <h3><i class="fa-solid fa-lightbulb"></i> 立ち寄りスポット案</h3>
+            <div class="gourmet-options">
+                <div class="spot-card"><h5><i class="fa-solid fa-bridge-water"></i> 流れ橋 (上津屋橋)</h5><p>帰り道、八幡市にある日本最長の木造橋。時代劇のロケ地としても有名で、渡るのは無料。</p><div class="card-links"><a class="map-link" href="https://www.google.com/maps/search/?api=1&query=流れ橋+上津屋橋" target="_blank">📍場所をチェック</a><span>|</span><a class="site-link" href="https://www.city.yawata.kyoto.jp/0000000477.html" target="_blank">🌐公式サイト</a></div></div>
+                <div class="spot-card"><h5><i class="fa-solid fa-building-columns"></i> アサヒビール大山崎山荘美術館</h5><p>建築やアートに興味があれば。建物を見るだけでも価値あり（入館は有料）。</p><div class="card-links"><a class="map-link" href="https://www.google.com/maps/search/?api=1&query=アサヒビール大山崎山荘美術館" target="_blank">📍場所をチェック</a><span>|</span><a class="site-link" href="https://www.asahigroup-oyamazaki.com/" target="_blank">🌐公式サイト</a></div></div>
+            </div>
+
+            <h3><i class="fa-solid fa-utensils"></i> 選べる！茶畑ビューランチ</h3>
+            <div class="gourmet-options">
+                <div class="gourmet-card"><h5><i class="fa-solid fa-mug-saucer"></i>案① 和束茶カフェ</h5><p>予算: ¥1,200〜¥1,500<br>茶畑ビューの特等席でいただくランチは格別。</p><div class="card-links"><a class="map-link" href="https://www.google.com/maps/search/?api=1&query=和束茶カフェ" target="_blank">📍場所をチェック</a><span>|</span><a class="site-link" href="https://wazukacha-cafe.com/" target="_blank">🌐公式サイト</a></div></div>
+                <div class="gourmet-card"><h5><i class="fa-solid fa-seedling"></i>案② d:matcha Kyoto</h5><p>予算: ¥1,200〜¥1,500<br>自家栽培の茶葉を使ったスイーツや食事が楽しめる。</p><div class="card-links"><a class="map-link" href="https://www.google.com/maps/search/?api=1&query=d:matcha+Kyoto" target="_blank">📍場所をチェック</a><span>|</span><a class="site-link" href="https://dmatcha.jp/" target="_blank">🌐公式サイト</a></div></div>
+                <div class="gourmet-card"><h5><i class="fa-solid fa-store"></i>案③ 道の駅 みなみやましろ村</h5><p>予算: 〜¥1,200<br>村のレストランで茶そばや定食を味わうのもアリ。</p><div class="card-links"><a class="map-link" href="https://www.google.com/maps/search/?api=1&query=道の駅+お茶の京都+みなみやましろ村" target="_blank">📍場所をチェック</a><span>|</span><a class="site-link" href="https://michinoeki.kyoto.jp/" target="_blank">🌐公式サイト</a></div></div>
+            </div>
+
+            <h3><i class="fa-solid fa-burger"></i> 選べる！旅の締めくくり夕食</h3>
+            <div class="gourmet-options">
+                <div class="gourmet-card"><h5><i class="fa-solid fa-plate-wheat"></i>案① ハイライト食堂</h5><p>京都の学生の胃袋を支えるデカ盛り食堂。安くてボリューム満点。</p><div class="card-links"><a class="map-link" href="https://www.google.com/maps/search/?api=1&query=ハイライト食堂" target="_blank">📍近くの店を探す</a><span>|</span><a class="site-link" href="https://hilite-kyoto.jp/menu/" target="_blank">🌐公式サイト</a></div></div>
+                <div class="gourmet-card"><h5><i class="fa-solid fa-dragon"></i>案② 餃子の王将</h5><p>国道1号線沿いに多数。ジャストサイズメニューで色々頼んでシェアするのも楽しい。</p><div class="card-links"><a class="map-link" href="https://www.google.com/maps/search/?api=1&query=餃子の王将" target="_blank">📍近くの店を探す</a><span>|</span><a class="site-link" href="https://www.ohsho.co.jp/menu/west/" target="_blank">🌐公式サイト</a></div></div>
+                <div class="gourmet-card"><h5><i class="fa-solid fa-bowl-food"></i>案③ 来来亭</h5><p>背脂醤油ラーメンの有名チェーン。活気のある店内で食べるラーメンは格別。</p><div class="card-links"><a class="map-link" href="https://www.google.com/maps/search/?api=1&query=来来亭" target="_blank">📍近くの店を探す</a><span>|</span><a class="site-link" href="https://www.rairaitei.co.jp/menu/" target="_blank">🌐公式サイト</a></div></div>
+            </div>
+
+            <div class="info-box" style="margin-top:20px;">
+                <strong><i class="fa-solid fa-gas-pump"></i> ドライブ情報</strong>
+                <p><strong>推定走行距離:</strong> 約150km | <strong>ガソリン代目安:</strong> 約1,300円 (燃費20km/L, 170円/L)</p>
+            </div>
+        </section>
+
+        <footer class="section" style="text-align:center; background-color:#eef7ff;">
+            <p style="font-family: 'M PLUS Rounded 1c', sans-serif; font-weight:700; font-size: 1.2em;">気をつけて、いってらっしゃい！ 🚗💨</p>
+        </footer>
+
+    </div>
+
+</body>
+</html>
