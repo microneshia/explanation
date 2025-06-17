@@ -1,44 +1,19 @@
-// js/video-downloader.js
-
-// ========================= バックエンドURL設定 =========================
-// Renderにデプロイした後、このURLを書き換えてください。
-// 例: 'https://your-backend-name.onrender.com'
-const API_BASE_URL = 'https://downloader-backend-lw7j.onrender.com'; // URL
-// ===================================================================
+// ========================= 本番用 URL設定 =========================
+const API_BASE_URL = 'https://downloader-backend-lw7j.onrender.com'; // ← あなたのRender URLに書き換える
+// =================================================================
 
 // --- グローバル変数とDOM要素の初期化 ---
-let ws;
-let clientId;
-let videoData;
-
-const urlInput = document.getElementById('video-url');
-const fetchInfoBtn = document.getElementById('fetch-info-btn');
-const resultArea = document.getElementById('result-area');
-const videoThumbnail = document.getElementById('video-thumbnail');
-const videoTitle = document.getElementById('video-title');
-const modeSwitch = document.getElementById('mode-switch');
-const simpleModePanel = document.getElementById('simple-mode');
-const expertModePanel = document.getElementById('expert-mode');
-const videoCodecSelect = document.getElementById('video-codec-select');
-const audioCodecSelect = document.getElementById('audio-codec-select');
-const audioOnlyCheckbox = document.getElementById('audio-only-checkbox');
-const mp3QualityGroup = document.getElementById('mp3-quality-group');
-const mp3QualitySelect = document.getElementById('mp3-quality-select');
-const expertDownloadBtn = document.getElementById('expert-download-btn');
-const statusDiv = document.getElementById('status');
-const statusText = document.getElementById('status-text');
-const progressBar = document.getElementById('progress-bar').firstElementChild;
-const errorDiv = document.getElementById('error');
-const downloadLinkContainer = document.getElementById('download-link-container');
+let ws, clientId, videoData;
+const urlInput = document.getElementById('video-url'), fetchInfoBtn = document.getElementById('fetch-info-btn'), resultArea = document.getElementById('result-area'), videoThumbnail = document.getElementById('video-thumbnail'), videoTitle = document.getElementById('video-title'), modeSwitch = document.getElementById('mode-switch'), simpleModePanel = document.getElementById('simple-mode'), expertModePanel = document.getElementById('expert-mode'), videoCodecSelect = document.getElementById('video-codec-select'), audioCodecSelect = document.getElementById('audio-codec-select'), audioOnlyCheckbox = document.getElementById('audio-only-checkbox'), mp3QualityGroup = document.getElementById('mp3-quality-group'), mp3QualitySelect = document.getElementById('mp3-quality-select'), expertDownloadBtn = document.getElementById('expert-download-btn'), statusDiv = document.getElementById('status'), statusText = document.getElementById('status-text'), progressBar = document.getElementById('progress-bar').firstElementChild, errorDiv = document.getElementById('error'), downloadLinkContainer = document.getElementById('download-link-container');
 
 // --- WebSocket接続 ---
 function connectWebSocket() {
-    if (!urlInput) return; // ダウンローダーページでない場合は何もしない
+    if (!document.getElementById('video-url')) return;
     const wsUrl = API_BASE_URL.replace(/^http/, 'ws');
     ws = new WebSocket(wsUrl);
-    ws.onopen = () => console.log('Downloader WebSocket connected');
-    ws.onclose = () => { console.log('Downloader WebSocket disconnected. Reconnecting...'); setTimeout(connectWebSocket, 3000); };
-    ws.onerror = (error) => console.error(`Downloader WebSocket Error:`, error);
+    ws.onopen = () => console.log('WebSocket connected');
+    ws.onclose = () => { console.log('WebSocket disconnected. Reconnecting...'); setTimeout(connectWebSocket, 3000); };
+    ws.onerror = (error) => console.error(`WebSocket Error:`, error);
     ws.onmessage = (event) => {
         try {
             const message = JSON.parse(event.data);
@@ -54,44 +29,47 @@ function connectWebSocket() {
 }
 
 // --- イベントリスナー ---
-if (document.getElementById('video-url')) {
-    document.addEventListener('DOMContentLoaded', connectWebSocket);
-    fetchInfoBtn.addEventListener('click', async () => {
-        const url = urlInput.value.trim();
-        if (!isValidUrl(url)) { showError('有効なURLを入力してください。'); return; }
-        setLoading('動画情報を取得中...');
-        try {
-            const response = await fetch(`${API_BASE_URL}/get-formats`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ url }) });
-            const data = await response.json();
-            if (!response.ok) throw new Error(data.message);
-            videoData = data;
-            displayVideoInfo(data);
-            setIdle();
-        } catch (err) { showError(err.message || '情報の取得に失敗しました。'); setIdle(); }
-    });
-    modeSwitch.addEventListener('change', () => { simpleModePanel.classList.toggle('active'); expertModePanel.classList.toggle('active'); });
-    audioOnlyCheckbox.addEventListener('change', () => { videoCodecSelect.disabled = audioOnlyCheckbox.checked; mp3QualityGroup.classList.toggle('hidden', !audioOnlyCheckbox.checked); });
-    document.body.addEventListener('click', (e) => {
-        if (e.target.matches('.simple-download-btn')) {
-            e.preventDefault();
-            startDownload({ type: 'simple', ext: e.target.dataset.format });
-        }
-        else if (e.target.id === 'expert-download-btn') {
-            e.preventDefault();
-            const vcodec_id = videoCodecSelect.value, acodec_id = audioCodecSelect.value, isAudioOnly = audioOnlyCheckbox.checked;
-            if (!acodec_id) { showError('オーディオフォーマットを選択してください。'); return; }
-            if (!isAudioOnly && !vcodec_id) { showError('ビデオフォーマットを選択してください。'); return; }
-            startDownload(isAudioOnly
-                ? { type: 'expert_audio', acodec_id, ext: 'mp3', audio_quality: mp3QualitySelect.value }
-                : { type: 'expert_video', vcodec_id, acodec_id, ext: 'mp4' }
-            );
-        }
-    });
-}
+document.addEventListener('DOMContentLoaded', () => {
+    if (document.getElementById('video-url')) {
+        connectWebSocket();
+        fetchInfoBtn.addEventListener('click', async () => {
+            const url = urlInput.value.trim();
+            if (!isValidUrl(url)) { showError('有効なURLを入力してください。'); return; }
+            setLoading('動画情報を取得中...');
+            try {
+                const response = await fetch(`${API_BASE_URL}/get-formats`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ url }) });
+                const data = await response.json();
+                if (!response.ok) throw new Error(data.message);
+                videoData = data;
+                displayVideoInfo(data);
+                setIdle();
+            } catch (err) { showError(err.message || '情報の取得に失敗しました。'); setIdle(); }
+        });
+        modeSwitch.addEventListener('change', () => { simpleModePanel.classList.toggle('active'); expertModePanel.classList.toggle('active'); });
+        audioOnlyCheckbox.addEventListener('change', () => { videoCodecSelect.disabled = audioOnlyCheckbox.checked; mp3QualityGroup.classList.toggle('hidden', !audioOnlyCheckbox.checked); });
+        document.querySelector('.downloader-container').addEventListener('click', (e) => {
+            if (e.target.matches('.simple-download-btn')) {
+                e.preventDefault();
+                const options = { type: 'simple', ext: e.target.dataset.format };
+                startDownload(options);
+            }
+            else if (e.target.id === 'expert-download-btn') {
+                e.preventDefault();
+                const vcodec_id = videoCodecSelect.value, acodec_id = audioCodecSelect.value, isAudioOnly = audioOnlyCheckbox.checked;
+                if (!acodec_id) { showError('オーディオフォーマットを選択してください。'); return; }
+                if (!isAudioOnly && !vcodec_id) { showError('ビデオフォーマットを選択してください。'); return; }
+                const options = isAudioOnly
+                    ? { type: 'expert_audio', acodec_id, ext: 'mp3', audio_quality: mp3QualitySelect.value }
+                    : { type: 'expert_video', vcodec_id, acodec_id, ext: 'mp4' };
+                startDownload(options);
+            }
+        });
+    }
+});
 
 // --- UI更新関数 ---
 function setLoading(message) { hideAllMessages(); statusDiv.classList.remove('hidden'); statusText.textContent = message; updateProgress(0); document.querySelectorAll('.downloader-container button').forEach(b => b.disabled = true); }
-function setIdle() { statusDiv.classList.add('hidden'); document.querySelectorAll('.downloader-container button').forEach(b => b.disabled = false); if (videoData) { audioOnlyCheckbox.dispatchEvent(new Event('change')); } }
+function setIdle() { statusDiv.classList.add('hidden'); document.querySelectorAll('.downloader-container button').forEach(b => b.disabled = false); if (videoData) audioOnlyCheckbox.dispatchEvent(new Event('change')); }
 function updateStatus(message) { statusText.textContent = escapeHtml(message); }
 function updateProgress(progress) { const parent = progressBar.parentElement; parent.style.width = `${progress}%`; progressBar.textContent = `${Math.round(progress)}%`; }
 function displayVideoInfo(data) {

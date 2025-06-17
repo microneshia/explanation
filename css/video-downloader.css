@@ -1,108 +1,159 @@
-/* css/video-downloader.css */
-
-/* ★★★ ページ全体にダークテーマを適用 ★★★ */
-body#downloader-page {
-    font-family: "Noto Sans JP", sans-serif, -apple-system, BlinkMacSystemFont,
-        "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif;
-    background: linear-gradient(135deg, #1a1a2e, #0f3460);
+/* css/downloader.css */
+@import url("https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;700&display=swap");
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+html {
+    scroll-behavior: smooth;
+}
+body {
+    font-family: "Noto Sans JP", -apple-system, BlinkMacSystemFont, "Segoe UI",
+        Roboto, "Helvetica Neue", Arial, sans-serif;
+    line-height: 1.7;
+    background-color: #1a1a2e;
     color: #e0e0e0;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
 }
-
-/* ★★★ サイト共通パーツのスタイルを上書き調整 ★★★ */
-/* ヘッダー: 背景を透明にし、文字色を合わせる */
-body#downloader-page header {
-    background-color: transparent;
-    box-shadow: none;
-    color: #fff;
-}
-/* ナビゲーション: 背景を少し暗くし、文字色を合わせる */
-body#downloader-page nav {
-    background-color: rgba(0, 0, 0, 0.2);
-    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-}
-body#downloader-page nav a {
-    color: #e0e0e0;
-}
-/* フッター: 背景を透明にし、文字色を合わせる */
-body#downloader-page footer {
-    background-color: transparent;
-    color: rgba(255, 255, 255, 0.6);
-}
-/* トップへ戻るボタン: ダークテーマに合わせた色に */
-body#downloader-page #scrollTopBtn {
-    background-color: #e94560;
+header.site-header {
+    background-color: #007bff;
     color: white;
+    text-align: center;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
-body#downloader-page #scrollTopBtn:hover {
-    background-color: #c73a50;
+header.site-header a.header-link {
+    display: block;
+    padding: 20px 15px;
+    color: inherit;
+    text-decoration: none;
+    cursor: pointer;
 }
-
-/* ★★★ ダウンローダーUIのコンテナ ★★★ */
-/* common.cssの .main-container を上書き */
-body#downloader-page .main-container {
+header.site-header h1 {
+    font-size: 2.5rem;
+    font-weight: 600;
+}
+header.site-header h1 .subtitle {
+    display: block;
+    font-size: 1rem;
+    font-weight: 300;
+    margin-top: 5px;
+    opacity: 0.9;
+}
+nav {
+    background-color: #343a40;
+    padding: 10px 0;
+    text-align: center;
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+nav ul {
+    list-style: none;
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+nav ul li {
+    margin: 5px 10px;
+}
+nav a {
+    color: #f8f9fa;
+    text-decoration: none;
+    padding: 8px 12px;
+}
+footer.site-footer {
+    background-color: #343a40;
+    color: #adb5bd;
+    text-align: center;
+    padding: 25px 15px;
+    margin-top: auto;
+}
+footer.site-footer p {
+    font-size: 0.9rem;
+}
+#scrollTopBtn {
+    display: none;
+    position: fixed;
+    bottom: 30px;
+    right: 30px;
+    z-index: 999;
+    border: none;
+    outline: none;
+    background-color: #007bff;
+    color: white;
+    cursor: pointer;
+    padding: 12px 15px;
+    border-radius: 50%;
+    font-size: 18px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+    transition: opacity 0.3s, visibility 0.3s;
+    opacity: 0;
+    visibility: hidden;
+}
+#scrollTopBtn.show {
+    display: block;
+    opacity: 1;
+    visibility: visible;
+}
+#scrollTopBtn:hover {
+    background-color: #0056b3;
+}
+.main-container {
+    flex: 1;
     width: 100%;
-    max-width: 700px; /* メインの幅は維持 */
-    margin: 25px auto;
-    padding: 0; /* 内側のコンテナにpaddingを任せる */
-    background-color: transparent; /* 背景はbodyに任せる */
-    border-radius: 0;
-    box-shadow: none;
+    padding: 20px 0;
 }
-
-/* ダウンローダーのUI内側コンテナ */
-body#downloader-page .container {
+.downloader-container {
+    width: 95%;
+    max-width: 700px;
+    margin: 0 auto;
     background-color: #16213e;
     border-radius: 12px;
     box-shadow: 0 10px 40px rgba(0, 0, 0, 0.4);
     padding: 30px 40px;
     border: 1px solid #0f3460;
+    color: #e0e0e0;
 }
-
-/* ダウンローダー専用ヘッダー */
-body#downloader-page .downloader-header {
+.downloader-container header {
     text-align: center;
     margin-bottom: 30px;
 }
-body#downloader-page .downloader-header h1 {
+.downloader-container header h1 {
     color: #e94560;
     margin-bottom: 10px;
     font-size: 2rem;
-    border-bottom: none;
-    padding-bottom: 0;
 }
-body#downloader-page .downloader-header h1::after {
-    display: none;
-}
-body#downloader-page .downloader-header p {
+.downloader-container header p {
     font-size: 1.1rem;
     opacity: 0.8;
 }
-
-body#downloader-page .hidden {
+.hidden {
     display: none !important;
 }
-
-/* URL Section */
-body#downloader-page .url-section {
+.url-section {
     display: flex;
     gap: 15px;
     align-items: center;
     margin-bottom: 20px;
 }
-body#downloader-page .input-group {
+.url-section .input-group {
     flex-grow: 1;
-    margin-bottom: 0;
     position: relative;
 }
-body#downloader-page .input-group i {
+.url-section .input-group i {
     position: absolute;
     left: 18px;
     top: 50%;
     transform: translateY(-50%);
     opacity: 0.5;
-    color: #e0e0e0;
 }
-body#downloader-page input[type="url"] {
+.url-section input[type="url"] {
     width: 100%;
     padding: 15px 15px 15px 50px;
     font-size: 1rem;
@@ -112,13 +163,12 @@ body#downloader-page input[type="url"] {
     color: #e0e0e0;
     transition: border-color 0.3s;
 }
-body#downloader-page input[type="url"]:focus {
+.url-section input[type="url"]:focus {
     outline: none;
     border-color: #e94560;
     box-shadow: 0 0 10px rgba(233, 69, 96, 0.3);
 }
-
-body#downloader-page .btn {
+.btn {
     padding: 15px;
     font-size: 1rem;
     font-weight: 700;
@@ -132,38 +182,37 @@ body#downloader-page .btn {
     align-items: center;
     gap: 10px;
 }
-body#downloader-page .btn:disabled {
+.btn:disabled {
     background-color: #555 !important;
     cursor: not-allowed;
     transform: none;
     box-shadow: none;
 }
-body#downloader-page .btn:not(:disabled):hover {
+.btn:not(:disabled):hover {
     transform: translateY(-3px);
     box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
 }
-body#downloader-page .btn-fetch {
+.btn-fetch {
     background-color: #e94560;
     flex-shrink: 0;
 }
-body#downloader-page .btn-mp4 {
+.btn-mp4 {
     background-color: #3498db;
 }
-body#downloader-page .btn-mp3 {
+.btn-mp3 {
     background-color: #9b59b6;
 }
-body#downloader-page .btn-expert {
+.btn-expert {
     width: 100%;
     background-color: #27ae60;
 }
-
-body#downloader-page #result-area {
+#result-area {
     margin-top: 20px;
     padding-top: 20px;
     border-top: 1px solid #0f3460;
-    animation: downloaderFadeIn 0.5s;
+    animation: fadeIn 0.5s;
 }
-@keyframes downloaderFadeIn {
+@keyframes fadeIn {
     from {
         opacity: 0;
         transform: translateY(10px);
@@ -173,14 +222,13 @@ body#downloader-page #result-area {
         transform: translateY(0);
     }
 }
-
-body#downloader-page .video-info-header {
+.video-info-header {
     display: flex;
     align-items: center;
     gap: 20px;
     margin-bottom: 20px;
 }
-body#downloader-page #video-thumbnail {
+#video-thumbnail {
     width: 160px;
     height: 120px;
     object-fit: cover;
@@ -188,12 +236,12 @@ body#downloader-page #video-thumbnail {
     flex-shrink: 0;
     border: 2px solid #e94560;
 }
-body#downloader-page #video-title {
+#video-title {
     font-size: 1.3rem;
     font-weight: bold;
+    text-align: left;
 }
-
-body#downloader-page .mode-toggle {
+.mode-toggle {
     display: flex;
     justify-content: center;
     align-items: center;
@@ -201,18 +249,18 @@ body#downloader-page .mode-toggle {
     margin: 25px 0;
     font-weight: bold;
 }
-body#downloader-page .switch {
+.switch {
     position: relative;
     display: inline-block;
     width: 60px;
     height: 34px;
 }
-body#downloader-page .switch input {
+.switch input {
     opacity: 0;
     width: 0;
     height: 0;
 }
-body#downloader-page .slider {
+.slider {
     position: absolute;
     cursor: pointer;
     top: 0;
@@ -222,10 +270,10 @@ body#downloader-page .slider {
     background-color: #3498db;
     transition: 0.4s;
 }
-body#downloader-page .slider.round {
+.slider.round {
     border-radius: 34px;
 }
-body#downloader-page .slider.round:before {
+.slider.round:before {
     position: absolute;
     content: "";
     height: 26px;
@@ -236,48 +284,46 @@ body#downloader-page .slider.round:before {
     transition: 0.4s;
     border-radius: 50%;
 }
-body#downloader-page input:checked + .slider {
+input:checked + .slider {
     background-color: #e94560;
 }
-body#downloader-page input:checked + .slider:before {
+input:checked + .slider:before {
     transform: translateX(26px);
 }
-
-body#downloader-page .mode-panel {
+.mode-panel {
     display: none;
 }
-body#downloader-page .mode-panel.active {
+.mode-panel.active {
     display: block;
-    animation: downloaderFadeIn 0.5s;
+    animation: fadeIn 0.5s;
 }
-body#downloader-page .panel-description {
+.panel-description {
     text-align: center;
     margin-bottom: 20px;
     opacity: 0.8;
 }
-body#downloader-page .options-group {
+.options-group {
     display: flex;
     gap: 15px;
 }
-body#downloader-page .options-group .btn {
+.options-group .btn {
     flex-grow: 1;
 }
-
-body#downloader-page .form-grid {
+.form-grid {
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: 20px;
     margin-bottom: 20px;
 }
-body#downloader-page .form-group {
+.form-group {
     display: flex;
     flex-direction: column;
 }
-body#downloader-page .form-group label {
+.form-group label {
     margin-bottom: 8px;
     font-weight: bold;
 }
-body#downloader-page .form-group select {
+.form-group select {
     width: 100%;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -290,20 +336,20 @@ body#downloader-page .form-group select {
     font-size: 1rem;
     cursor: pointer;
 }
-body#downloader-page .form-group select:disabled {
+.form-group select:disabled {
     opacity: 0.5;
     cursor: not-allowed;
 }
-body#downloader-page .form-group select:focus {
+.form-group select:focus {
     text-overflow: clip;
     white-space: normal;
 }
-body#downloader-page .audio-only-group {
+.audio-only-group {
     grid-column: 1 / -1;
     justify-content: center;
     align-items: center;
 }
-body#downloader-page .audio-only-group label {
+.audio-only-group label {
     display: flex;
     align-items: center;
     gap: 10px;
@@ -311,22 +357,21 @@ body#downloader-page .audio-only-group label {
     cursor: pointer;
     font-weight: normal;
 }
-body#downloader-page #mp3-quality-group {
+#mp3-quality-group {
     grid-column: 1 / -1;
 }
-
-body#downloader-page #status,
-body#downloader-page #error,
-body#downloader-page #download-link-container {
+#status,
+#error,
+#download-link-container {
     margin-top: 20px;
     padding: 20px;
     border-radius: 8px;
 }
-body#downloader-page #status {
+#status {
     background-color: rgba(0, 0, 0, 0.2);
     text-align: center;
 }
-body#downloader-page .progress-bar-container {
+.progress-bar-container {
     width: 100%;
     height: 25px;
     background-color: #0f3460;
@@ -335,7 +380,7 @@ body#downloader-page .progress-bar-container {
     overflow: hidden;
     border: 1px solid #2c3e50;
 }
-body#downloader-page #progress-bar {
+#progress-bar {
     width: 0%;
     height: 100%;
     background: linear-gradient(90deg, #3498db, #9b59b6);
@@ -345,19 +390,18 @@ body#downloader-page #progress-bar {
     align-items: center;
     justify-content: center;
 }
-body#downloader-page #progress-bar span {
+#progress-bar span {
     color: white;
     font-weight: bold;
     text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
 }
-
-body#downloader-page #error {
+#error {
     background-color: #c0392b;
     color: #fff;
     text-align: center;
     font-weight: 700;
 }
-body#downloader-page #download-link-container a {
+#download-link-container a {
     display: block;
     padding: 15px;
     text-align: center;
@@ -367,40 +411,57 @@ body#downloader-page #download-link-container a {
     border-radius: 8px;
     font-size: 1.2rem;
     font-weight: bold;
-    animation: downloaderFadeIn 0.5s;
+    animation: fadeIn 0.5s;
 }
-body#downloader-page #download-link-container a:hover {
+#download-link-container a:hover {
     filter: brightness(1.1);
 }
-
-body#downloader-page .downloader-footer {
+.downloader-container footer {
     text-align: center;
     margin-top: 30px;
     font-size: 0.8rem;
     opacity: 0.6;
 }
-
-@media (max-width: 600px) {
-    body#downloader-page .container {
-        padding: 20px;
+@media (max-width: 768px) {
+    header.site-header h1 {
+        font-size: 1.6rem;
     }
-    body#downloader-page .url-section {
+    header.site-header h1 .subtitle {
+        font-size: 0.9rem;
+    }
+    nav ul {
+        justify-content: space-around;
+    }
+    nav ul li {
+        margin: 5px;
+    }
+}
+@media (max-width: 600px) {
+    .downloader-container {
+        padding: 20px;
+        width: 100%;
+        border-radius: 0;
+    }
+    .url-section {
         flex-direction: column;
         align-items: stretch;
     }
-    body#downloader-page .video-info-header {
+    .video-info-header {
         flex-direction: column;
         text-align: center;
     }
-    body#downloader-page #video-thumbnail {
+    #video-thumbnail {
         width: 100%;
         height: auto;
         max-width: 320px;
     }
-    body#downloader-page .form-grid {
+    #video-title {
+        text-align: center;
+    }
+    .form-grid {
         grid-template-columns: 1fr;
     }
-    body#downloader-page .options-group {
+    .options-group {
         flex-direction: column;
     }
 }

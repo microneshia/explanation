@@ -1,32 +1,20 @@
 <!DOCTYPE html>
 <html lang="ja">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>高機能ビデオダウンローダー - 総合解説プラットフォーム</title>
-    <meta name="description" content="yt-dlpを利用した高機能なWebビデオダウンローダー。シンプルモードとエキスパートモードを搭載し、様々な形式でのダウンロードに対応します。">
-    <meta name="article-number" content="99">
-
-    <!-- 共通CSSと専用CSSを読み込み -->
-    <link rel="stylesheet" href="../css/common.css">
-    <link rel="stylesheet" href="../css/video-downloader.css"> <!-- このツール専用のCSS -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
-        integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA=="
-        crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <meta name="article-number" content="000017">
+    <meta name="description" content="様々な動画サイトから、お好みのフォーマット（MP4/MP3）や品質を選んで動画をダウンロードできる高機能ツールです。">
+    <title>動画ダウンローダー - 総合解説プラットフォーム</title>
+    <link rel="stylesheet" href="../css/downloader.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
 </head>
-<!-- ★★★ 修正箇所: bodyにIDを追加 ★★★ -->
-
-<body id="downloader-page">
-
-    <!-- サイト共通ヘッダー -->
-    <header>
+<body>
+    <header class="site-header">
         <a href="../index.html" class="header-link">
             <h1>総合解説プラットフォーム <span class="subtitle">あらゆる疑問に、明快な解答を。</span></h1>
         </a>
     </header>
-
-    <!-- サイト共通ナビゲーション -->
     <nav>
         <ul>
             <li><a href="../index.html">トップ</a></li>
@@ -34,12 +22,10 @@
             <li><a href="../tags.html">タグ検索</a></li>
         </ul>
     </nav>
-
-    <!-- メインコンテンツ (UIコンテナ) -->
     <div class="main-container">
-        <div class="container">
-            <header class="downloader-header">
-                <h1><i class="fa-solid fa-cogs"></i> 高機能ビデオダウンローダー</h1>
+        <div class="downloader-container">
+            <header>
+                <h1><i class="fa-solid fa-download"></i> 動画ダウンローダー</h1>
                 <p>シンプルにも、詳細にも。あなたのためのダウンローダー。</p>
             </header>
             <main>
@@ -48,8 +34,7 @@
                         <i class="fa-solid fa-link"></i>
                         <input type="url" id="video-url" placeholder="ここに動画のURLを貼り付け...">
                     </div>
-                    <button id="fetch-info-btn" class="btn btn-fetch"><i class="fa-solid fa-magnifying-glass"></i>
-                        動画情報を取得</button>
+                    <button id="fetch-info-btn" class="btn btn-fetch"><i class="fa-solid fa-magnifying-glass"></i> 動画情報を取得</button>
                 </div>
                 <div id="result-area" class="hidden">
                     <div class="video-info-header">
@@ -67,69 +52,37 @@
                     <div id="simple-mode" class="mode-panel active">
                         <p class="panel-description">クリック一つで最適なファイルをダウンロードします。</p>
                         <div class="options-group">
-                            <button class="btn btn-mp4 simple-download-btn" data-format="mp4"><i
-                                    class="fa-solid fa-video"></i> MP4でダウンロード</button>
-                            <button class="btn btn-mp3 simple-download-btn" data-format="mp3"><i
-                                    class="fa-solid fa-music"></i> MP3でダウンロード</button>
+                            <button class="btn btn-mp4 simple-download-btn" data-format="mp4"><i class="fa-solid fa-video"></i> MP4でダウンロード</button>
+                            <button class="btn btn-mp3 simple-download-btn" data-format="mp3"><i class="fa-solid fa-music"></i> MP3でダウンロード</button>
                         </div>
                     </div>
                     <div id="expert-mode" class="mode-panel">
                         <p class="panel-description">コーデックや品質を細かく指定してダウンロードします。</p>
                         <div class="form-grid">
-                            <div class="form-group">
-                                <label for="video-codec-select"><i class="fa-solid fa-film"></i> ビデオフォーマット</label>
-                                <select id="video-codec-select"></select>
-                            </div>
-                            <div class="form-group">
-                                <label for="audio-codec-select"><i class="fa-solid fa-volume-high"></i>
-                                    オーディオフォーマット</label>
-                                <select id="audio-codec-select"></select>
-                            </div>
-                            <div class="form-group audio-only-group">
-                                <label><input type="checkbox" id="audio-only-checkbox"> 音声のみダウンロード</label>
-                            </div>
+                            <div class="form-group"><label for="video-codec-select"><i class="fa-solid fa-film"></i> ビデオフォーマット</label><select id="video-codec-select"></select></div>
+                            <div class="form-group"><label for="audio-codec-select"><i class="fa-solid fa-volume-high"></i> オーディオフォーマット</label><select id="audio-codec-select"></select></div>
+                            <div class="form-group audio-only-group"><label><input type="checkbox" id="audio-only-checkbox"> 音声のみダウンロード</label></div>
                             <div class="form-group hidden" id="mp3-quality-group">
                                 <label for="mp3-quality-select"><i class="fa-solid fa-sliders"></i> MP3品質 (0=最高)</label>
                                 <select id="mp3-quality-select">
-                                    <option value="0">0 (VBR ~245kbps)</option>
-                                    <option value="2">2 (VBR ~190kbps)</option>
-                                    <option value="5" selected>5 (VBR ~130kbps)</option>
-                                    <option value="9">9 (VBR ~65kbps)</option>
+                                    <option value="0">0 (VBR ~245kbps)</option><option value="2">2 (VBR ~190kbps)</option>
+                                    <option value="5" selected>5 (VBR ~130kbps)</option><option value="9">9 (VBR ~65kbps)</option>
                                 </select>
                             </div>
                         </div>
-                        <button id="expert-download-btn" class="btn btn-expert"><i class="fa-solid fa-download"></i>
-                            選択した形式でダウンロード</button>
+                        <button id="expert-download-btn" class="btn btn-expert"><i class="fa-solid fa-download"></i> 選択した形式でダウンロード</button>
                     </div>
                 </div>
-                <div id="status" class="hidden">
-                    <p id="status-text"></p>
-                    <div class="progress-bar-container">
-                        <div id="progress-bar"><span></span></div>
-                    </div>
-                </div>
+                <div id="status" class="hidden"><p id="status-text"></p><div class="progress-bar-container"><div id="progress-bar"><span></span></div></div></div>
                 <div id="error" class="hidden"></div>
                 <div id="download-link-container" class="hidden"></div>
             </main>
-            <footer class="downloader-footer">
-                <p><strong>注意:</strong> 著作権で保護されたコンテンツのダウンロードは法律で禁じられている場合があります。個人的な利用、または権利者の許可を得た上で自己責任でご利用ください。</p>
-            </footer>
+            <footer><p><strong>注意:</strong> 著作権で保護されたコンテンツのダウンロードは法律で禁じられている場合があります。個人的な利用、または権利者の許可を得た上で自己責任でご利用ください。</p></footer>
         </div>
     </div>
-
-
-    <!-- サイト共通フッター -->
-    <footer>
-        <p>© 2025 総合解説プラットフォーム. All rights reserved.</p>
-    </footer>
-
-    <!-- サイト共通トップへ戻るボタン -->
+    <footer class="site-footer"><p>© 2025 総合解説プラットフォーム. All rights reserved.</p></footer>
     <button id="scrollTopBtn" title="トップへ戻る">⇧</button>
-
-    <!-- 共通JSと専用JSを読み込み -->
-    <script src="../js/article-list.js"></script>
     <script src="../js/common.js"></script>
-    <script src="../js/video-downloader.js"></script>
+    <script src="../js/downloader.js"></script>
 </body>
-
 </html>
