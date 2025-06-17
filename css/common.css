@@ -256,7 +256,6 @@ footer p {
     justify-content: center;
     align-items: center;
     padding: 25px 0 10px 0;
-    user-select: none;
     flex-wrap: wrap;
     gap: 5px;
 }
@@ -291,6 +290,9 @@ footer p {
     padding: 8px 0;
 }
 
+.about{
+    margin-top: 40px
+}
 
 /* --- レスポンシブ対応 --- */
 @media (max-width: 768px) {
