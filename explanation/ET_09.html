@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- 記事のタイトル -->
+    <title>静電気学 徹底解説：帯電球の電場・電位とポアソン方程式 - 総合解説プラットフォーム</title>
+
+    <!-- 記事の連番 -->
+    <meta name="article-number" content="000015">
+
+    <!-- 共通CSSファイルの読み込み -->
+    <link rel="stylesheet" href="../css/common.css">
+    <link rel="stylesheet" href="../css/article.css">
+
+    <!-- MathJax関連スクリプト -->
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script src="../js/mathjax-config.js"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+</head>
+
+<body>
+    <!-- 共通ヘッダー -->
+    <header>
+        <a href="../index.html" class="header-link">
+            <h1>総合解説プラットフォーム <span class="subtitle">あらゆる疑問に、明快な解答を。</span></h1>
+        </a>
+    </header>
+
+    <!-- 共通ナビゲーションバー -->
+    <nav>
+        <ul>
+            <li><a href="../index.html">トップ</a></li>
+            <li><a href="../contents.html">コンテンツ</a></li>
+            <li><a href="../tags.html">タグ検索</a></li>
+        </ul>
+    </nav>
+
+    <!-- メインコンテンツ -->
+    <main class="article-container">
+        <h1>静電気学 徹底解説：帯電球の電場・電位とポアソン方程式</h1>
+
+        <!-- タグはJavaScriptによってこの位置に自動挿入されます -->
+
+        <p>
+            電磁気学の根幹をなす「静電気学」。この分野の理解度を測る3つの重要な演習問題を通じて、その奥深い世界を探求します。この記事を読めば、<span
+                class="highlight">ガウスの法則の応用</span>、<span class="highlight">絶縁体と導体の本質的な違い</span>、そして電位と電荷を結びつける<span
+                class="highlight">ポアソン方程式</span>の扱い方まで、静電場の重要概念を網羅的にマスターできます。
+        </p>
+
+        <section id="maxwell">
+            <h2>静電気学の出発点：マクスウェル方程式</h2>
+            <p>
+                静電気学では、時間変化のない場合のマクスウェル方程式、特に<span class="important">ガウスの法則</span>と<span
+                    class="important">静電場の渦なしの法則</span>が基本となります。
+            </p>
+            <div class="math-block">
+                $$ \nabla \cdot \vec{E} = \frac{\rho}{\varepsilon_0} \quad , \quad \nabla \times \vec{E} = 0 $$
+            </div>
+            <p>これらから、電場と電位の関係 \(\vec{E} = -\nabla \phi\) や、積分形のガウスの法則が導かれます。</p>
+        </section>
+
+
+        <section id="problem1">
+            <h2>問題1：一様に帯電した絶縁体球</h2>
+            <p>半径\(a\)、総電荷\(+Q\)の絶縁体球の電場と電位を求めます。球対称性からガウスの法則を適用するのが有効です。</p>
+
+            <h3>電場 $E(r)$</h3>
+            <ul>
+                <li><strong>内部 ($r &lt; a$):</strong> ガウス面内の電荷は \(Q_{in} = Q(r/a)^3\)。
+                            <div class="math-block">$$ E(r) = \frac{Q}{4\pi \varepsilon_0 a^3} r $$</div>
+                </li>
+                <li><strong>外部 ($r \ge a$):</strong> ガウス面内の電荷は \(Q\)。
+                    <div class="math-block">$$ E(r) = \frac{1}{4\pi \varepsilon_0} \frac{Q}{r^2} $$</div>
+                </li>
+            </ul>
+            <h3>電位 $\phi(r)$</h3>
+            <p>\(\phi(\infty)=0\)を基準に電場を積分します。</p>
+            <ul>
+                <li><strong>外部 ($r \ge a$):</strong>
+                    <div class="math-block">$$ \phi(r) = \frac{1}{4\pi\varepsilon_0} \frac{Q}{r} $$</div>
+                </li>
+                <li><strong>内部 ($r &lt; a$):</strong>
+                            <div class="math-block">$$ \phi(r) = \frac{Q(3a^2 - r^2)}{8\pi\varepsilon_0 a^3} $$</div>
+                </li>
+            </ul>
+        </section>
+
+        <section id="problem2">
+            <h2>問題2：帯電した導体球</h2>
+            <p>半径\(a\)、総電荷\(+Q\)の導体球を考えます。導体は静電平衡状態で<span class="important">内部電場がゼロ</span>、<span
+                    class="important">電荷は表面のみに分布</span>、<span class="important">全体が等電位</span>という性質を持ちます。</p>
+
+            <h3>電場 $E(r)$</h3>
+            <ul>
+                <li><strong>内部 ($r &lt; a$):</strong> \( E(r) = 0 \)</li>
+                <li><strong>外部 ($r \ge a$):</strong> 絶縁体球と同じ。 \( E(r) = \frac{1}{4\pi \varepsilon_0} \frac{Q}{r^2} \)
+                </li>
+            </ul>
+            <h3>電位 $\phi(r)$</h3>
+            <ul>
+                <li><strong>外部 ($r \ge a$):</strong> \( \phi(r) = \frac{1}{4\pi\varepsilon_0} \frac{Q}{r} \)</li>
+                <li><strong>内部 ($r &lt; a$):</strong> 表面と同じ電位で一定。 \( \phi(r) = \frac{1}{4\pi\varepsilon_0} \frac{Q}{a} \)
+                </li>
+            </ul>
+            <p>絶縁体と導体の最大の違いは、電荷が体積全体に分布するか、表面のみに分布するかにあり、これが内部の電場と電位の振る舞いの差となって現れます。</p>
+        </section>
+
+        <section id="problem3">
+            <h2>問題3：ポアソン方程式の応用</h2>
+            <p>電位 \(\phi(x, y, z) = -C_0 (x^2 + 2y^2)\) が与えられたときの電荷密度\(\rho\)を求めます。ポアソン方程式 \(\nabla^2 \phi =
+                -\rho/\varepsilon_0\) を利用します。</p>
+            <p>電位のラプラシアン \(\nabla^2 \phi\) を計算します。</p>
+            <div class="math-block">
+                $$ \nabla^2 \phi = \frac{\partial^2 \phi}{\partial x^2} + \frac{\partial^2 \phi}{\partial y^2} +
+                \frac{\partial^2 \phi}{\partial z^2} = (-2C_0) + (-4C_0) + 0 = -6C_0 $$
+            </div>
+            <p>ポアソン方程式に代入すると、</p>
+            <div class="math-block">
+                $$ -6C_0 = -\frac{\rho}{\varepsilon_0} \implies \rho = 6C_0\varepsilon_0 $$
+            </div>
+            <p>電荷密度は空間に一様に分布していることがわかります。</p>
+        </section>
+
+        <section id="conclusion">
+            <h2>まとめ</h2>
+            <p>今回の演習問題を通じて、静電気学の根幹をなす概念を学びました。対称性を利用したガウスの法則の適用、絶縁体と導体の静電的な性質の違い、そして電位と電荷分布を結びつけるポアソン方程式の扱いは、電磁気学を学ぶ上で非常に重要です。
+            </p>
+        </section>
+
+    </main>
+
+    <!-- 共通フッター -->
+    <footer>
+        <p>© 2025 総合解説プラットフォーム. All rights reserved.</p>
+    </footer>
+
+    <!-- トップへ戻るボタン -->
+    <button id="scrollTopBtn" title="トップへ戻る">⇧</button>
+
+    <!-- 外部JavaScriptの読み込み (順序が重要) -->
+    <script src="../js/article-list.js"></script>
+    <script src="../js/common.js"></script>
+</body>
+
+</html>

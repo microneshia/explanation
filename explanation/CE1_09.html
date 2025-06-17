@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- 記事のタイトル -->
+    <title>連立微分方程式の解法（ラプラス変換） - 総合解説プラットフォーム</title>
+
+    <!-- 記事の連番 -->
+    <meta name="article-number" content="000016">
+
+    <!-- 共通CSSファイルの読み込み -->
+    <link rel="stylesheet" href="../css/common.css">
+    <link rel="stylesheet" href="../css/article.css">
+
+    <!-- MathJax関連スクリプト -->
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script src="../js/mathjax-config.js"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+
+    <!-- このページ固有のスタイル -->
+    <style>
+        .step {
+            margin-bottom: 2.5em;
+            padding: 20px;
+            border-left: 4px solid #3498db;
+            background-color: #f8f9fa;
+            border-radius: 5px;
+        }
+
+        .conclusion {
+            margin-top: 30px;
+            padding: 25px;
+            background-color: #e8f6f3;
+            border: 1px solid #1abc9c;
+            border-left-width: 5px;
+            border-radius: 5px;
+            font-size: 1.1em;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- 共通ヘッダー -->
+    <header>
+        <a href="../index.html" class="header-link">
+            <h1>総合解説プラットフォーム <span class="subtitle">あらゆる疑問に、明快な解答を。</span></h1>
+        </a>
+    </header>
+
+    <!-- 共通ナビゲーションバー -->
+    <nav>
+        <ul>
+            <li><a href="../index.html">トップ</a></li>
+            <li><a href="../contents.html">コンテンツ</a></li>
+            <li><a href="../tags.html">タグ検索</a></li>
+        </ul>
+    </nav>
+
+    <!-- メインコンテンツ -->
+    <main class="article-container">
+        <h1>連立微分方程式のラプラス変換による解法</h1>
+
+        <!-- タグはJavaScriptによってこの位置に自動挿入されます -->
+
+        <p>
+            この記事では、ラプラス変換と逆行列を用いて、連立微分方程式を解く具体的な手順を解説します。初期条件がすべてゼロの場合の計算を追っていきます。
+        </p>
+
+        <section id="problem">
+            <h2>問題設定</h2>
+            <p>以下の連立微分方程式を解きます。</p>
+            <div class="math-block">
+                $$
+                \begin{cases}
+                x''(t) - y''(t) + y'(t) - x(t) = 1 \\
+                2x''(t) - y''(t) - 2x(t) + y(t) = 0
+                \end{cases}
+                $$
+            </div>
+            <p>初期条件は \( x(0) = x'(0) = y(0) = y'(0) = 0 \) とします。</p>
+        </section>
+
+        <section id="solution">
+            <h2>解法プロセス</h2>
+
+            <div class="step">
+                <h3>ステップ1: 連立微分方程式のラプラス変換</h3>
+                <p>各方程式の両辺をラプラス変換します。\(x(t)\) のラプラス変換を \(X(s)\)、\(y(t)\) のラプラス変換を \(Y(s)\) とし、初期条件がすべてゼロであるため、微分法則は
+                    \(\mathcal{L}\{f^{(n)}(t)\} = s^n F(s)\) となります。</p>
+                <p><b>方程式1:</b> \( (s^2 - 1)X(s) + (-s^2 + s)Y(s) = \frac{1}{s} \)</p>
+                <p><b>方程式2:</b> \( (2s^2 - 2)X(s) + (-s^2 + 1)Y(s) = 0 \)</p>
+            </div>
+
+            <div class="step">
+                <h3>ステップ2: 行列形式での表現</h3>
+                <p>ラプラス変換された代数方程式を行列で表現します。</p>
+                <div class="math-block">
+                    $$
+                    \begin{pmatrix}
+                    s^2-1 & -s^2+s \\
+                    2s^2-2 & -s^2+1
+                    \end{pmatrix}
+                    \begin{pmatrix}
+                    X(s) \\
+                    Y(s)
+                    \end{pmatrix}
+                    =
+                    \begin{pmatrix}
+                    1/s \\
+                    0
+                    \end{pmatrix}
+                    $$
+                </div>
+            </div>
+
+            <div class="step">
+                <h3>ステップ3: 逆行列を用いて \(X(s)\) と \(Y(s)\) を解く</h3>
+                <p>係数行列の逆行列 \(A^{-1}\) を用いて解を求めます。</p>
+                <div class="math-block">
+                    $$
+                    \begin{pmatrix}
+                    X(s) \\
+                    Y(s)
+                    \end{pmatrix}
+                    = \frac{1}{(s-1)^2(s+1)} \begin{pmatrix}
+                    -(s+1) & s \\
+                    -2(s+1) & s+1
+                    \end{pmatrix}
+                    \begin{pmatrix}
+                    1/s \\
+                    0
+                    \end{pmatrix}
+                    = \frac{1}{(s-1)^2(s+1)} \begin{pmatrix}
+                    -\frac{s+1}{s} \\
+                    -\frac{2(s+1)}{s}
+                    \end{pmatrix}
+                    $$
+                </div>
+                <p>これにより、\(X(s)\) と \(Y(s)\) は以下のように求まります。</p>
+                <div class="math-block">
+                    $$ X(s) = -\frac{1}{s(s-1)^2} \quad , \quad Y(s) = -\frac{2}{s(s-1)^2} $$
+                </div>
+            </div>
+
+            <div class="step">
+                <h3>ステップ4: 逆ラプラス変換</h3>
+                <p>まず、\(X(s)\) を部分分数分解します。</p>
+                <div class="math-block">
+                    $$ X(s) = -\frac{1}{s(s-1)^2} = -\left( \frac{1}{s} - \frac{1}{s-1} + \frac{1}{(s-1)^2} \right) =
+                    -\frac{1}{s} + \frac{1}{s-1} - \frac{1}{(s-1)^2} $$
+                </div>
+                <p>これを逆ラプラス変換して \(x(t)\) を求めます。</p>
+                <div class="math-block">
+                    $$ x(t) = \mathcal{L}^{-1}\left\{ X(s) \right\} = -1 + e^t - te^t = -1 + (1-t)e^t $$
+                </div>
+                <p>\(Y(s) = 2X(s)\) の関係から、\(y(t)\) は \(x(t)\) の2倍となります。</p>
+                <div class="math-block">
+                    $$ y(t) = 2x(t) = -2 + 2(1-t)e^t $$
+                </div>
+            </div>
+
+            <div class="conclusion">
+                <h2>結論</h2>
+                <p>連立微分方程式の解は以下の通りです。</p>
+                <div class="math-block">
+                    $$ x(t) = -1 + (1-t)e^t $$
+                    $$ y(t) = -2 + 2(1-t)e^t $$
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- 共通フッター -->
+    <footer>
+        <p>© 2025 総合解説プラットフォーム. All rights reserved.</p>
+    </footer>
+
+    <!-- トップへ戻るボタン -->
+    <button id="scrollTopBtn" title="トップへ戻る">⇧</button>
+
+    <!-- 外部JavaScriptの読み込み (順序が重要) -->
+    <script src="../js/article-list.js"></script>
+    <script src="../js/common.js"></script>
+</body>
+
+</html>

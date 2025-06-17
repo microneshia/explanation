@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- 記事のタイトル -->
+    <title>フーリエ半区間展開 - 総合解説プラットフォーム</title>
+
+    <!-- 記事の連番 -->
+    <meta name="article-number" content="000009">
+
+    <!-- 共通CSSファイルの読み込み -->
+    <link rel="stylesheet" href="../css/common.css">
+    <link rel="stylesheet" href="../css/article.css">
+
+    <!-- MathJax関連スクリプト -->
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script src="../js/mathjax-config.js"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+</head>
+
+<body>
+    <!-- 共通ヘッダー -->
+    <header>
+        <a href="../index.html" class="header-link">
+            <h1>総合解説プラットフォーム <span class="subtitle">あらゆる疑問に、明快な解答を。</span></h1>
+        </a>
+    </header>
+
+    <!-- 共通ナビゲーションバー -->
+    <nav>
+        <ul>
+            <li><a href="../index.html">トップ</a></li>
+            <li><a href="../contents.html">コンテンツ</a></li>
+            <li><a href="../tags.html">タグ検索</a></li>
+        </ul>
+    </nav>
+
+    <!-- メインコンテンツ -->
+    <main class="article-container">
+        <h1>フーリエ半区間展開</h1>
+
+        <!-- タグはJavaScriptによってこの位置に自動挿入されます -->
+
+        <p>
+            この記事では、半区間 $(0, L)$ で与えられた関数 $f(x) = x^2$ を、偶関数または奇関数として区間 $(-L, L)$
+            に拡張し、それぞれのフーリエ級数（余弦級数と正弦級数）を求める方法を詳しく解説します。
+            この問題を通して、<span class="highlight">部分積分の繰り返し</span>や、<span
+                class="highlight">偶関数・奇関数の性質を利用した計算の簡略化</span>など、フーリエ級数展開における重要なテクニックを学べます。
+        </p>
+
+        <section id="section1">
+            <h2>1. 問題の確認と基本事項</h2>
+            <p>半区間 $(0, L)$ で定義された関数 $f(x) = x^2$ を、偶関数または奇関数として拡張し、フーリエ級数を求めます。</p>
+            <ul>
+                <li><strong>フーリエ余弦級数</strong>: 関数を<span class="important">偶関数</span>として拡張します。\(b_n = 0\)
+                    となり、コサイン項のみの級数になります。</li>
+                <li><strong>フーリエ正弦級数</strong>: 関数を<span class="important">奇関数</span>として拡張します。\(a_0 = 0, a_n = 0\)
+                    となり、サイン項のみの級数になります。</li>
+            </ul>
+        </section>
+
+        <section id="section2">
+            <h2>2. フーリエ余弦級数（偶関数拡張）</h2>
+            <p>
+                関数を偶関数 $F_e(x) = x^2, (-L &lt; x &lt; L)$ として拡張します。\(b_n=0\) となるため、\(a_0\) と \(a_n\) を計算します。 </p>
+                    <div class="math-block">
+                        $$ a_0 = \frac{2}{L} \int_{0}^{L} x^2 \,dx = \frac{2L^2}{3} $$
+                        $$ a_n = \frac{2}{L} \int_{0}^{L} x^2 \cos\left(\frac{n\pi x}{L}\right) \,dx =
+                        \frac{4L^2}{n^2\pi^2}(-1)^n $$
+                    </div>
+                    <p>したがって、フーリエ余弦級数は以下のようになります。</p>
+                    <div class="math-block">
+                        $$ f(x) \sim \frac{L^2}{3} + \frac{4L^2}{\pi^2} \sum_{n=1}^{\infty} \frac{(-1)^n}{n^2}
+                        \cos\left(\frac{n\pi x}{L}\right) $$
+                    </div>
+        </section>
+
+        <section id="section3">
+            <h2>3. フーリエ正弦級数（奇関数拡張）</h2>
+            <p>
+                関数を奇関数 $F_o(x)\) に拡張します。\(a_0=0, a_n=0\) となるため、\(b_n\) のみを計算します。
+            </p>
+            <div class="math-block">
+                $$ b_n = \frac{2}{L} \int_{0}^{L} x^2 \sin\left(\frac{n\pi x}{L}\right) \,dx =
+                \frac{2L^2}{n\pi}(-1)^{n+1} + \frac{4L^2}{n^3\pi^3}((-1)^n - 1) $$
+            </div>
+            <p>
+                この係数は、$n$ が偶数か奇数かで形が簡単になります。
+            </p>
+            <ul>
+                <li><strong>\(n\) が偶数の場合:</strong> \( b_n = -\frac{2L^2}{n\pi} \)</li>
+                <li><strong>\(n\) が奇数の場合:</strong> \( b_n = \frac{2L^2}{n\pi} - \frac{8L^2}{n^3\pi^3} \)</li>
+            </ul>
+            <p>したがって、フーリエ正弦級数は以下のようになります。</p>
+            <div class="math-block">
+                $$ f(x) \sim \sum_{n=1}^{\infty} \left\{ \frac{2L^2}{n\pi}(-1)^{n+1} + \frac{4L^2}{n^3\pi^3}((-1)^n - 1)
+                \right\} \sin\left(\frac{n\pi x}{L}\right) $$
+            </div>
+        </section>
+
+        <section id="conclusion">
+            <h2>まとめ</h2>
+            <p>本記事では、関数 $f(x) = x^2$
+                の半区間展開について、フーリエ余弦級数とフーリエ正弦級数を導出しました。この計算プロセスを通じて、フーリエ級数展開における基本的な考え方と計算テクニックの重要性を確認できました。</p>
+        </section>
+    </main>
+
+    <!-- 共通フッター -->
+    <footer>
+        <p>© 2025 総合解説プラットフォーム. All rights reserved.</p>
+    </footer>
+
+    <!-- トップへ戻るボタン -->
+    <button id="scrollTopBtn" title="トップへ戻る">⇧</button>
+
+    <!-- 外部JavaScriptの読み込み (順序が重要) -->
+    <script src="../js/article-list.js"></script>
+    <script src="../js/common.js"></script>
+</body>
+
+</html>

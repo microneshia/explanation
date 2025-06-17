@@ -1,0 +1,796 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>最悪のウェブサイト</title>
+    <meta name="article-number" content="000015">
+    <meta name="description" content="ウェブクリエイターが陥りがちな「善意の失敗」を集めたショーケースです。">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Kiwi+Maru&family=Mochiy+Pop+One&family=Yuji+Syuku&display=swap"
+        rel="stylesheet">
+
+    <!-- フローティングナビゲーションメニュー用のCSS -->
+    <link rel="stylesheet" href="../css/nav-menu.css">
+
+    <!-- このコンテンツ固有のスタイル -->
+    <style>
+        :root {
+            --theme-color-1: #88c100;
+            --theme-color-2: #ff9900;
+            --base-font-size: 16px;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: "Yuji Syuku", serif;
+            font-size: var(--base-font-size);
+            line-height: 1.8;
+            background-color: #fdfaf4;
+            color: #333;
+            margin: 0;
+            padding-top: 80px;
+        }
+
+        h1,
+        h2,
+        h3 {
+            font-family: "Mochiy Pop One", sans-serif;
+        }
+
+        .section-title {
+            margin-bottom: 40px;
+        }
+
+        .container {
+            max-width: 960px;
+            margin: 0 auto;
+            padding: 60px 20px;
+            text-align: center;
+        }
+
+        .container-fluid {
+            width: 100%;
+            padding: 80px 20px;
+            box-sizing: border-box;
+            text-align: center;
+            background-color: #fff8e1;
+        }
+
+        body {
+            cursor: none;
+        }
+
+        .custom-cursor {
+            position: fixed;
+            width: 30px;
+            height: 30px;
+            border: 2px solid var(--theme-color-2);
+            border-radius: 50%;
+            pointer-events: none;
+            left: -100px;
+            top: -100px;
+            transform: translate(-50%, -50%);
+            transition: left 0.4s, top 0.4s, width 0.4s, height 0.4s, background-color 0.4s;
+            z-index: 10001;
+            opacity: 0;
+        }
+
+        .custom-cursor.visible {
+            opacity: 1;
+        }
+
+        .custom-cursor.hover {
+            width: 50px;
+            height: 50px;
+            background-color: rgba(255, 153, 0, 0.3);
+        }
+
+        header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 40px;
+            background-color: rgba(253, 250, 244, 0.8);
+            backdrop-filter: blur(10px);
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+            z-index: 1000;
+            transition: transform 1.5s cubic-bezier(0.165, 0.84, 0.44, 1);
+        }
+
+        header.hidden {
+            transform: translateY(-100%);
+        }
+
+        .logo {
+            font-family: "Mochiy Pop One", sans-serif;
+            font-size: 1.5rem;
+            color: var(--theme-color-1);
+        }
+
+        #scroll-indicator-wrapper {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 5px;
+            background-color: #eee;
+            z-index: 1001;
+        }
+
+        #scroll-indicator {
+            width: 0;
+            height: 100%;
+            background-color: var(--theme-color-2);
+        }
+
+        .gallery-container {
+            position: relative;
+            width: 100%;
+            max-width: 800px;
+            margin: 0 auto;
+            overflow: hidden;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            background-color: #eee;
+        }
+
+        .gallery-track {
+            display: flex;
+            touch-action: pan-y;
+        }
+
+        .gallery-track.smooth {
+            transition: transform 0.5s ease-in-out;
+        }
+
+        .gallery-slide {
+            min-width: 100%;
+            aspect-ratio: 16 / 9;
+        }
+
+        .gallery-slide img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            pointer-events: none;
+        }
+
+        .gallery-nav {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 40px;
+            height: 40px;
+            background: rgba(0, 0, 0, 0.5);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            font-size: 1.5rem;
+            cursor: none;
+            z-index: 10;
+            opacity: 0.7;
+            transition: background-color 0.3s;
+        }
+
+        .gallery-nav:hover {
+            background: rgba(0, 0, 0, 0.8);
+        }
+
+        #prev-btn {
+            left: 10px;
+        }
+
+        #next-btn {
+            right: 10px;
+        }
+
+        .gallery-dots {
+            position: absolute;
+            bottom: 15px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 10px;
+            z-index: 10;
+        }
+
+        .dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background-color: rgba(255, 255, 255, 0.5);
+            cursor: none;
+            transition: background-color 0.3s;
+        }
+
+        .dot.active {
+            background-color: rgba(255, 255, 255, 1);
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 30px;
+            margin-top: 50px;
+        }
+
+        .feature-card {
+            background-color: #fff;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.08);
+            text-align: center;
+        }
+
+        .card-icon-feature {
+            font-size: 3rem;
+            margin-bottom: 20px;
+            display: inline-block;
+            background-color: var(--theme-color-1);
+            color: white;
+            width: 80px;
+            height: 80px;
+            line-height: 80px;
+            border-radius: 50%;
+        }
+
+        .reveal-on-scroll {
+            opacity: 0;
+            transform: translateY(100px);
+            transition: opacity 2s ease-out, transform 2s cubic-bezier(0.165, 0.84, 0.44, 1);
+        }
+
+        .reveal-on-scroll.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .reveal-on-scroll.feature-card:nth-child(2) {
+            transition-delay: 0.2s;
+        }
+
+        .reveal-on-scroll.feature-card:nth-child(3) {
+            transition-delay: 0.4s;
+        }
+
+        .horizontal-scroll-container {
+            height: 300vh;
+            position: relative;
+        }
+
+        .sticky-wrapper {
+            position: sticky;
+            top: 0;
+            height: 100vh;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+        }
+
+        .horizontal-content {
+            display: flex;
+            width: calc(4 * 400px + 4 * 100px);
+            padding: 0 50px;
+        }
+
+        .horizontal-card {
+            flex-shrink: 0;
+            width: 400px;
+            height: 450px;
+            background-color: #ffffff;
+            border-radius: 20px;
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.12);
+            padding: 40px;
+            box-sizing: border-box;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            margin: 0 50px;
+        }
+
+        .horizontal-card h3 {
+            color: var(--theme-color-1);
+            margin-bottom: 20px;
+        }
+
+        .horizontal-card p {
+            font-size: 1rem;
+            line-height: 1.7;
+        }
+
+        .card-icon {
+            font-size: 4rem;
+            margin-top: 30px;
+            animation: spin-icon 8s linear infinite;
+        }
+
+        @keyframes spin-icon {
+            from {
+                transform: rotate(0deg);
+            }
+
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        .tooltip-wrapper {
+            position: relative;
+            display: inline-block;
+            border-bottom: 2px dotted var(--theme-color-1);
+        }
+
+        .tooltip {
+            position: absolute;
+            bottom: 125%;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: #333;
+            color: #fff;
+            padding: 10px;
+            border-radius: 5px;
+            font-size: 0.9rem;
+            white-space: nowrap;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.3s, visibility 0.3s;
+            z-index: 10;
+        }
+
+        .tooltip-wrapper:hover .tooltip {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .justified-text {
+            text-align: justify;
+        }
+
+        .read-more-content {
+            max-height: 120px;
+            overflow: hidden;
+            position: relative;
+            transition: max-height 1s ease-in-out;
+        }
+
+        .read-more-content::after {
+            content: "";
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 50px;
+            background: linear-gradient(transparent, #fdfaf4);
+            pointer-events: none;
+            transition: opacity 0.5s;
+        }
+
+        .read-more-content.expanded {
+            max-height: 1000px;
+        }
+
+        .read-more-content.expanded::after {
+            opacity: 0;
+        }
+
+        .read-more-button {
+            display: inline-block;
+            margin-top: 15px;
+            padding: 10px 20px;
+            background: var(--theme-color-1);
+            color: white;
+            border-radius: 20px;
+            cursor: none;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 15px;
+            font-family: "Kiwi Maru", serif;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            box-sizing: border-box;
+            font-size: 1rem;
+        }
+
+        #bgm-controls {
+            position: fixed;
+            bottom: 30px;
+            left: 30px;
+            background: #fff;
+            padding: 10px;
+            border-radius: 50px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            z-index: 999;
+        }
+
+        #play-pause-btn {
+            width: 40px;
+            height: 40px;
+            border: none;
+            border-radius: 50%;
+            background: var(--theme-color-1);
+            color: white;
+            font-size: 1.2rem;
+            cursor: none;
+        }
+
+        #bgm-label {
+            font-size: 0.8rem;
+        }
+
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.7);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 10002;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.5s, visibility 0.5s;
+        }
+
+        .modal-overlay.visible {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .modal-content {
+            background: #fff;
+            padding: 40px;
+            border-radius: 15px;
+            max-width: 500px;
+            width: 90%;
+            transform: scale(0.7);
+            transition: transform 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        .modal-overlay.visible .modal-content {
+            transform: scale(1);
+        }
+
+        .close-modal-btn {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: none;
+            border: none;
+            font-size: 2rem;
+            color: #aaa;
+            cursor: none;
+        }
+
+        #loader {
+            position: fixed;
+            inset: 0;
+            z-index: 10000;
+            background-color: #fdfaf4;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            transition: opacity 1s, visibility 1s;
+        }
+
+        #loader.hidden {
+            opacity: 0;
+            visibility: hidden;
+        }
+
+        .loader-text {
+            font-family: "Kiwi Maru", serif;
+            font-size: 1.5rem;
+            overflow: hidden;
+        }
+
+        .loader-text span {
+            display: inline-block;
+            transform: translateY(100%);
+            animation: revealText 2.5s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+        }
+
+        @keyframes revealText {
+            to {
+                transform: translateY(0);
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <!-- フローティングナビゲーションメニュー -->
+    <div id="menu-toggle-icon" style="z-index: 20002;">≡</div>
+    <div id="floating-menu" style="z-index: 20001;">
+        <a href="../index.html">トップページへ</a>
+        <a href="../contents.html">コンテンツ一覧へ</a>
+    </div>
+
+    <!-- 元のコンテンツHTML（変更なし） -->
+    <div class="custom-cursor"></div>
+    <div id="loader">
+        <p class="loader-text"></p>
+    </div>
+    <header>
+        <div class="logo">善意の失敗</div>
+        <nav id="main-nav"></nav>
+    </header>
+    <div id="scroll-indicator-wrapper">
+        <div id="scroll-indicator"></div>
+    </div>
+    <main>
+        <section class="container-fluid reveal-on-scroll">
+            <h1 class="section-title">良かれと思って作った、最悪のウェブサイト</h1>
+            <p style="max-width: 800px; margin: 0 auto">
+                このサイトは、ウェブクリエイターが陥りがちな「善意の失敗」を集めたショーケースです。<br />セクションごとに幅が違うこのページ、スクロールしていて「ガタガタする」「もっさりする」と感じませんか？
+            </p>
+        </section>
+        
+        <section class="container">
+            <h2 class="section-title reveal-on-scroll">
+                慌ただしくループするギャラリー
+            </h2>
+            <div class="gallery-container reveal-on-scroll">
+                <div class="gallery-track">
+                    <div class="gallery-slide">
+                        <img src="https://picsum.photos/800/450?random=1" alt="ランダムな風景画像1" />
+                    </div>
+                    <div class="gallery-slide">
+                        <img src="https://picsum.photos/800/450?random=2" alt="ランダムな風景画像2" />
+                    </div>
+                    <div class="gallery-slide">
+                        <img src="https://picsum.photos/800/450?random=3" alt="ランダムな風景画像3" />
+                    </div>
+                    <div class="gallery-slide">
+                        <img src="https://picsum.photos/800/450?random=4" alt="ランダムな風景画像4" />
+                    </div>
+                </div>
+                <button id="prev-btn" class="gallery-nav">&lt;</button>
+                <button id="next-btn" class="gallery-nav">&gt;</button>
+                <div class="gallery-dots"></div>
+            </div>
+            <p class="reveal-on-scroll" style="margin-top: 20px">
+                矢印、ドット、スワイプ、ループ、全部使えます！でも、あなたの操作は1.5秒後には無かったことにされます。
+            </p>
+        </section>
+        
+        <section class="container-fluid">
+            <h2 class="section-title reveal-on-scroll">
+                私たちのこだわり（動きすぎ）
+            </h2>
+            <div class="features-grid">
+                <div class="feature-card reveal-on-scroll">
+                    <div class="card-icon-feature">🎨</div>
+                    <h3>独創的なデザイン</h3>
+                    <p>
+                        他にはない、あなたのサイトだけの特別なデザインを。たとえそれが使いにくくても、見た目のインパクトを最優先します。
+                    </p>
+                </div>
+                <div class="feature-card reveal-on-scroll">
+                    <div class="card-icon-feature">✨</div>
+                    <h3>華麗なアニメーション</h3>
+                    <p>
+                        あらゆる要素に動きをつけて、ユーザーを飽きさせません。コンテンツに集中したい？それは想定していません。
+                    </p>
+                </div>
+                <div class="feature-card reveal-on-scroll">
+                    <div class="card-icon-feature">💡</div>
+                    <h3>親切すぎる機能</h3>
+                    <p>
+                        ユーザーが求める前に、私たちが「良い」と信じる機能を提供します。それが邪魔になっても、それは親切心の結果です。
+                    </p>
+                </div>
+            </div>
+        </section>
+        
+        <section class="horizontal-scroll-container">
+            <div class="sticky-wrapper">
+                <div class="horizontal-content">
+                    <div class="horizontal-card">
+                        <h3>縦スクロールが横に！</h3>
+                        <p>
+                            雑誌をめくるような、リッチな体験を提供したかったのです。でも、普通のスクロール操作を乗っ取られると、多くの人は混乱します。
+                        </p>
+                        <div class="card-icon">🌀</div>
+                    </div>
+                    <div class="horizontal-card">
+                        <h3>直感的ではない動き</h3>
+                        <p>
+                            PCのマウスホイールや、スマホのタッチ操作。慣れ親しんだ動きが予期せぬ結果を生むと、コントロールを失ったように感じます。
+                        </p>
+                        <div class="card-icon">😵</div>
+                    </div>
+                    <div class="horizontal-card">
+                        <h3>スマホでは更に悪化</h3>
+                        <p>
+                            タッチ操作では、少し指が触れただけで意図せず横にスクロールしてしまい、目的のコンテンツにたどり着くのが困難になります。
+                        </p>
+                        <div class="card-icon">📱</div>
+                    </div>
+                    <div class="horizontal-card">
+                        <h3>「普通」が一番</h3>
+                        <p>
+                            ユニークな体験の提供も大切ですが、基本的な操作性は損なうべきではありません。このセクションが終われば、通常のスクロールに戻ります。
+                        </p>
+                        <div class="card-icon">👍</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <section class="container">
+            <h2 class="section-title reveal-on-scroll">
+                続きを読む（不要なボタン）
+            </h2>
+            <div class="read-more-container reveal-on-scroll">
+                <div class="read-more-content">
+                    <p class="justified-text">
+                        クリエイターの「こだわり」は、時にユーザーの「使いやすさ」と衝突します。例えば、この「続きを読む」機能。ページの初期表示をスッキリ見せたいという親切心から実装されました。また、この文章は<span
+                            class="tooltip-wrapper">左右が揃えられています<span class="tooltip">text-align:
+                                justifyを適用中</span></span>が、日本語では不自然な空白が生まれています。ユーザーはコンテンツを読むためにサイトを訪れているのであり、UIを操作するために来ているわけではないのです。
+                    </p>
+                </div>
+                <span class="read-more-button">続きを読む</span>
+            </div>
+        </section>
+        
+        <section class="container">
+            <h2 class="section-title reveal-on-scroll">お問い合わせ</h2>
+            <form class="reveal-on-scroll" onsubmit="alert('送信機能はありません'); return false;">
+                <div class="form-group">
+                    <input type="tel" id="phone" placeholder="電話番号（例: 09012345678）" autocomplete="off" required />
+                    <p style="font-size: 0.8rem; margin-top: 5px">
+                        ブラウザの自動入力をオフにし、ハイフンを自動で挿入する親切設計です。
+                    </p>
+                </div>
+                <button type="submit" class="read-more-button">送信</button>
+            </form>
+        </section>
+    </main>
+    <div id="bgm-controls">
+        <button id="play-pause-btn">▶</button>
+        <span id="bgm-label">BGM</span>
+        <audio id="background-music" loop>
+            <source src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3" type="audio/mpeg" />
+        </audio>
+    </div>
+    <div class="modal-overlay">
+        <div class="modal-content">
+            <button class="close-modal-btn">×</button>
+            <h3>特別なお知らせ！</h3>
+            <p>このサイトの体験はいかがでしたか？<br />このモーダルは、あなたの作業を中断させるためだけに表示されています。</p>
+        </div>
+    </div>
+
+    <!-- 統合されたJavaScript -->
+    <script>
+        // --- ナビゲーションメニューのロジック ---
+        document.addEventListener('DOMContentLoaded', () => {
+            const menuToggleIcon = document.getElementById('menu-toggle-icon');
+            const floatingMenu = document.getElementById('floating-menu');
+            if (menuToggleIcon && floatingMenu) {
+                menuToggleIcon.addEventListener('click', (event) => {
+                    event.stopPropagation();
+                    floatingMenu.classList.toggle('show');
+                });
+                document.addEventListener('click', (event) => {
+                    if (floatingMenu.classList.contains('show')) {
+                        if (!menuToggleIcon.contains(event.target) && !floatingMenu.contains(event.target)) {
+                            floatingMenu.classList.remove('show');
+                        }
+                    }
+                });
+            }
+        });
+
+        // --- 元のコンテンツロジック (変更なし) ---
+        document.addEventListener("DOMContentLoaded", () => {
+            const initPage = () => {
+                setupCustomCursor();
+                setupGallery();
+                setupScrollAnimations();
+                setupOtherBadFeatures();
+            };
+            const setupCustomCursor = () => {
+                const cursor = document.querySelector(".custom-cursor");
+                const updateCursorPosition = (x, y) => { cursor.style.left = `${x}px`; cursor.style.top = `${y}px`; };
+                document.addEventListener("mousemove", (e) => { cursor.classList.add("visible"); updateCursorPosition(e.clientX, e.clientY); });
+                document.addEventListener("touchstart", (e) => { cursor.classList.add("visible"); if (e.touches.length > 0) { updateCursorPosition(e.touches[0].clientX, e.touches[0].clientY); } }, { passive: true });
+                document.addEventListener("touchmove", (e) => { if (e.touches.length > 0) { updateCursorPosition(e.touches[0].clientX, e.touches[0].clientY); } }, { passive: true });
+                document.addEventListener("touchend", () => { cursor.classList.remove("visible"); });
+                document.querySelectorAll("button, a, .read-more-button, .tooltip-wrapper, .dot, .gallery-nav").forEach((el) => {
+                    el.addEventListener("mouseenter", () => cursor.classList.add("hover"));
+                    el.addEventListener("mouseleave", () => cursor.classList.remove("hover"));
+                });
+            };
+            const setupGallery = () => {
+                const gallery = document.querySelector(".gallery-container"); if (!gallery) return;
+                const track = gallery.querySelector(".gallery-track"); const originalSlides = Array.from(track.children);
+                const slideCount = originalSlides.length; const nextBtn = gallery.querySelector("#next-btn");
+                const prevBtn = gallery.querySelector("#prev-btn"); const dotsContainer = gallery.querySelector(".gallery-dots");
+                track.appendChild(originalSlides[0].cloneNode(true)); track.insertBefore(originalSlides[slideCount - 1].cloneNode(true), originalSlides[0]);
+                let currentIndex = 1, autoSlideInterval, isDragging = false, startPos = 0, currentTranslate = 0;
+                originalSlides.forEach((_, i) => { const dot = document.createElement("button"); dot.classList.add("dot"); dot.addEventListener("click", () => { currentIndex = i + 1; setPosition(true); }); dotsContainer.appendChild(dot); });
+                const dots = Array.from(dotsContainer.children);
+                const setPosition = (withTransition = false) => {
+                    if (withTransition) { track.classList.add("smooth"); } else { track.classList.remove("smooth"); }
+                    currentTranslate = -currentIndex * gallery.clientWidth; track.style.transform = `translateX(${currentTranslate}px)`;
+                };
+                const updateDots = () => { const realIndex = (currentIndex - 1 + slideCount) % slideCount; dots.forEach(dot => dot.classList.remove("active")); dots[realIndex].classList.add("active"); };
+                const startAutoSlide = () => { if (autoSlideInterval) clearInterval(autoSlideInterval); autoSlideInterval = setInterval(() => { currentIndex++; setPosition(true); }, 1500); };
+                const getPositionX = (e) => e.type.includes("mouse") ? e.pageX : e.touches[0].clientX;
+                const dragStart = (e) => { isDragging = true; startPos = getPositionX(e); clearInterval(autoSlideInterval); track.classList.remove("smooth"); };
+                const drag = (e) => { if (isDragging) { const diff = getPositionX(e) - startPos; currentTranslate = -currentIndex * gallery.clientWidth + diff; track.style.transform = `translateX(${currentTranslate}px)`; } };
+                const dragEnd = () => {
+                    if (!isDragging) return; isDragging = false; const movedBy = currentTranslate - -currentIndex * gallery.clientWidth;
+                    if (movedBy < -(gallery.clientWidth / 4)) currentIndex++; if (movedBy > gallery.clientWidth / 4) currentIndex--; setPosition(true);
+                };
+                nextBtn.addEventListener("click", () => { currentIndex++; setPosition(true); });
+                prevBtn.addEventListener("click", () => { currentIndex--; setPosition(true); });
+                gallery.addEventListener("mousedown", dragStart); gallery.addEventListener("touchstart", dragStart, { passive: true });
+                gallery.addEventListener("mouseup", dragEnd); gallery.addEventListener("mouseleave", dragEnd);
+                gallery.addEventListener("touchend", dragEnd); gallery.addEventListener("mousemove", drag); gallery.addEventListener("touchmove", drag, { passive: true });
+                track.addEventListener("transitionend", () => {
+                    if (currentIndex <= 0) { currentIndex = slideCount; setPosition(); }
+                    if (currentIndex >= slideCount + 1) { currentIndex = 1; setPosition(); }
+                    updateDots(); startAutoSlide();
+                });
+                setPosition(); updateDots(); startAutoSlide();
+            };
+            const setupScrollAnimations = () => {
+                const revealObserver = new IntersectionObserver((entries) => {
+                    entries.forEach((entry) => { entry.target.classList.toggle("visible", entry.isIntersecting); });
+                }, { threshold: 0.1 });
+                document.querySelectorAll(".reveal-on-scroll").forEach(el => revealObserver.observe(el));
+                const indicator = document.getElementById("scroll-indicator");
+                window.addEventListener("scroll", () => {
+                    for (let i = 0; i < 5000; i++) Math.sin(i);
+                    if (indicator) indicator.style.width = `${(window.scrollY / (document.documentElement.scrollHeight - window.innerHeight)) * 100}%`;
+                });
+                const header = document.querySelector("header"); let lastScrollY = window.pageYOffset;
+                window.addEventListener("scroll", () => { header.classList.toggle("hidden", lastScrollY < window.pageYOffset && window.pageYOffset > 80); lastScrollY = window.pageYOffset; });
+                const hContainer = document.querySelector(".horizontal-scroll-container"); const hContent = document.querySelector(".horizontal-content");
+                window.addEventListener("scroll", () => {
+                    if (!hContainer || !hContent) return; const sTop = window.pageYOffset; const cTop = hContainer.offsetTop;
+                    const cHeight = hContainer.offsetHeight; const wHeight = window.innerHeight;
+                    if (sTop >= cTop && sTop <= cTop + cHeight - wHeight) {
+                        const percent = (sTop - cTop) / (cHeight - wHeight);
+                        const maxScroll = hContent.scrollWidth - window.innerWidth;
+                        hContent.style.transform = `translateX(-${Math.min(maxScroll, maxScroll * percent)}px)`;
+                    }
+                });
+            };
+            const setupOtherBadFeatures = () => {
+                const loader = document.getElementById("loader"); const loaderText = document.querySelector(".loader-text");
+                "最高の体験を、心を込めて準備中...".split("").forEach((char, i) => { const span = document.createElement("span"); span.textContent = char; span.style.animationDelay = `${i * 0.1}s`; loaderText.appendChild(span); });
+                setTimeout(() => loader.classList.add("hidden"), 2000);
+                document.querySelectorAll(".read-more-container .read-more-button").forEach(btn => btn.addEventListener("click", e => { const cont = e.target.previousElementSibling; if (cont) { cont.classList.add("expanded"); e.target.style.display = "none"; } }));
+                document.getElementById("phone").addEventListener("input", e => { let v = e.target.value.replace(/\D/g, ""); if (v.length > 3 && v.length <= 7) v = `${v.slice(0, 3)}-${v.slice(3)}`; else if (v.length > 7) v = `${v.slice(0, 3)}-${v.slice(3, 7)}-${v.slice(7, 11)}`; e.target.value = v; });
+                const bgm = document.getElementById("background-music");
+                document.getElementById("play-pause-btn").addEventListener("click", e => { if (bgm.paused) { bgm.play().catch(() => { }); e.target.textContent = "❚❚"; } else { bgm.pause(); e.target.textContent = "▶"; } });
+                const modal = document.querySelector(".modal-overlay");
+                setTimeout(() => modal.classList.add("visible"), 15000);
+                document.querySelector(".close-modal-btn").addEventListener("click", () => modal.classList.remove("visible"));
+            };
+            initPage();
+        });
+    </script>
+</body>
+
+</html>

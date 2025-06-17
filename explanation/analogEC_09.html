@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- 記事のタイトル -->
+    <title>CR移相形発振回路はなぜ3段必要か？ - 総合解説プラットフォーム</title>
+
+    <!-- 記事の連番 -->
+    <meta name="article-number" content="000014">
+
+    <!-- 共通CSSファイルの読み込み -->
+    <link rel="stylesheet" href="../css/common.css">
+    <link rel="stylesheet" href="../css/article.css">
+
+    <!-- MathJax関連スクリプト -->
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script src="../js/mathjax-config.js"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+
+    <!-- このページ固有のスタイル -->
+    <style>
+        .summary-box {
+            background-color: #fffbe6;
+            padding: 20px;
+            border: 1px solid #ffe58f;
+            border-left: 5px solid #ffc107;
+            border-radius: 5px;
+            margin: 25px 0;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- 共通ヘッダー -->
+    <header>
+        <a href="../index.html" class="header-link">
+            <h1>総合解説プラットフォーム <span class="subtitle">あらゆる疑問に、明快な解答を。</span></h1>
+        </a>
+    </header>
+
+    <!-- 共通ナビゲーションバー -->
+    <nav>
+        <ul>
+            <li><a href="../index.html">トップ</a></li>
+            <li><a href="../contents.html">コンテンツ</a></li>
+            <li><a href="../tags.html">タグ検索</a></li>
+        </ul>
+    </nav>
+
+    <!-- メインコンテンツ -->
+    <main class="article-container">
+        <h1>CR移相形発振回路はなぜ3段必要か？</h1>
+
+        <!-- タグはJavaScriptによってこの位置に自動挿入されます -->
+
+        <p>
+            CR移相形発振回路が持続的に発振するために、なぜCRフィルタが3段以上必要になるのかを、数式を用いて基礎から詳しく解説します。
+        </p>
+
+        <section id="s1">
+            <h2>1. 発振の基本条件（バルクハウゼンの条件）</h2>
+            <p>発振回路が安定して持続的な信号を生成するためには、以下の2つの「バルクハウゼンの条件」を同時に満たす必要があります。</p>
+            <div class="highlight">
+                <p><strong>1. 振幅条件:</strong> ループゲインの大きさ（絶対値）が1以上であること。<br>
+                <div class="math-block">$$ |A\beta| \ge 1 $$</div>
+                </p>
+                <p><strong>2. 位相条件:</strong> ループ全体の位相シフトが $360^{\circ}$ (または $0^{\circ}$) の整数倍であること。<br>
+                <div class="math-block">$$ \text{Phase}(A\beta) = 2\pi n \quad (n = 0, 1, 2, \dots) $$</div>
+                </p>
+            </div>
+            <p>これは、「回路を一周して戻ってきた信号が、元の信号と全く同じ形で強め合う」ことを意味します。</p>
+        </section>
+
+        <section id="s2">
+            <h2>2. CR移相形発振回路の構成と目標</h2>
+            <p>この発振回路は、常に<span class="important">180°の位相をシフトさせる「反転増幅部(A)」</span>と、<span
+                    class="important">残りの180°を達成するための「CRフィルタ帰還部(β)」</span>で構成されます。</p>
+            <p class="highlight">
+                ここでの核心的な問いは、「CRフィルタだけで $180^{\circ}$ の位相シフトは可能なのか？」という点です。これをCRフィルタの段数ごとに見ていきましょう。
+            </p>
+        </section>
+
+        <section id="s3">
+            <h2>3. なぜ3段必要なのか？段数ごとの検討</h2>
+            <h3>CRフィルタが1段の場合</h3>
+            <p>1段のCRハイパスフィルタの伝達関数 $\beta(j\omega)$ とその位相シフト $\phi_1$ は次式で表されます。</p>
+            <div class="math-block">
+                $$ \beta(j\omega) = \frac{j\omega CR}{1 + j\omega CR} \implies \phi_1 = 90^{\circ} - \arctan(\omega CR)
+                $$
+            </div>
+            <p>この式から、$\phi_1$ が取りうる範囲は $0^{\circ} &lt; \phi_1 &lt; 90^{\circ}$ となります。つまり、<strong>1段では最大でも $90^{\circ}$
+                    の位相しか進めることができず、$180^{\circ}$ には全く届きません。</strong></p>
+
+            <h3>CRフィルタが2段の場合</h3>
+            <p>2段にすれば $90^{\circ} \times 2 = 180^{\circ}$
+                となりそうですが、実際はそうなりません。2段目のCRフィルタが1段目にとっての<strong>負荷</strong>となり、互いに影響し合う<span
+                    class="important">「負荷効果」</span>が発生するため、単純な足し算はできません。厳密に計算しても最大位相シフトは $180^{\circ}$
+                には達せず、<strong>2段でも発振条件を満たすことはできません。</strong></p>
+
+            <h3>CRフィルタが3段の場合</h3>
+            <p>3段のCRフィルタを用いると、ついに $180^{\circ}$ の位相シフトを達成できます。3段CRフィルタの伝達関数の逆数 $1/\beta$ を求めると以下のようになります。</p>
+            <div class="math-block">
+                $$ \frac{1}{\beta} = \left( 1 - \frac{5}{(\omega CR)^2} \right) - j \left( \frac{6}{\omega CR} -
+                \frac{1}{(\omega CR)^3} \right) $$
+            </div>
+            <p>位相が $180^{\circ}$ になるには、伝達関数が負の実数、つまり<span class="highlight">虚数部が0</span>になる必要があります。</p>
+            <div class="math-block">
+                $$ \frac{6}{\omega CR} - \frac{1}{(\omega CR)^3} = 0 \implies \omega_0 = \frac{1}{\sqrt{6} CR} $$
+            </div>
+            <p>この特定の周波数 $\omega_0$ で位相条件が満たされます。このときの帰還率の大きさ $|\beta|$ を計算すると、</p>
+            <div class="math-block">
+                $$ \left. \frac{1}{\beta} \right|_{\omega=\omega_{0}} = 1 - \frac{5}{1/6} = -29 \implies \beta =
+                -\frac{1}{29} $$
+            </div>
+            <p>これは、減衰率が $1/29$ であることを意味します。振幅条件 $|A\beta| \ge 1$ を満たすには、増幅部の利得 $|A|$ は<strong>少なくとも29倍以上</strong>必要です。
+            </p>
+
+            <div class="summary-box">
+                <h3>ここまでのまとめ</h3>
+                <ul>
+                    <li><strong>1段、2段のCRフィルタ</strong>では、どのような周波数でも位相シフトを $180^{\circ}$ にすることが物理的に不可能です。</li>
+                    <li><strong>3段のCRフィルタ</strong>を用いることで、初めて特定の周波数 $\omega_0$ で $180^{\circ}$ の位相シフトを実現できます。</li>
+                    <li>この $180^{\circ}$ と反転増幅器の $180^{\circ}$ を合わせ、ループ全体の位相が $360^{\circ}$ となり発振します。</li>
+                </ul>
+            </div>
+        </section>
+
+        <section id="s4">
+            <h2>4. 理論と実践：なぜゲインを少し大きく設定するのか？</h2>
+            <p>理論上は増幅率 $|A|=29$ で発振しますが、実際の回路では部品の誤差や損失があるため、ループゲインが1を確実に超えるように、理論値より少し大きな値（例: $|A|=30$）に設定するのが一般的です。
+            </p>
+            <p>これにより発振が確実にスタートし、振幅が成長します。そして、増幅器の出力が電源電圧で飽和（クリップ）し始めると、実効的な増幅率が低下します。最終的に、実効ループゲインがちょうど「1」になる点で振幅の成長が止まり、安定した発振状態に落ち着きます。この<span
+                    class="important">増幅器の非線形性</span>が、振幅を安定させる重要な役割を果たしています。</p>
+        </section>
+    </main>
+
+    <!-- 共通フッター -->
+    <footer>
+        <p>© 2025 総合解説プラットフォーム. All rights reserved.</p>
+    </footer>
+
+    <!-- トップへ戻るボタン -->
+    <button id="scrollTopBtn" title="トップへ戻る">⇧</button>
+
+    <!-- 外部JavaScriptの読み込み (順序が重要) -->
+    <script src="../js/article-list.js"></script>
+    <script src="../js/common.js"></script>
+</body>
+
+</html>

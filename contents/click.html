@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <title>クッキークリッカー風ゲーム</title>
+    <meta name="article-number" content="000011">
+    <meta name="description" content="クッキーをクリックして増やしていく、シンプルなクリッカーゲームです。">
+
+    <!-- フローティングナビゲーションメニュー用のCSS -->
+    <link rel="stylesheet" href="../css/nav-menu.css">
+
+    <!-- このコンテンツ固有のスタイル -->
+    <style>
+        html,
+        body {
+            margin: 0;
+            font-family: sans-serif;
+            background-color: #f3e5ab;
+            text-align: center;
+            user-select: none;
+            -webkit-user-select: none;
+            touch-action: manipulation;
+        }
+
+        #cookie {
+            width: 200px;
+            height: 200px;
+            background: url('https://img.atwiki.jp/free-gaming/attach/71/102/250.png') no-repeat center/cover;
+            border-radius: 50%;
+            margin: 30px auto 10px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+        }
+
+        #cookie:active {
+            transform: scale(0.95);
+        }
+
+        #count {
+            font-size: 24px;
+            margin: 10px 0;
+        }
+
+        .button {
+            padding: 12px 20px;
+            font-size: 16px;
+            margin: 6px 5px;
+            border: none;
+            background-color: #ffb347;
+            color: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+            display: inline-block;
+            transition: background-color 0.2s, color 0.2s;
+        }
+
+        .button:disabled {
+            background-color: #999;
+            color: #ddd;
+        }
+
+        .stats {
+            margin-top: 10px;
+            font-size: 16px;
+        }
+
+        .container {
+            max-width: 400px;
+            margin: 0 auto;
+            padding-bottom: 70px;
+        }
+
+        #deleteBtn {
+            position: fixed;
+            bottom: 10px;
+            left: 50%;
+            transform: translateX(-50%);
+            padding: 10px 20px;
+            background-color: #e74c3c;
+            color: white;
+            font-size: 14px;
+            border: none;
+            border-radius: 6px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- フローティングナビゲーションメニュー -->
+    <div id="menu-toggle-icon">≡</div>
+    <div id="floating-menu">
+        <a href="../index.html">トップページへ</a>
+        <a href="../contents.html">コンテンツ一覧へ</a>
+    </div>
+
+    <!-- 元のコンテンツHTML -->
+    <div class="container">
+        <div id="cookie"></div>
+        <div id="count">クッキー: 0</div>
+
+        <div id="shop">
+            <button id="btnAutoClick" class="button" onclick="buyAutoClick()">オートクリック購入 (価格: <span
+                    id="autoClickCost">10</span>)</button><br>
+            <button id="btnClickPower" class="button" onclick="buyClickPower()">クリック強化購入 (価格: <span
+                    id="clickPowerCost">5</span>)</button><br>
+            <button id="btnAutoMult" class="button" onclick="buyAutoMultiplier()">オートクリック数を倍に (価格: <span
+                    id="autoMultiplierCost">100</span>)</button><br>
+            <button id="btnClickMult" class="button" onclick="buyClickMultiplier()">クリック加算数を倍に (価格: <span
+                    id="clickMultiplierCost">50</span>)</button><br>
+        </div>
+
+        <div class="stats">
+            オートクリック数: <span id="autoClickers">0</span><br>
+            クリック加算数: <span id="clickPower">1</span>
+        </div>
+    </div>
+
+    <button id="deleteBtn" onclick="deleteData()">データ削除</button>
+
+    <!-- 統合されたJavaScript -->
+    <script>
+        // --- ナビゲーションメニューのロジック ---
+        document.addEventListener('DOMContentLoaded', () => {
+            const menuToggleIcon = document.getElementById('menu-toggle-icon');
+            const floatingMenu = document.getElementById('floating-menu');
+            if (menuToggleIcon && floatingMenu) {
+                menuToggleIcon.addEventListener('click', (event) => {
+                    event.stopPropagation();
+                    floatingMenu.classList.toggle('show');
+                });
+                document.addEventListener('click', (event) => {
+                    if (floatingMenu.classList.contains('show')) {
+                        if (!menuToggleIcon.contains(event.target) && !floatingMenu.contains(event.target)) {
+                            floatingMenu.classList.remove('show');
+                        }
+                    }
+                });
+            }
+        });
+
+        // --- 元のコンテンツロジック（変更なし） ---
+        let cookies = 0;
+        let autoClickers = 0;
+        let clickPower = 1;
+
+        let autoClickCost = 10;
+        let clickPowerCost = 5;
+        let autoMultiplierCost = 100;
+        let clickMultiplierCost = 50;
+
+        let autoInterval;
+        let correctionInterval;
+        let addedThisSecond = 0;
+
+        const cookie = document.getElementById("cookie");
+        const countDisplay = document.getElementById("count");
+
+        const autoClickersDisplay = document.getElementById("autoClickers");
+        const clickPowerDisplay = document.getElementById("clickPower");
+
+        const autoClickCostDisplay = document.getElementById("autoClickCost");
+        const clickPowerCostDisplay = document.getElementById("clickPowerCost");
+        const autoMultiplierCostDisplay = document.getElementById("autoMultiplierCost");
+        const clickMultiplierCostDisplay = document.getElementById("clickMultiplierCost");
+
+        const btnAutoClick = document.getElementById("btnAutoClick");
+        const btnClickPower = document.getElementById("btnClickPower");
+        const btnAutoMult = document.getElementById("btnAutoMult");
+        const btnClickMult = document.getElementById("btnClickMult");
+
+        cookie.addEventListener("click", () => {
+            cookies += clickPower;
+            updateDisplay();
+        });
+
+        function formatNumber(num) {
+            return Math.floor(num).toLocaleString("ja-JP");
+        }
+
+        function updateDisplay() {
+            countDisplay.innerText = "クッキー: " + formatNumber(cookies);
+            autoClickersDisplay.innerText = formatNumber(autoClickers);
+            clickPowerDisplay.innerText = formatNumber(clickPower);
+
+            autoClickCostDisplay.innerText = formatNumber(autoClickCost);
+            clickPowerCostDisplay.innerText = formatNumber(clickPowerCost);
+            autoMultiplierCostDisplay.innerText = formatNumber(autoMultiplierCost);
+            clickMultiplierCostDisplay.innerText = formatNumber(clickMultiplierCost);
+
+            btnAutoClick.disabled = cookies < autoClickCost;
+            btnClickPower.disabled = cookies < clickPowerCost;
+            btnAutoMult.disabled = cookies < autoMultiplierCost;
+            btnClickMult.disabled = cookies < clickMultiplierCost;
+        }
+
+        function buyAutoClick() {
+            if (cookies >= autoClickCost) {
+                cookies -= autoClickCost;
+                autoClickers++;
+                autoClickCost = 10 + Math.floor(autoClickers * 8);
+                setupAutoClick();
+                updateDisplay();
+            }
+        }
+
+        function buyClickPower() {
+            if (cookies >= clickPowerCost) {
+                cookies -= clickPowerCost;
+                clickPower++;
+                clickPowerCost = 5 + Math.floor(clickPower * 4);
+                updateDisplay();
+            }
+        }
+
+        function buyAutoMultiplier() {
+            if (cookies >= autoMultiplierCost) {
+                cookies -= autoMultiplierCost;
+                autoClickers *= 2;
+                autoMultiplierCost = 100 + Math.floor(autoClickers * 20);
+                setupAutoClick();
+                updateDisplay();
+            }
+        }
+
+        function buyClickMultiplier() {
+            if (cookies >= clickMultiplierCost) {
+                cookies -= clickMultiplierCost;
+                clickPower *= 2;
+                clickMultiplierCost = 50 + Math.floor(clickPower * 15);
+                updateDisplay();
+            }
+        }
+
+        function setupAutoClick() {
+            if (autoInterval) clearInterval(autoInterval);
+            if (correctionInterval) clearInterval(correctionInterval);
+
+            addedThisSecond = 0;
+            const rate = autoClickers;
+
+            if (rate > 0) {
+                const intervalMs = 1000 / rate;
+                autoInterval = setInterval(() => {
+                    cookies += 1;
+                    addedThisSecond += 1;
+                    updateDisplay();
+                }, intervalMs);
+
+                correctionInterval = setInterval(() => {
+                    const diff = rate - addedThisSecond;
+                    if (diff > 0) cookies += diff;
+                    addedThisSecond = 0;
+                    updateDisplay();
+                }, 1000);
+            }
+        }
+
+        function deleteData() {
+            if (confirm("本当にデータを削除しますか？")) {
+                cookies = 0;
+                autoClickers = 0;
+                clickPower = 1;
+                autoClickCost = 10;
+                clickPowerCost = 5;
+                autoMultiplierCost = 100;
+                clickMultiplierCost = 50;
+
+                alert("データを削除しました。ページをリロードします。");
+                location.reload();
+            }
+        }
+
+        // 初回表示
+        updateDisplay();
+    </script>
+</body>
+
+</html>

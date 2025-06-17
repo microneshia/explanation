@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- 記事のタイトル -->
+    <title>スカラーポテンシャル導入の解説 - 総合解説プラットフォーム</title>
+
+    <!-- 記事の連番 -->
+    <meta name="article-number" content="000001">
+
+    <!-- 共通CSSファイルの読み込み -->
+    <link rel="stylesheet" href="../css/common.css">
+    <link rel="stylesheet" href="../css/article.css">
+
+    <!-- MathJax関連スクリプト -->
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script src="../js/mathjax-config.js"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+</head>
+
+<body>
+    <!-- 共通ヘッダー -->
+    <header>
+        <a href="../index.html" class="header-link">
+            <h1>総合解説プラットフォーム <span class="subtitle">あらゆる疑問に、明快な解答を。</span></h1>
+        </a>
+    </header>
+
+    <!-- 共通ナビゲーションバー -->
+    <nav>
+        <ul>
+            <li><a href="../index.html">トップ</a></li>
+            <li><a href="../contents.html">コンテンツ</a></li>
+            <li><a href="../tags.html">タグ検索</a></li>
+        </ul>
+    </nav>
+
+    <!-- メインコンテンツ -->
+    <main class="article-container">
+        <h1>スカラーポテンシャル導入の解説</h1>
+
+        <!-- タグはJavaScriptによってこの位置に自動挿入されます -->
+
+        <!-- 元の記事本文 -->
+        <p>
+            スカラーポテンシャル \(\phi\) が導入される過程、特に「回転がゼロのベクトル場はスカラー場の勾配で表せる」という部分と、「スカラーポテンシャル \(\phi\)
+            がファラデーの法則を自動的に満たす」という意味について詳しく解説します。
+        </p>
+
+        <section id="section1">
+            <h2>1. 式 \(\nabla \times (\mathbf{E} + \frac{\partial \mathbf{A}}{\partial t}) = 0\) の意味</h2>
+            <p>
+                この式は、電磁気学における電場 \(\mathbf{E}\) とベクトルポテンシャル \(\mathbf{A}\) の関係を導く上で非常に重要な中間ステップです。まず、この式に至るまでの背景を確認しましょう。
+            </p>
+            <ul>
+                <li>
+                    <strong>ファラデーの電磁誘導の法則:</strong> 電場の回転 (curl) は磁束密度の時間的変化のマイナスに等しいことを示します。
+                    <div class="math-block">
+                        $$ \nabla \times \mathbf{E} = -\frac{\partial \mathbf{B}}{\partial t} $$
+                    </div>
+                </li>
+                <li>
+                    <strong>ベクトルポテンシャル \(\mathbf{A}\) の導入:</strong> 磁場 \(\mathbf{B}\) は発散が常にゼロ ( \(\nabla \cdot
+                    \mathbf{B} = 0\) ) という性質を持ちます。この性質を満たすために、磁場 \(\mathbf{B}\) をあるベクトル場 \(\mathbf{A}\) の回転として定義します。
+                    <div class="math-block">
+                        $$ \mathbf{B} = \nabla \times \mathbf{A} $$
+                    </div>
+                    この定義により、\(\nabla \cdot \mathbf{B} = \nabla \cdot (\nabla \times \mathbf{A}) \equiv 0\)
+                    (回転の発散は恒等的にゼロ) が自動的に満たされます。
+                </li>
+            </ul>
+            <p>
+                これらの式を組み合わせると、
+                $$ \nabla \times \mathbf{E} = -\frac{\partial (\nabla \times \mathbf{A})}{\partial t} $$
+                ここで、時間微分 \(\frac{\partial}{\partial t}\) と空間微分（回転 \(\nabla \times\)）は独立な変数に対する演算なので、その順序を交換できます。
+                $$ \nabla \times \mathbf{E} = -\nabla \times \left(\frac{\partial \mathbf{A}}{\partial t}\right) $$
+                移項すると、
+                $$ \nabla \times \mathbf{E} + \nabla \times \left(\frac{\partial \mathbf{A}}{\partial t}\right) = 0 $$
+                回転演算子 \(\nabla \times\) は線形性を持つため（つまり、\(\nabla \times (\mathbf{X} + \mathbf{Y}) = \nabla \times
+                \mathbf{X} + \nabla \times \mathbf{Y}\)）、
+            <div class="math-block">
+                $$ \nabla \times \left(\mathbf{E} + \frac{\partial \mathbf{A}}{\partial t}\right) = 0 $$
+            </div>
+            この式が示すのは、ベクトル場 \( \left(\mathbf{E} + \frac{\partial \mathbf{A}}{\partial t}\right) \) の<span
+                class="important">回転 (curl) が空間の全ての点でゼロである</span>ということです。このような場を「渦なしの場 (irrotational field)」と呼びます。
+            </p>
+        </section>
+
+        <section id="section2">
+            <h2>2. 「回転がゼロということはスカラー場の勾配で表せる」</h2>
+            <p>
+                これはベクトル解析における非常に重要な定理です。
+            </p>
+            <ul>
+                <li><strong>スカラー場 (\(\phi\)):</strong> 空間の各点にスカラー値（大きさのみを持つ量、例：温度、標高、電位）が定義されたものです。</li>
+                <li><strong>勾配 (\(\nabla \phi\)):</strong> スカラー場 \(\phi\) の勾配 \(\nabla \phi\)
+                    は、そのスカラー場が最も急に増加する方向を向き、その増加率を大きさとして持つベクトル場です。</li>
+            </ul>
+            <p>
+                定理は次のように述べられます：
+                <span class="highlight">「あるベクトル場の回転が空間の全ての点でゼロであるならば、そのベクトル場は、あるスカラー場の勾配として必ず表現できる。」</span>
+            </p>
+            <p>
+                したがって、\( \nabla \times \left(\mathbf{E} + \frac{\partial \mathbf{A}}{\partial t}\right) = 0 \)
+                であることから、ベクトル場 \( \left(\mathbf{E} + \frac{\partial \mathbf{A}}{\partial t}\right) \) は、あるスカラー場（ここでは慣習に従い
+                \(-\phi\) とします）の勾配として書けます。
+            <div class="math-block">
+                $$ \mathbf{E} + \frac{\partial \mathbf{A}}{\partial t} = -\nabla \phi $$
+            </div>
+            ここで、\(\phi(\mathbf{r}, t)\) が<strong>スカラーポテンシャル</strong>です。マイナス符号は、電場が電位の高い方から低い方へ向かうという物理的な慣習に合わせたものです。
+            </p>
+        </section>
+
+        <section id="section3">
+            <h2>3. スカラーポテンシャル \(\phi\) はファラデーの法則を自動的に満たす</h2>
+            <p>
+                この表現は、「スカラーポテンシャル \(\phi\) とベクトルポテンシャル \(\mathbf{A}\) を用いて、電場 \(\mathbf{E}\) と磁場 \(\mathbf{B}\)
+                を以下のように定義すれば、
+            </p>
+            <div class="math-block">
+                $$ \mathbf{E} = -\nabla \phi - \frac{\partial \mathbf{A}}{\partial t} \quad \text{および} \quad \mathbf{B}
+                = \nabla \times \mathbf{A} $$
+            </div>
+            <p>
+                これらの \(\mathbf{E}\) と \(\mathbf{B}\) は、ファラデーの法則 \( \nabla \times \mathbf{E} = -\frac{\partial
+                \mathbf{B}}{\partial t} \) を<span class="important">恒等的に（常に）満たす</span>」という意味です。
+            </p>
+            <p>
+                実際に確認してみましょう。
+            </p>
+            <p>
+                ファラデーの法則の左辺:
+                $$ \nabla \times \mathbf{E} = \nabla \times \left(-\nabla \phi - \frac{\partial \mathbf{A}}{\partial
+                t}\right) = -(\nabla \times (\nabla \phi)) - \nabla \times \left(\frac{\partial \mathbf{A}}{\partial
+                t}\right) $$
+                ここで、ベクトル解析の恒等式「<span class="important">スカラー場の勾配の回転は常にゼロ</span>」 \((\nabla \times (\nabla \phi) = 0)\)
+                を用いると、
+                $$ \nabla \times \mathbf{E} = -\nabla \times \left(\frac{\partial \mathbf{A}}{\partial t}\right) $$
+            </p>
+            <p>
+                ファラデーの法則の右辺:
+                $$ -\frac{\partial \mathbf{B}}{\partial t} = -\frac{\partial (\nabla \times \mathbf{A})}{\partial t} $$
+            </p>
+            <p>
+                時間微分と空間微分は交換可能なので、左辺と右辺は一致します。
+            </p>
+            <p>
+                これは、マクスウェル方程式のうち2つが、ポテンシャル \(\phi\) と \(\mathbf{A}\) の定義の中に巧みに組み込まれ、<span
+                    class="highlight">これらのポテンシャルを用いれば自動的に満たされる</span>ことを意味します。
+            </p>
+        </section>
+    </main>
+
+    <!-- 共通フッター -->
+    <footer>
+        <p>© 2025 総合解説プラットフォーム. All rights reserved.</p>
+    </footer>
+
+    <!-- トップへ戻るボタン -->
+    <button id="scrollTopBtn" title="トップへ戻る">⇧</button>
+
+    <!-- 外部JavaScriptの読み込み (順序が重要) -->
+    <script src="../js/article-list.js"></script>
+    <script src="../js/common.js"></script>
+</body>
+
+</html>

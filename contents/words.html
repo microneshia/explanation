@@ -1,0 +1,543 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>言葉の雨</title>
+    <meta name="article-number" content="000005">
+    <meta name="description" content="多種多様な言葉を雨のように降らせます。">
+
+    <!-- Google Fontsの読み込み -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;700&family=Noto+Serif+JP:wght@400;700&family=Yuji+Syuku&family=Mochiy+Pop+One&display=swap"
+        rel="stylesheet">
+
+    <!-- フローティングナビゲーションメニュー用のCSS -->
+    <link rel="stylesheet" href="../css/nav-menu.css">
+
+    <!-- このコンテンツ固有のスタイル -->
+    <style>
+        :root {
+            --background-color: #f0f0f0;
+            --text-color: #333;
+            --word-base-color: #555;
+            --accent-color: #007bff;
+            --panel-bg-color: rgba(255, 255, 255, 0.9);
+            --panel-text-color: #333;
+            --button-bg-color: #007bff;
+            --button-text-color: #fff;
+            --current-font-family: 'Noto Sans JP', sans-serif;
+            --base-fall-duration: 8s;
+            --meter-bg-color: #e9ecef;
+            --meter-fill-color: #007bff;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: var(--current-font-family);
+            background-color: var(--background-color);
+            color: var(--text-color);
+            overflow: hidden;
+            width: 100vw;
+            height: 100vh;
+            transition: background-color 0.5s, color 0.5s;
+        }
+
+        #word-container {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+        }
+
+        .word {
+            position: absolute;
+            white-space: nowrap;
+            font-size: calc(16px + 2vw);
+            color: var(--word-base-color);
+            padding: 5px 10px;
+            border-radius: 5px;
+            opacity: 0;
+            animation-name: fall;
+            animation-timing-function: linear;
+            animation-iteration-count: 1;
+            animation-fill-mode: forwards;
+            will-change: transform, opacity;
+            animation-duration: var(--base-fall-duration);
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1);
+            --initial-rotate: -5deg;
+            --final-rotate: 10deg;
+        }
+
+        @keyframes fall {
+            0% {
+                transform: translateY(-100px) rotate(var(--initial-rotate));
+                opacity: 0;
+            }
+
+            10% {
+                opacity: 1;
+                transform: translateY(0vh) rotate(0deg);
+            }
+
+            90% {
+                opacity: 1;
+            }
+
+            100% {
+                transform: translateY(105vh) rotate(var(--final-rotate));
+                opacity: 0;
+            }
+        }
+
+        body.theme-dark {
+            --background-color: #222;
+            --text-color: #f0f0f0;
+            --word-base-color: #ccc;
+            --panel-bg-color: rgba(50, 50, 50, 0.9);
+            --panel-text-color: #f0f0f0;
+            --button-bg-color: #0056b3;
+            --meter-bg-color: #444;
+            --meter-fill-color: #0056b3;
+        }
+
+        body.theme-sky {
+            --background-color: linear-gradient(to bottom, #87CEEB, #E0F2F7);
+            --text-color: #1A237E;
+            --word-base-color: #0D47A1;
+            --panel-bg-color: rgba(224, 242, 247, 0.9);
+            --panel-text-color: #1A237E;
+            --button-bg-color: #1E88E5;
+            --meter-bg-color: #cce7ff;
+            --meter-fill-color: #1E88E5;
+        }
+
+        body.theme-sky {
+            background: var(--background-color);
+        }
+
+        body.theme-sakura {
+            --background-color: linear-gradient(to bottom, #FFC0CB, #FFF0F5);
+            --text-color: #C71585;
+            --word-base-color: #DB7093;
+            --panel-bg-color: rgba(255, 240, 245, 0.9);
+            --panel-text-color: #C71585;
+            --button-bg-color: #FF69B4;
+            --meter-bg-color: #ffe4e1;
+            --meter-fill-color: #FF69B4;
+        }
+
+        body.theme-sakura {
+            background: var(--background-color);
+        }
+
+        .font-noto-sans-jp {
+            --current-font-family: 'Noto Sans JP', sans-serif;
+        }
+
+        .font-noto-serif-jp {
+            --current-font-family: 'Noto Serif JP', serif;
+        }
+
+        .font-yuji-syuku {
+            --current-font-family: 'Yuji Syuku', cursive;
+        }
+
+        .font-mochiy-pop-one {
+            --current-font-family: 'Mochiy Pop One', sans-serif;
+        }
+
+        #settings-button {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            padding: 12px 18px;
+            font-size: 16px;
+            background-color: var(--button-bg-color);
+            color: var(--button-text-color);
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            z-index: 1001;
+            transition: background-color 0.3s, opacity 0.3s;
+        }
+
+        #settings-button:hover {
+            opacity: 0.9;
+        }
+
+        #settings-panel {
+            position: fixed;
+            bottom: -100%;
+            left: 0;
+            width: 100%;
+            background-color: var(--panel-bg-color);
+            color: var(--panel-text-color);
+            box-shadow: 0 -4px 10px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            box-sizing: border-box;
+            z-index: 1000;
+            transition: bottom 0.5s ease-in-out;
+            border-top-left-radius: 20px;
+            border-top-right-radius: 20px;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+
+        #settings-panel.open {
+            bottom: 0;
+        }
+
+        .setting-group {
+            margin-bottom: 15px;
+        }
+
+        .setting-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+            font-size: 1em;
+        }
+
+        .setting-group select,
+        .setting-group input[type="range"] {
+            width: 100%;
+            padding: 10px;
+            border-radius: 8px;
+            border: 1px solid #ccc;
+            background-color: var(--background-color);
+            color: var(--text-color);
+            font-size: 1em;
+            box-sizing: border-box;
+        }
+
+        .setting-group input[type="range"] {
+            padding: 0;
+        }
+
+        .setting-group select:focus,
+        .setting-group input[type="range"]:focus {
+            outline: none;
+            border-color: var(--accent-color);
+            box-shadow: 0 0 0 2px var(--accent-color-alpha, rgba(0, 123, 255, 0.25));
+        }
+
+        .value-display {
+            display: inline-block;
+            margin-left: 10px;
+            font-weight: bold;
+        }
+
+        .range-labels span {
+            font-size: 0.9em;
+        }
+
+        .range-labels span:last-child {
+            float: right;
+        }
+
+        #word-stock-meter-container {
+            margin-top: 20px;
+            padding-top: 15px;
+            border-top: 1px solid var(--text-color-alpha, rgba(0, 0, 0, 0.1));
+        }
+
+        #word-stock-meter-container p {
+            margin: 0 0 5px 0;
+            font-size: 0.9em;
+        }
+
+        .meter-bar {
+            width: 100%;
+            height: 20px;
+            background-color: var(--meter-bg-color);
+            border-radius: 10px;
+            overflow: hidden;
+            border: 1px solid var(--text-color-alpha, rgba(0, 0, 0, 0.2));
+        }
+
+        .meter-fill {
+            width: 0%;
+            height: 100%;
+            background-color: var(--meter-fill-color);
+            border-radius: 10px 0 0 10px;
+            transition: width 0.1s ease-out;
+            text-align: center;
+            line-height: 20px;
+            color: var(--button-text-color);
+            font-size: 0.8em;
+            font-weight: bold;
+        }
+    </style>
+</head>
+
+<body class="theme-sky font-noto-sans-jp">
+    <!-- フローティングナビゲーションメニュー -->
+    <div id="menu-toggle-icon">≡</div>
+    <div id="floating-menu">
+        <a href="../index.html">トップページへ</a>
+        <a href="../contents.html">コンテンツ一覧へ</a>
+    </div>
+
+    <!-- 元のコンテンツHTML -->
+    <div id="word-container"></div>
+    <button id="settings-button">設定</button>
+    <div id="settings-panel">
+        <div class="setting-group">
+            <label for="speed-slider">落下スピード (<span id="speed-value" class="value-display">標準</span>)</label>
+            <input type="range" id="speed-slider" min="0.25" max="2.5" step="0.05" value="1.0">
+            <div class="range-labels"><span>遅い</span><span>速い</span></div>
+        </div>
+        <div class="setting-group">
+            <label for="quantity-slider">単語の出現量 (<span id="quantity-value" class="value-display">標準</span>)</label>
+            <input type="range" id="quantity-slider" min="0.25" max="3.5" step="0.05" value="1.0">
+            <div class="range-labels"><span>少ない</span><span>多い</span></div>
+        </div>
+        <div class="setting-group">
+            <label for="theme-selector">テーマ</label>
+            <select id="theme-selector">
+                <option value="sky">空と雲</option>
+                <option value="light">ライト</option>
+                <option value="dark">ダーク</option>
+                <option value="sakura">桜</option>
+            </select>
+        </div>
+        <div class="setting-group">
+            <label for="font-selector">フォント</label>
+            <select id="font-selector">
+                <option value="noto-sans-jp">ゴシック (Noto Sans JP)</option>
+                <option value="noto-serif-jp">明朝 (Noto Serif JP)</option>
+                <option value="yuji-syuku">手書き風 (Yuji Syuku)</option>
+                <option value="mochiy-pop-one">ポップ (Mochiy Pop One)</option>
+            </select>
+        </div>
+        <div id="word-stock-meter-container">
+            <p>単語ストック状況 (<span id="word-stock-count">0</span> / <span id="word-stock-max">0</span>)</p>
+            <div class="meter-bar">
+                <div id="word-stock-meter-fill" class="meter-fill">0%</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const FallingWords = {
+            config: {
+                initialWords: [], maxWordsOnScreen: 50000, baseSpawnInterval: 500, baseFallDuration: 8, baseWikiFetchInterval: 12000,
+                wikiFetchCount: 100, baseHatenaFetchInterval: 25000, hatenaHotentryRssUrl: 'https://b.hatena.ne.jp/hotentry/all.rss',
+                baseNhkNewsFetchInterval: 35000, nhkNewsRssUrl: 'https://www.nhk.or.jp/rss/news/cat0.xml',
+                baseItmediaNewsFetchInterval: 40000, itmediaNewsRssUrl: 'https://rss.itmedia.co.jp/rss/2.0/news_bursts.xml',
+                minApiFetchIntervalSafety: 5000, maxApiFetchIntervalSafety: 120000, corsProxyUrl: 'https://api.allorigins.win/raw?url=',
+                maxWordListLength: 5000, minSpawnIntervalSafety: 100, extractedPhraseMinLength: 4, extractedPhraseMaxLength: 25,
+                fontSizeAdjustments: [{ maxLength: 3, scale: 1.2 }, { maxLength: 5, scale: 1.0 }, { maxLength: 7, scale: 0.85 }, { maxLength: 15, scale: 0.7 }, { maxLength: Infinity, scale: 0.5 }],
+                baseWordFontSizePx: 16, baseWordFontSizeVw: 2, meterUpdateInterval: 10,
+                initialRotationRange: { min: -8, max: 3 }, finalRotationRange: { min: -5, max: 12 }
+            },
+            state: {
+                words: [], spawnIntervalId: null, wikiFetchTimeoutId: null, hatenaFetchTimeoutId: null, nhkNewsFetchTimeoutId: null, itmediaNewsFetchTimeoutId: null,
+                meterUpdateIntervalId: null, currentSpeedFactor: 1.0, currentQuantityFactor: 1.0, activeWords: 0, isPanelOpen: false, currentTheme: 'sky', currentFont: 'noto-sans-jp'
+            },
+            elements: {
+                container: null, settingsButton: null, settingsPanel: null, speedSlider: null, speedValueDisplay: null, quantitySlider: null, quantityValueDisplay: null,
+                themeSelector: null, fontSelector: null, wordStockCount: null, wordStockMax: null, wordStockMeterFill: null,
+                menuToggleIcon: null, floatingMenu: null // メニュー要素を追加
+            },
+            init() {
+                // ナビゲーションメニューの要素を取得
+                this.elements.menuToggleIcon = document.getElementById('menu-toggle-icon');
+                this.elements.floatingMenu = document.getElementById('floating-menu');
+                // 元のコンテンツ要素を取得
+                this.elements.container = document.getElementById('word-container');
+                this.elements.settingsButton = document.getElementById('settings-button');
+                this.elements.settingsPanel = document.getElementById('settings-panel');
+                this.elements.speedSlider = document.getElementById('speed-slider');
+                this.elements.speedValueDisplay = document.getElementById('speed-value');
+                this.elements.quantitySlider = document.getElementById('quantity-slider');
+                this.elements.quantityValueDisplay = document.getElementById('quantity-value');
+                this.elements.themeSelector = document.getElementById('theme-selector');
+                this.elements.fontSelector = document.getElementById('font-selector');
+                this.elements.wordStockCount = document.getElementById('word-stock-count');
+                this.elements.wordStockMax = document.getElementById('word-stock-max');
+                this.elements.wordStockMeterFill = document.getElementById('word-stock-meter-fill');
+
+                this.state.words = [...this.config.initialWords];
+                this.setupEventListeners();
+                this.applyInitialSettings();
+                this.updateWordStockMeter();
+            },
+            setupEventListeners() {
+                // ナビゲーションメニューのイベントリスナーを統合
+                if (this.elements.menuToggleIcon && this.elements.floatingMenu) {
+                    this.elements.menuToggleIcon.addEventListener('click', (event) => {
+                        event.stopPropagation();
+                        this.elements.floatingMenu.classList.toggle('show');
+                    });
+                    document.addEventListener('click', (event) => {
+                        if (this.elements.floatingMenu.classList.contains('show')) {
+                            if (!this.elements.menuToggleIcon.contains(event.target) && !this.elements.floatingMenu.contains(event.target)) {
+                                this.elements.floatingMenu.classList.remove('show');
+                            }
+                        }
+                    });
+                }
+
+                // 元のイベントリスナー
+                this.elements.settingsButton.addEventListener('click', () => {
+                    this.toggleSettingsPanel();
+                    if (this.state.isPanelOpen) {
+                        this.updateWordStockMeter(); if (!this.state.meterUpdateIntervalId) { this.state.meterUpdateIntervalId = setInterval(() => this.updateWordStockMeter(), this.config.meterUpdateInterval); }
+                    } else { if (this.state.meterUpdateIntervalId) { clearInterval(this.state.meterUpdateIntervalId); this.state.meterUpdateIntervalId = null; } }
+                });
+                this.elements.speedSlider.addEventListener('input', (e) => this.updateSpeed(parseFloat(e.target.value)));
+                this.elements.quantitySlider.addEventListener('input', (e) => this.updateQuantity(parseFloat(e.target.value)));
+                this.elements.themeSelector.addEventListener('change', (e) => this.updateTheme(e.target.value));
+                this.elements.fontSelector.addEventListener('change', (e) => this.updateFont(e.target.value));
+            },
+            // ... (FallingWordsオブジェクトの他のメソッドは、元のままで変更ありません) ...
+            updateWordStockMeter() {
+                if (!this.elements.wordStockCount) return; const currentCount = this.state.words.length; const maxCount = this.config.maxWordListLength;
+                const percentage = maxCount > 0 ? Math.round((currentCount / maxCount) * 100) : 0;
+                this.elements.wordStockCount.textContent = currentCount; this.elements.wordStockMax.textContent = maxCount;
+                this.elements.wordStockMeterFill.style.width = `${percentage}%`; this.elements.wordStockMeterFill.textContent = `${percentage}%`;
+                if (percentage < 20) { this.elements.wordStockMeterFill.style.backgroundColor = '#dc3545'; }
+                else if (percentage < 50) { this.elements.wordStockMeterFill.style.backgroundColor = '#ffc107'; }
+                else { this.elements.wordStockMeterFill.style.backgroundColor = 'var(--meter-fill-color)'; }
+            },
+            applyInitialSettings() {
+                const savedSpeed = localStorage.getItem('fallingWordsSpeed'); this.updateSpeed(savedSpeed ? parseFloat(savedSpeed) : 1.0, false);
+                if (savedSpeed) this.elements.speedSlider.value = savedSpeed; const savedQuantity = localStorage.getItem('fallingWordsQuantity');
+                this.updateQuantity(savedQuantity ? parseFloat(savedQuantity) : 1.0, false); if (savedQuantity) this.elements.quantitySlider.value = savedQuantity;
+                const savedTheme = localStorage.getItem('fallingWordsTheme'); this.updateTheme(savedTheme || 'sky'); if (savedTheme) this.elements.themeSelector.value = savedTheme;
+                const savedFont = localStorage.getItem('fallingWordsFont'); this.updateFont(savedFont || 'noto-sans-jp'); if (savedFont) this.elements.fontSelector.value = savedFont;
+                this.startFalling(); this.restartWordSourceFetches(0);
+            },
+            startFalling() {
+                if (this.state.spawnIntervalId) clearInterval(this.state.spawnIntervalId); const spawnInterval = this.config.baseSpawnInterval / (this.state.currentSpeedFactor * this.state.currentQuantityFactor);
+                this.state.spawnIntervalId = setInterval(() => { this.spawnWord(); }, Math.max(this.config.minSpawnIntervalSafety, spawnInterval));
+            },
+            stopFalling() { if (this.state.spawnIntervalId) clearInterval(this.state.spawnIntervalId); this.state.spawnIntervalId = null; },
+            spawnWord() {
+                if (this.state.activeWords >= this.config.maxWordsOnScreen || this.state.words.length === 0) return;
+                const randomIndex = Math.floor(Math.random() * this.state.words.length); const wordText = this.state.words.splice(randomIndex, 1)[0];
+                const wordElement = document.createElement('div'); wordElement.classList.add('word'); wordElement.textContent = wordText;
+                const initialRot = Math.random() * (this.config.initialRotationRange.max - this.config.initialRotationRange.min) + this.config.initialRotationRange.min;
+                const finalRot = Math.random() * (this.config.finalRotationRange.max - this.config.finalRotationRange.min) + this.config.finalRotationRange.min;
+                wordElement.style.setProperty('--initial-rotate', `${initialRot}deg`); wordElement.style.setProperty('--final-rotate', `${finalRot}deg`);
+                this.elements.container.appendChild(wordElement); let textLengthScale = 1.0;
+                for (const adj of this.config.fontSizeAdjustments) { if (wordText.length <= adj.maxLength) { textLengthScale = adj.scale; break; } }
+                const randomBaseScale = 0.8 + Math.random() * 0.4; const finalScale = randomBaseScale * textLengthScale;
+                wordElement.style.fontSize = `calc(${this.config.baseWordFontSizePx * finalScale}px + ${this.config.baseWordFontSizeVw * finalScale}vw)`;
+                const wordWidth = wordElement.offsetWidth; const containerWidth = this.elements.container.offsetWidth;
+                let randomX = (wordWidth + 20 > containerWidth) ? 10 : Math.max(10, Math.min(Math.random() * (containerWidth - wordWidth - 20), containerWidth - wordWidth - 10));
+                wordElement.style.left = `${randomX}px`; const fallDuration = this.config.baseFallDuration / this.state.currentSpeedFactor;
+                wordElement.style.animationDuration = `${Math.max(1, fallDuration)}s`; this.state.activeWords++;
+                wordElement.addEventListener('animationend', () => { wordElement.remove(); this.state.activeWords--; });
+            },
+            extractPhrasesFromText(text) {
+                if (!text) return []; let cleanedText = text; const tempElem = document.createElement('textarea'); tempElem.innerHTML = cleanedText; cleanedText = tempElem.value;
+                cleanedText = cleanedText.replace(/https?:\/\/\S+/gi, ' ').replace(/\S+@\S+\.\S+/gi, ' ').replace(/[「」『』【】《》＜＞（）()\[\]{}]+/g, ' ').replace(/\s+/g, ' ');
+                const potentialPhrases = cleanedText.split(/[\s、。・]/).map(p => p.trim()).filter(p => {
+                    if (!p || p.startsWith('@') || p.endsWith('…') || p.endsWith('...')) return false;
+                    if (p.length < this.config.extractedPhraseMinLength || p.length > this.config.extractedPhraseMaxLength) return false;
+                    const containsJapanese = /[ぁ-んァ-ヶ一-龠々]/.test(p);
+                    const isAlphaNumSymbolOnly = /^[a-zA-Z0-9\s.,!?'"()\[\]{}:;&_\-/#@+*=~`<>|\\]+$/.test(p);
+                    if (!containsJapanese && isAlphaNumSymbolOnly && p.length < 3) return false;
+                    if (/^[0-9]+$/.test(p) || /^[^a-zA-Z0-9ぁ-んァ-ヶ一-龠々]+$/.test(p)) return false;
+                    if (/^(AD|PR|広告|詳細|こちら|記事全文を読む|続きを読む)$/i.test(p)) return false;
+                    return true;
+                });
+                return [...new Set(potentialPhrases)];
+            },
+            addWordsToState(newPhrasesArray) {
+                newPhrasesArray.forEach(phrase => { if (phrase && !this.state.words.includes(phrase)) { this.state.words.push(phrase); } });
+                const overflow = this.state.words.length - this.config.maxWordListLength; if (overflow > 0) this.state.words.splice(0, overflow);
+            },
+            calculateApiFetchInterval(baseInterval) {
+                let factor = this.state.currentSpeedFactor * this.state.currentQuantityFactor; if (factor <= 0.1) factor = 0.1;
+                let interval = baseInterval / factor; return Math.min(this.config.maxApiFetchIntervalSafety, Math.max(this.config.minApiFetchIntervalSafety, interval));
+            },
+            async fetchWikipediaRandomTitlesAndExtractPhrases(count = this.config.wikiFetchCount) {
+                let phrases = []; try {
+                    const res = await fetch(`https://ja.wikipedia.org/w/api.php?action=query&list=random&rnnamespace=0&rnlimit=${count}&format=json&origin=*`);
+                    if (!res.ok) { return []; } const data = await res.json();
+                    if (data.query?.random) { data.query.random.forEach(item => phrases.push(...this.extractPhrasesFromText(item.title))); }
+                } catch (error) { console.error('Error fetching Wikipedia titles:', error); } return [...new Set(phrases)];
+            },
+            async fetchRssContentAndExtractPhrases(rssUrl, sourceName = "RSS") {
+                if (!rssUrl) return []; const url = `${this.config.corsProxyUrl}${encodeURIComponent(rssUrl)}`; let phrases = [];
+                try {
+                    const res = await fetch(url); if (!res.ok) { return []; } const rssText = await res.text();
+                    const parser = new DOMParser(); const xmlDoc = parser.parseFromString(rssText, "text/xml");
+                    if (xmlDoc.querySelector("parsererror")) { return []; } const items = xmlDoc.getElementsByTagName("item");
+                    for (let i = 0; i < items.length; i++) {
+                        const title = items[i].getElementsByTagName("title")[0]?.textContent; const desc = items[i].getElementsByTagName("description")[0]?.textContent;
+                        if (title) phrases.push(...this.extractPhrasesFromText(title)); if (desc) {
+                            const tempDiv = document.createElement('div');
+                            tempDiv.innerHTML = desc; phrases.push(...this.extractPhrasesFromText(tempDiv.textContent || ""));
+                        }
+                    }
+                } catch (error) { console.error(`Error with ${sourceName}:`, error); } return [...new Set(phrases)];
+            },
+            async updateWordsFromWikipedia() { this.addWordsToState(await this.fetchWikipediaRandomTitlesAndExtractPhrases()); },
+            async updateWordsFromHatena() { this.addWordsToState(await this.fetchRssContentAndExtractPhrases(this.config.hatenaHotentryRssUrl, "Hatena")); },
+            async updateWordsFromNhkNews() { this.addWordsToState(await this.fetchRssContentAndExtractPhrases(this.config.nhkNewsRssUrl, "NHK News")); },
+            async updateWordsFromItmediaNews() { this.addWordsToState(await this.fetchRssContentAndExtractPhrases(this.config.itmediaNewsRssUrl, "ITmedia News")); },
+            scheduleWikipediaFetch(delay) {
+                if (this.state.wikiFetchTimeoutId) clearTimeout(this.state.wikiFetchTimeoutId);
+                this.state.wikiFetchTimeoutId = setTimeout(async () => { await this.updateWordsFromWikipedia(); this.scheduleWikipediaFetch(this.calculateApiFetchInterval(this.config.baseWikiFetchInterval)); }, delay);
+            },
+            scheduleHatenaFetch(delay) {
+                if (this.state.hatenaFetchTimeoutId) clearTimeout(this.state.hatenaFetchTimeoutId);
+                this.state.hatenaFetchTimeoutId = setTimeout(async () => { await this.updateWordsFromHatena(); this.scheduleHatenaFetch(this.calculateApiFetchInterval(this.config.baseHatenaFetchInterval)); }, delay);
+            },
+            scheduleNhkNewsFetch(delay) {
+                if (this.config.nhkNewsRssUrl) {
+                    if (this.state.nhkNewsFetchTimeoutId) clearTimeout(this.state.nhkNewsFetchTimeoutId);
+                    this.state.nhkNewsFetchTimeoutId = setTimeout(async () => { await this.updateWordsFromNhkNews(); this.scheduleNhkNewsFetch(this.calculateApiFetchInterval(this.config.baseNhkNewsFetchInterval)); }, delay);
+                }
+            },
+            scheduleItmediaNewsFetch(delay) {
+                if (this.config.itmediaNewsRssUrl) {
+                    if (this.state.itmediaNewsFetchTimeoutId) clearTimeout(this.state.itmediaNewsFetchTimeoutId);
+                    this.state.itmediaNewsFetchTimeoutId = setTimeout(async () => { await this.updateWordsFromItmediaNews(); this.scheduleItmediaNewsFetch(this.calculateApiFetchInterval(this.config.baseItmediaNewsFetchInterval)); }, delay);
+                }
+            },
+            restartWordSourceFetches(initialDelay = 200) {
+                this.scheduleWikipediaFetch(initialDelay); this.scheduleHatenaFetch(initialDelay + 1000);
+                this.scheduleNhkNewsFetch(initialDelay + 2000); this.scheduleItmediaNewsFetch(initialDelay + 3000);
+            },
+            updateSpeed(factor, restartFalling = true) {
+                this.state.currentSpeedFactor = factor; localStorage.setItem('fallingWordsSpeed', factor);
+                let text = "標準"; if (factor < 0.6) text = "かなり遅い"; else if (factor < 0.9) text = "遅い"; else if (factor > 1.1 && factor <= 1.5) text = "速い"; else if (factor > 1.5 && factor <= 2.0) text = "かなり速い"; else if (factor > 2.0) text = "超高速";
+                this.elements.speedValueDisplay.textContent = text + ` (x${factor.toFixed(2)})`;
+                if (restartFalling) { this.stopFalling(); this.startFalling(); this.restartWordSourceFetches(); }
+            },
+            updateQuantity(factor, restartFalling = true) {
+                this.state.currentQuantityFactor = factor; localStorage.setItem('fallingWordsQuantity', factor);
+                let text = "標準"; if (factor < 0.6) text = "かなり少ない"; else if (factor < 0.9) text = "少ない"; else if (factor > 1.1 && factor <= 1.8) text = "多い"; else if (factor > 1.8 && factor <= 2.5) text = "かなり多い"; else if (factor > 2.5) text = "非常に多い";
+                this.elements.quantityValueDisplay.textContent = text + ` (x${factor.toFixed(2)})`;
+                if (restartFalling) { this.stopFalling(); this.startFalling(); this.restartWordSourceFetches(); }
+            },
+            updateTheme(themeName) {
+                document.body.className = document.body.className.replace(/theme-\S+/g, '').trim(); document.body.classList.add(`theme-${themeName}`);
+                if (!document.body.classList.contains(this.state.currentFont)) { document.body.classList.add(this.state.currentFont); }
+                this.state.currentTheme = themeName; localStorage.setItem('fallingWordsTheme', themeName); setTimeout(() => this.updateWordStockMeter(), 50);
+            },
+            updateFont(fontName) {
+                document.body.classList.remove(`font-${this.state.currentFont}`); document.body.classList.add(`font-${fontName}`);
+                this.state.currentFont = fontName; localStorage.setItem('fallingWordsFont', fontName);
+            },
+            toggleSettingsPanel() {
+                this.state.isPanelOpen = !this.state.isPanelOpen; this.elements.settingsPanel.classList.toggle('open', this.state.isPanelOpen);
+                this.elements.settingsButton.textContent = this.state.isPanelOpen ? '閉じる' : '設定';
+            }
+        };
+        window.addEventListener('DOMContentLoaded', () => { FallingWords.init(); });
+    </script>
+</body>
+
+</html>

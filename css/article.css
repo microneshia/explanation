@@ -1,0 +1,176 @@
+/* ================================================================== */
+/* 解説記事ページ用スタイル (`explanation/`内)                        */
+/* ================================================================== */
+
+/* メインコンテンツエリア */
+.article-container {
+    width: 90%;
+    margin: 25px auto;
+    padding: 35px;
+    background-color: #ffffff;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.07);
+    flex: 1;
+}
+
+/* 見出しスタイル */
+.article-container h1 {
+    font-size: 2.2rem;
+    color: #007bff;
+    margin-bottom: 25px;
+    padding-bottom: 12px;
+    border-bottom: 2px solid #007bff;
+    text-align: center;
+}
+
+.article-container h2 {
+    font-size: 1.8rem;
+    color: #0056b3;
+    margin-top: 35px;
+    margin-bottom: 18px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid #ced4da;
+}
+
+.article-container h3 {
+    font-size: 1.5rem;
+    color: #343a40;
+    margin-top: 28px;
+    margin-bottom: 12px;
+}
+
+.article-container h4 {
+    font-size: 1.3rem;
+    color: #495057;
+    margin-top: 24px;
+    margin-bottom: 10px;
+    padding-left: 10px;
+    border-left: 3px solid #007bff;
+}
+
+/* 段落とリスト */
+.article-container p,
+.article-container li {
+    font-size: 1.05rem;
+    margin-bottom: 18px;
+}
+
+.article-container ul,
+.article-container ol {
+    margin-left: 20px;
+    padding-left: 18px;
+    margin-bottom: 18px;
+}
+
+/* 数式ブロック */
+.math-block {
+    margin: 25px 0;
+    padding: 18px;
+    background-color: #eef3f7;
+    border-left: 4px solid #007bff;
+    overflow-x: auto;
+    border-radius: 0 5px 5px 0;
+}
+
+mjx-container[jax="CHTML"][display="true"] {
+    display: block;
+    overflow-x: auto;
+    overflow-y: hidden;
+    padding: 5px 0;
+}
+
+/* 強調表示 */
+.important {
+    font-weight: bold;
+    color: #dc3545;
+}
+
+.highlight {
+    background-color: #ffc107;
+    padding: 2px 6px;
+    border-radius: 4px;
+    color: #212529;
+}
+
+/* コード表示 */
+code {
+    background-color: #e9ecef;
+    padding: 0.2em 0.4em;
+    margin: 0 0.1em;
+    font-size: 0.9em;
+    border-radius: 4px;
+    font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, Courier, monospace;
+}
+
+pre {
+    background-color: #282c34;
+    color: #abb2bf;
+    padding: 15px;
+    border-radius: 5px;
+    overflow-x: auto;
+    margin: 20px 0;
+}
+
+pre code {
+    background-color: transparent;
+    padding: 0;
+    margin: 0;
+    font-size: 0.95em;
+    line-height: 1.5;
+}
+
+/* 引用ブロックのスタイル */
+blockquote {
+    background-color: #f1f3f5;
+    border-left: 5px solid #007bff;
+    margin: 20px 0;
+    padding: 15px 20px;
+    color: #495057;
+}
+
+/* 表のスタイル */
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 25px 0;
+    font-size: 0.9em;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+table th,
+table td {
+    padding: 12px 15px;
+    border: 1px solid #ddd;
+    text-align: left;
+    vertical-align: top;
+}
+
+table th {
+    background-color: #007bff;
+    color: white;
+    font-weight: bold;
+}
+
+/* --- レスポンシブ対応 --- */
+@media (max-width: 768px) {
+    .article-container {
+        padding: 20px 15px;
+    }
+
+    .article-container h1 {
+        font-size: 1.6rem;
+    }
+    .article-container h2 {
+        font-size: 1.3rem;
+    }
+    .article-container h3 {
+        font-size: 1.1rem;
+    }
+    .article-container h4 {
+        font-size: 1.1rem;
+    }
+    .article-container p,
+    .article-container li {
+        font-size: 0.95rem;
+    }
+}

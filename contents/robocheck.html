@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ロボット確認</title>
+    <meta name="article-number" content="000004">
+    <meta name="description" content="あなたが人間であることの確認を行います。">
+
+    <!-- 共通CSSファイルの読み込み -->
+    <link rel="stylesheet" href="../css/common.css">
+    <link rel="stylesheet" href="../css/article.css">
+
+    <!-- このページ固有のスタイル -->
+    <style>
+        /* article-containerを画面中央に配置するためのスタイル */
+        .article-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+        }
+
+        /* ユーザー選択を無効にするスタイル */
+        .no-select {
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+        }
+
+        .article-container h3 {
+            font-size: 1.5rem;
+            /* rem単位に変更 */
+            color: #343a40;
+            margin-bottom: 20px;
+        }
+
+        #randomHiragana {
+            position: relative;
+            margin-bottom: 20px;
+        }
+
+        .hiragana {
+            display: inline-block;
+            margin-right: -4px;
+            /* 文字間の重なりを調整 */
+            font-weight: normal;
+            font-size: 1.2rem;
+        }
+
+        .line {
+            position: absolute;
+            height: 1px;
+            /* 細くする */
+            background-color: rgba(0, 0, 0, 0.5);
+            transform-origin: 0 0;
+        }
+
+        .input-container {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            /* 要素間の隙間 */
+        }
+
+        #checkButton {
+            padding: 10px 20px;
+            font-size: 1rem;
+            font-weight: bold;
+            color: white;
+            background-color: #007BFF;
+            border: none;
+            border-radius: 5px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+            cursor: pointer;
+            transition: background-color 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        #checkButton:hover:not(:disabled) {
+            background-color: #0056b3;
+        }
+
+        #checkButton:disabled {
+            background-color: #cccccc;
+            color: #666666;
+            cursor: not-allowed;
+            box-shadow: none;
+        }
+
+        #inputText {
+            padding: 10px;
+            font-size: 1rem;
+            border: 2px solid #cccccc;
+            border-radius: 5px;
+            outline: none;
+            transition: border-color 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        #inputText:focus {
+            border-color: #888888;
+            box-shadow: 0 0 8px rgba(0, 0, 0, 0.1);
+        }
+    </style>
+</head>
+
+<body>
+    <!-- 共通ヘッダー -->
+    <header>
+        <a href="../index.html" class="header-link">
+            <h1>総合解説プラットフォーム <span class="subtitle">あらゆる疑問に、明快な解答を。</span></h1>
+        </a>
+    </header>
+
+    <!-- 共通ナビゲーションバー -->
+    <nav>
+        <ul>
+            <li><a href="../index.html">トップ</a></li>
+            <li><a href="../contents.html">コンテンツ</a></li>
+            <li><a href="../tags.html">タグ検索</a></li>
+        </ul>
+    </nav>
+
+    <!-- メインコンテンツ -->
+    <main class="article-container no-select">
+        <h3>あなたはロボットですか？</h3>
+        <div id="randomHiragana"></div>
+        <div class="input-container">
+            <input type="text" id="inputText" placeholder="表示された文字列を入力" autocomplete="off">
+            <button id="checkButton" disabled>私は人間です</button>
+        </div>
+    </main>
+
+    <!-- 共通フッター -->
+    <footer>
+        <p>© 2025 総合解説プラットフォーム. All rights reserved.</p>
+    </footer>
+
+    <!-- トップへ戻るボタン -->
+    <button id="scrollTopBtn" title="トップへ戻る">⇧</button>
+
+    <!-- 外部JavaScriptの読み込み (順序が重要) -->
+    <script src="../js/article-list.js"></script>
+    <script src="../js/common.js"></script>
+
+    <!-- このページ固有のスクリプト -->
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const hiraganaList = ['あ', 'い', 'う', 'え', 'お', 'か', 'き', 'く', 'け', 'こ', 'さ', 'し', 'す', 'せ', 'そ', 'た', 'ち', 'つ', 'て', 'と', 'な', 'に', 'ぬ', 'ね', 'の', 'は', 'ひ', 'ふ', 'へ', 'ほ', 'ま', 'み', 'む', 'め', 'も', 'や', 'ゆ', 'よ', 'ら', 'り', 'る', 'れ', 'ろ', 'わ', 'を', 'ん'];
+            let correctAnswer = '';
+
+            const randomHiraganaDiv = document.getElementById('randomHiragana');
+            const inputText = document.getElementById('inputText');
+            const checkButton = document.getElementById('checkButton');
+
+            const generateHiragana = () => {
+                let html = '';
+                let answer = '';
+                for (let i = 0; i < 4; i++) {
+                    const randomChar = hiraganaList[Math.floor(Math.random() * hiraganaList.length)];
+                    const fontWeight = [100, 400, 700, 900][Math.floor(Math.random() * 4)];
+                    const rotation = (Math.random() - 0.5) * 60;
+                    html += `<span class="hiragana" style="font-weight: ${fontWeight}; transform: rotate(${rotation}deg);">${randomChar}</span>`;
+                    answer += randomChar;
+                }
+                randomHiraganaDiv.innerHTML = html;
+                return answer;
+            };
+
+            const addRandomLines = () => {
+                const existingLines = randomHiraganaDiv.querySelectorAll('.line');
+                existingLines.forEach(line => line.remove());
+
+                const rect = randomHiraganaDiv.getBoundingClientRect();
+                if (rect.width === 0) return; // 要素が非表示の場合は何もしない
+
+                const lineCount = Math.floor(Math.random() * 4) + 4;
+                for (let i = 0; i < lineCount; i++) {
+                    const line = document.createElement('div');
+                    line.classList.add('line');
+                    line.style.top = `${rect.height / 2 + (Math.random() - 0.5) * 15}px`;
+                    line.style.left = `${(Math.random() - 0.5) * 10}px`;
+                    line.style.width = `${rect.width * (0.8 + Math.random() * 0.4)}px`;
+                    line.style.transform = `rotate(${(Math.random() - 0.5) * 30}deg)`;
+                    randomHiraganaDiv.appendChild(line);
+                }
+            };
+
+            const initializeCaptcha = () => {
+                correctAnswer = generateHiragana();
+                setTimeout(addRandomLines, 50); // DOM描画を待ってから線を追加
+            };
+
+            const checkInput = () => {
+                if (inputText.value === correctAnswer) {
+                    alert("おめでとうございます。あなたは人間です！！");
+                } else {
+                    alert("残念ながら、あなたはロボットであると診断されました...");
+                }
+                location.reload();
+            };
+
+            inputText.addEventListener('input', () => {
+                checkButton.disabled = inputText.value.length < 4;
+            });
+
+            checkButton.addEventListener('click', checkInput);
+
+            // 初期化
+            initializeCaptcha();
+        });
+    </script>
+</body>
+
+</html>

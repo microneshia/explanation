@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- 記事のタイトル -->
+    <title>AM波、PM波、FM波の違い - 総合解説プラットフォーム</title>
+
+    <!-- 記事の連番 -->
+    <meta name="article-number" content="000012">
+
+    <!-- 共通CSSファイルの読み込み -->
+    <link rel="stylesheet" href="../css/common.css">
+    <link rel="stylesheet" href="../css/article.css">
+
+    <!-- MathJax関連スクリプト -->
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script src="../js/mathjax-config.js"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+</head>
+
+<body>
+    <!-- 共通ヘッダー -->
+    <header>
+        <a href="../index.html" class="header-link">
+            <h1>総合解説プラットフォーム <span class="subtitle">あらゆる疑問に、明快な解答を。</span></h1>
+        </a>
+    </header>
+
+    <!-- 共通ナビゲーションバー -->
+    <nav>
+        <ul>
+            <li><a href="../index.html">トップ</a></li>
+            <li><a href="../contents.html">コンテンツ</a></li>
+            <li><a href="../tags.html">タグ検索</a></li>
+        </ul>
+    </nav>
+
+    <!-- メインコンテンツ -->
+    <main class="article-container">
+        <h1>AM波、PM波、FM波の違い</h1>
+
+        <!-- タグはJavaScriptによってこの位置に自動挿入されます -->
+
+        <p>
+            AM波、PM波、FM波は、情報を電波に乗せて送るための「変調方式」の一種です。本解説では、それぞれの基本的な仕組みから、情報通信工学の観点からの詳細な特性までを、数式を交えて深く掘り下げていきます。
+        </p>
+
+        <section id="s1">
+            <h2>変調 (Modulation) の基礎</h2>
+            <p>音声やデータなどの情報信号（ベースバンド信号）は、そのままでは遠くまで効率的に伝送できません。そこで、情報を「キャリア波（搬送波）」と呼ばれる高周波の電波に乗せることで、伝送に適した形に変換します。この操作を「変調」と呼びます。
+            </p>
+
+            <h3>基本となる波の表現</h3>
+            <p>変調を理解するために、キャリア波と情報信号の基本式を確認します。</p>
+            <div class="math-block">
+                $$ c(t) = A_c \cos(2\pi f_c t), \quad m(t) = A_m \cos(2\pi f_m t) $$
+            </div>
+        </section>
+
+        <section id="s2">
+            <h2>各変調方式の詳細解説</h2>
+
+            <h3>1. AM波 (Amplitude Modulation: 振幅変調)</h3>
+            <p>情報信号 $m(t)$ の振幅に応じて、キャリア波の<span class="highlight">振幅</span>を変化させます。AM波 $s_{AM}(t)$ は次のように表されます。</p>
+            <div class="math-block">
+                $$s_{AM}(t) = [A_c + k_a m(t)] \cos(2\pi f_c t)$$
+            </div>
+            <p>AM波の帯域幅は情報信号の最高周波数の2倍、\(B_{AM} = 2f_{m,max}\) となります。</p>
+
+            <h3>2. FM波 (Frequency Modulation: 周波数変調)</h3>
+            <p>情報信号 $m(t)$ の振幅に応じて、キャリア波の<span class="highlight">瞬時周波数</span>を変化させます。振幅は一定です。</p>
+            <div class="math-block">
+                $$s_{FM}(t) = A_c \cos \left( 2\pi f_c t + k_f \int m(t) dt \right)$$
+            </div>
+            <p>FM波のスペクトルは理論上無限に広がりますが、実効的な帯域幅は<span class="important">カーソンの法則</span> \(B_{FM} \approx 2(\Delta f +
+                f_{m,max})\) で近似されます。</p>
+
+            <h3>3. PM波 (Phase Modulation: 位相変調)</h3>
+            <p>情報信号 $m(t)$ の振幅に応じて、キャリア波の<span class="highlight">位相</span>を変化させます。振幅は一定です。</p>
+            <div class="math-block">
+                $$s_{PM}(t) = A_c \cos(2\pi f_c t + k_p m(t))$$
+            </div>
+            <p>PM波は、情報信号を<span class="important">微分してからFM変調</span>するのと等価であり、FM波は情報信号を<span
+                    class="important">積分してからPM変調</span>するのと等価という密接な関係があります。</p>
+        </section>
+
+        <section id="s3">
+            <h2>情報通信工学の視点からの比較</h2>
+            <div class="table-responsive">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>特徴</th>
+                            <th>AM波</th>
+                            <th>FM波</th>
+                            <th>PM波</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>変調の分類</strong></td>
+                            <td>線形変調</td>
+                            <td>非線形変調</td>
+                            <td>非線形変調</td>
+                        </tr>
+                        <tr>
+                            <td><strong>ノイズ耐性</strong></td>
+                            <td>弱い</td>
+                            <td>強い</td>
+                            <td>強い</td>
+                        </tr>
+                        <tr>
+                            <td><strong>帯域幅</strong></td>
+                            <td>狭い</td>
+                            <td>広い</td>
+                            <td>広い</td>
+                        </tr>
+                        <tr>
+                            <td><strong>電力効率</strong></td>
+                            <td>悪い (キャリアに電力集中)</td>
+                            <td>良い</td>
+                            <td>良い</td>
+
+                        </tr>
+                        <tr>
+                            <td><strong>回路の複雑さ</strong></td>
+                            <td>比較的シンプル</td>
+                            <td>複雑</td>
+                            <td>複雑</td>
+                        </tr>
+                        <tr>
+                            <td><strong>主な用途</strong></td>
+                            <td>AMラジオ放送、航空無線</td>
+                            <td>FMラジオ放送、テレビ音声</td>
+                            <td>デジタル通信(PSK, QAM)の基礎</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <p>AMは狭帯域で回路が単純ですがノイズに弱く、FM/PMは広帯域を必要としますがノイズに強く高品質な通信が可能です。これらの特性が、それぞれの方式が特定のアプリケーションに適している理由となっています。</p>
+        </section>
+
+    </main>
+
+    <!-- 共通フッター -->
+    <footer>
+        <p>© 2025 総合解説プラットフォーム. All rights reserved.</p>
+    </footer>
+
+    <!-- トップへ戻るボタン -->
+    <button id="scrollTopBtn" title="トップへ戻る">⇧</button>
+
+    <!-- 外部JavaScriptの読み込み (順序が重要) -->
+    <script src="../js/article-list.js"></script>
+    <script src="../js/common.js"></script>
+</body>
+
+</html>

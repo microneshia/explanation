@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- 記事のタイトル -->
+    <title>任意周期の関数のフーリエ級数 - 総合解説プラットフォーム</title>
+
+    <!-- 記事の連番 -->
+    <meta name="article-number" content="000007">
+
+    <!-- 共通CSSファイルの読み込み -->
+    <link rel="stylesheet" href="../css/common.css">
+    <link rel="stylesheet" href="../css/article.css">
+
+    <!-- MathJax関連スクリプト -->
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script src="../js/mathjax-config.js"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+</head>
+
+<body>
+    <!-- 共通ヘッダー -->
+    <header>
+        <a href="../index.html" class="header-link">
+            <h1>総合解説プラットフォーム <span class="subtitle">あらゆる疑問に、明快な解答を。</span></h1>
+        </a>
+    </header>
+
+    <!-- 共通ナビゲーションバー -->
+    <nav>
+        <ul>
+            <li><a href="../index.html">トップ</a></li>
+            <li><a href="../contents.html">コンテンツ</a></li>
+            <li><a href="../tags.html">タグ検索</a></li>
+        </ul>
+    </nav>
+
+    <!-- メインコンテンツ -->
+    <main class="article-container">
+        <h1>任意周期の関数のフーリエ級数</h1>
+
+        <!-- タグはJavaScriptによってこの位置に自動挿入されます -->
+
+        <p>
+            この記事では、与えられた2つの関数に対するフーリエ級数を計算し、その詳細な解説と解答を提供します。
+            ここでは、周期 \(p=2L\) の関数について、そのフーリエ係数を求め、級数を構成する手順を追っていきます。
+        </p>
+
+        <section id="general_formula">
+            <h2>フーリエ級数の一般式</h2>
+            <p>
+                周期 \(p = 2L\) の関数 \(f(x)\) のフーリエ級数は、以下の形で与えられます。
+            </p>
+            <div class="math-block">
+                $$ f(x) \sim \frac{a_0}{2} + \sum_{n=1}^{\infty} \left(a_n \cos\left(\frac{n\pi x}{L}\right) + b_n
+                \sin\left(\frac{n\pi x}{L}\right)\right) $$
+            </div>
+            <p>
+                フーリエ係数は関数の<span class="important">偶奇性</span>を利用すると計算が簡略化できます。
+            </p>
+        </section>
+
+        <section id="problem_a">
+            <h2>問題 (a): \(f(x) = |x|\) のフーリエ級数</h2>
+            <p>
+                定義域は \((-2 \lt x \lt 2)\)、周期は \(p = 4\) です。よって \(L = 2\) となります。
+                この関数は<span class="highlight">偶関数</span>なので、\(b_n = 0\) です。
+            </p>
+            <h3>フーリエ係数の計算</h3>
+            <p>
+                \(a_0 = \frac{2}{2} \int_0^2 x \,dx = 2\)。<br>
+                \(a_n = \frac{2}{2} \int_0^2 x \cos(\frac{n\pi x}{2}) \,dx = \frac{4}{(n\pi)^2}((-1)^n - 1)\)。
+            </p>
+            <p>
+                \(a_n\) は \(n\) が奇数のときのみ値を持ち、\(a_n = -\frac{8}{(n\pi)^2}\) となります。
+            </p>
+            <h3>フーリエ級数</h3>
+            <div class="math-block">
+                $$ f(x) \sim 1 - \frac{8}{\pi^2} \sum_{k=1}^{\infty} \frac{1}{(2k-1)^2} \cos\left(\frac{(2k-1)\pi
+                x}{2}\right) $$
+            </div>
+        </section>
+
+        <section id="problem_b">
+            <h2>問題 (b): \(f(x) = 1 - x^2\) のフーリエ級数</h2>
+            <p>
+                定義域は \((-1 \lt x \lt 1)\)、周期は \(p = 2\) です。よって \(L=1\) となります。
+                この関数も<span class="highlight">偶関数</span>なので、\(b_n = 0\) です。
+            </p>
+            <h3>フーリエ係数の計算</h3>
+            <p>
+                \(a_0 = \frac{2}{1} \int_0^1 (1-x^2) \,dx = \frac{4}{3}\)。<br>
+                \(a_n = \frac{2}{1} \int_0^1 (1-x^2) \cos(n\pi x) \,dx = -\frac{4(-1)^n}{(n\pi)^2}\)。
+            </p>
+            <h3>フーリエ級数</h3>
+            <div class="math-block">
+                $$ f(x) \sim \frac{2}{3} - \frac{4}{\pi^2} \sum_{n=1}^{\infty} \frac{(-1)^n}{n^2} \cos(n\pi x) $$
+            </div>
+        </section>
+
+        <section id="conclusion">
+            <h2>まとめ</h2>
+            <p>
+                本記事では、任意周期の関数のフーリエ級数展開について、具体的な2つの例題を用いて解説しました。
+                偶奇性の利用と部分積分が計算の鍵となります。
+            </p>
+        </section>
+
+    </main>
+
+    <!-- 共通フッター -->
+    <footer>
+        <p>© 2025 総合解説プラットフォーム. All rights reserved.</p>
+    </footer>
+
+    <!-- トップへ戻るボタン -->
+    <button id="scrollTopBtn" title="トップへ戻る">⇧</button>
+
+    <!-- 外部JavaScriptの読み込み (順序が重要) -->
+    <script src="../js/article-list.js"></script>
+    <script src="../js/common.js"></script>
+</body>
+
+</html>

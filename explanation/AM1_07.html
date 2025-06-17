@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- 記事のタイトル -->
+    <title>フーリエ級数の問題解説 (周期2π) - 総合解説プラットフォーム</title>
+
+    <!-- 記事の連番 -->
+    <meta name="article-number" content="000005">
+
+    <!-- 共通CSSファイルの読み込み -->
+    <link rel="stylesheet" href="../css/common.css">
+    <link rel="stylesheet" href="../css/article.css">
+
+    <!-- MathJax関連スクリプト -->
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script src="../js/mathjax-config.js"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+</head>
+
+<body>
+    <!-- 共通ヘッダー -->
+    <header>
+        <a href="../index.html" class="header-link">
+            <h1>総合解説プラットフォーム <span class="subtitle">あらゆる疑問に、明快な解答を。</span></h1>
+        </a>
+    </header>
+
+    <!-- 共通ナビゲーションバー -->
+    <nav>
+        <ul>
+            <li><a href="../index.html">トップ</a></li>
+            <li><a href="../contents.html">コンテンツ</a></li>
+            <li><a href="../tags.html">タグ検索</a></li>
+        </ul>
+    </nav>
+
+    <!-- メインコンテンツ -->
+    <main class="article-container">
+        <h1>フーリエ級数の問題解説 (周期2πの関数)</h1>
+
+        <!-- タグはJavaScriptによってこの位置に自動挿入されます -->
+
+        <p>
+            このページでは、フーリエ級数に関する問題の解法を詳しく解説します。これらの問題はすべて周期 \(2\pi\) の関数を扱います。
+        </p>
+        <p>
+            周期が \(2\pi\) の場合、フーリエ級数および係数は次のようになります (\(L=\pi\)):
+        </p>
+        <div class="math-block">
+            $$ f(x) \sim \frac{a_0}{2} + \sum_{n=1}^{\infty} (a_n \cos(nx) + b_n \sin(nx)) $$
+            $$ a_n = \frac{1}{\pi} \int_{-\pi}^{\pi} f(x) \cos(nx) dx, \quad b_n = \frac{1}{\pi} \int_{-\pi}^{\pi} f(x)
+            \sin(nx) dx $$
+        </div>
+
+        <section id="problem5">
+            <h2>1. \(f(x) = x \quad (-\pi \lt x \lt \pi)\) のフーリエ級数</h2>
+            <p>この関数は<span class="highlight">奇関数</span>であるため、\(a_0 = 0, a_n = 0\) となり、\(b_n\) のみを計算します。</p>
+            <h3>フーリエ係数の計算</h3>
+            <div class="math-block">
+                $$ b_n = \frac{2}{\pi} \int_{0}^{\pi} x \sin(nx) dx = \frac{2}{n}(-1)^{n+1} $$
+            </div>
+            <h3>フーリエ級数</h3>
+            <div class="math-block">$$ f(x) \sim \sum_{n=1}^{\infty} \frac{2}{n}(-1)^{n+1} \sin(nx) = 2 \left( \sin(x) -
+                \frac{1}{2}\sin(2x) + \frac{1}{3}\sin(3x) - \dots \right) $$</div>
+            <p>この級数は不連続点 \(x = \pm \pi\) でギブス現象を示し、その点では \(0\) に収束します。</p>
+        </section>
+
+        <section id="problem6">
+            <h2>2. \(f(x) = x \quad (0 \lt x \lt 2\pi)\) のフーリエ級数</h2>
+            <p>この関数は奇関数でも偶関数でもありません。積分区間は \((0, 2\pi)\) です。</p>
+            <h3>フーリエ係数の計算</h3>
+            <p>\(a_0 = 2\pi\), \(a_n = 0\), \(b_n = -\frac{2}{n}\) と計算されます。</p>
+            <h3>フーリエ級数</h3>
+            <div class="math-block">$$ f(x) \sim \pi - 2 \sum_{n=1}^{\infty} \frac{\sin(nx)}{n} = \pi - 2 \left( \sin(x)
+                + \frac{1}{2}\sin(2x) + \frac{1}{3}\sin(3x) + \dots \right) $$</div>
+            <p>不連続点 \(x=2k\pi\) では、左右の極限の平均値である \(\pi\) に収束します。</p>
+        </section>
+
+        <section id="problem7">
+            <h2>3. \(f(x) = x^2 \quad (-\pi \lt x \lt \pi)\) のフーリエ級数</h2>
+            <p>この関数は<span class="highlight">偶関数</span>であるため、\(b_n = 0\) となり、\(a_0\) と \(a_n\) のみを計算します。</p>
+            <h3>フーリエ係数の計算</h3>
+            <p>\(a_0 = \frac{2\pi^2}{3}\), \(a_n = \frac{4}{n^2}(-1)^n\) と計算されます。</p>
+            <h3>フーリエ級数</h3>
+            <div class="math-block">$$ f(x) \sim \frac{\pi^2}{3} + \sum_{n=1}^{\infty} \frac{4}{n^2}(-1)^n \cos(nx) =
+                \frac{\pi^2}{3} - 4\cos(x) + \cos(2x) - \frac{4}{9}\cos(3x) + \dots $$</div>
+            <p>この関数は周期的拡張後も連続であるため、フーリエ級数は一様に収束します。</p>
+        </section>
+
+        <section id="comparison">
+            <h2>定義区間の重要性</h2>
+            <p>問題1と問題2は、同じ \(f(x)=x\) という式でも、<span
+                    class="highlight">定義区間が異なる</span>と全く異なる周期関数となり、そのフーリエ級数も異なるものになることを示しています。これはフーリエ係数の積分区間が変わるためです。
+            </p>
+        </section>
+
+        <section id="conclusion">
+            <h2>まとめ</h2>
+            <p>フーリエ級数を求める際には、以下の点が重要です。</p>
+            <ul>
+                <li>関数の<span class="important">偶奇性</span>を確認し、計算を簡略化する。</li>
+                <li>関数の<span class="important">定義域と周期</span>を正しく把握し、積分区間を設定する。</li>
+                <li><span class="highlight">部分積分</span>を正確に実行する。</li>
+            </ul>
+        </section>
+    </main>
+
+    <!-- 共通フッター -->
+    <footer>
+        <p>© 2025 総合解説プラットフォーム. All rights reserved.</p>
+    </footer>
+
+    <!-- トップへ戻るボタン -->
+    <button id="scrollTopBtn" title="トップへ戻る">⇧</button>
+
+    <!-- 外部JavaScriptの読み込み (順序が重要) -->
+    <script src="../js/article-list.js"></script>
+    <script src="../js/common.js"></script>
+</body>
+
+</html>

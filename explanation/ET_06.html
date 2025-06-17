@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- 記事のタイトル -->
+    <title>演習問題(6)：重ね合わせの原理とポテンシャルの導入 - 総合解説プラットフォーム</title>
+
+    <!-- 記事の連番 -->
+    <meta name="article-number" content="000003">
+
+    <!-- 共通CSSファイルの読み込み -->
+    <link rel="stylesheet" href="../css/common.css">
+    <link rel="stylesheet" href="../css/article.css">
+
+    <!-- MathJax関連スクリプト -->
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script src="../js/mathjax-config.js"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+</head>
+
+<body>
+    <!-- 共通ヘッダー -->
+    <header>
+        <a href="../index.html" class="header-link">
+            <h1>総合解説プラットフォーム <span class="subtitle">あらゆる疑問に、明快な解答を。</span></h1>
+        </a>
+    </header>
+
+    <!-- 共通ナビゲーションバー -->
+    <nav>
+        <ul>
+            <li><a href="../index.html">トップ</a></li>
+            <li><a href="../contents.html">コンテンツ</a></li>
+            <li><a href="../tags.html">タグ検索</a></li>
+        </ul>
+    </nav>
+
+    <!-- メインコンテンツ -->
+    <main class="article-container">
+        <h1>演習問題(6)：重ね合わせの原理とポテンシャルの導入</h1>
+
+        <!-- タグはJavaScriptによってこの位置に自動挿入されます -->
+
+        <p>
+            この演習問題は、講義で学んだ「重ね合わせの原理」と「ポテンシャルの導入」に関する理解度を測るものです。以下に各問題の詳しい解答と解説を示します。
+        </p>
+
+        <section id="problem1">
+            <h2>1. 問題1：線形性の確認</h2>
+            <p>
+                演算子 \(L\) が線形であるためには、斉次性 \(L(aX) = aL(X)\) と加法性 \(L(X+Y) = L(X) + L(Y)\) を満たす必要があります。
+            </p>
+            <h3>1.1. (1) \(L(X) = 3X + \frac{dX}{dt}\)</h3>
+            <p>この演算子は斉次性と加法性を両方満たすため、<strong class="highlight">線形</strong>です。</p>
+
+            <h3>1.2. (2) \(L(X) = X\frac{dX}{dt}\)</h3>
+            <p>\(L(aX) = a^2 X\frac{dX}{dt} \neq aL(X)\) となるため、斉次性を満たさず、<strong class="highlight">非線形</strong>です。</p>
+
+            <h3>1.3. (3) \(L(X) = \sin(X)\)</h3>
+            <p>一般に \(\sin(aX) \neq a\sin(X)\) であるため、斉次性を満たさず、<strong class="highlight">非線形</strong>です。</p>
+        </section>
+
+        <section id="problem2">
+            <h2>2. 問題2：重ね合わせの原理</h2>
+            <p><strong>全電場 \(\boldsymbol{E}\) の表現:</strong><br>
+                電荷密度が \(\rho_1 + \rho_2\) の場合、全電場は \(\boldsymbol{E} = \boldsymbol{E}_1 + \boldsymbol{E}_2\)
+                と表されます。これは<span class="highlight">重ね合わせの原理</span>に基づきます。
+            </p>
+            <p><strong>原理の根拠:</strong><br>
+                マクスウェル方程式が線形な方程式であるためです。例えばガウスの法則 \(\nabla \cdot \boldsymbol{E} = \rho / \varepsilon_0\)
+                は、\(\boldsymbol{E}\) と \(\rho\) に対して線形です。
+            </p>
+            <p><strong>電場のエネルギー密度について:</strong><br>
+                全エネルギー密度 \(u\) は、\(u = u_1 + u_2 + \varepsilon_0 \boldsymbol{E}_1 \cdot \boldsymbol{E}_2\)
+                となります。相互作用項が加わるため、エネルギー密度については重ね合わせの原理は<strong class="highlight">成り立ちません</strong>。
+            </p>
+        </section>
+
+        <section id="problem3">
+            <h2>3. 問題3：ベクトルの恒等式の証明</h2>
+            <p>各恒等式は、成分計算によって証明できます。</p>
+            <h3>3.1. (1) \({\boldsymbol \nabla}\times({\boldsymbol \nabla}\phi)={\boldsymbol 0}\)</h3>
+            <p>スカラー関数の2階偏微分の順序が交換可能であることから、各成分がゼロとなり、恒等式が成り立ちます。</p>
+            <h3>3.2. (2) \({\boldsymbol \nabla}\cdot({\boldsymbol \nabla}\times{\boldsymbol A})={\boldsymbol 0}\)</h3>
+            <p>こちらも同様に、2階偏微分の順序交換可能性により、各項が打ち消し合ってゼロとなり、恒等式が成り立ちます。</p>
+            <h3>3.3. (3) \({\boldsymbol \nabla}\times({\boldsymbol \nabla}\times {\boldsymbol A})={\boldsymbol
+                \nabla}({\boldsymbol \nabla}\cdot{\boldsymbol A})-{\boldsymbol \nabla}^2{\boldsymbol A}\)</h3>
+            <p>左辺のx成分を計算し、\(\frac{\partial^2 A_x}{\partial x^2}\) を足し引きすることで、右辺のx成分と一致することを示せます。y, z成分も同様です。</p>
+        </section>
+
+        <section id="problem4">
+            <h2>4. 問題4：ゲージ変換</h2>
+            <p>
+                ゲージ変換後のポテンシャル \(\phi' = \phi - \frac{\partial \chi}{\partial t}\) と \(\boldsymbol{A}' = \boldsymbol{A} +
+                \boldsymbol{\nabla} \chi\) を用いて、新しい電磁場 \(\boldsymbol{E'}\), \(\boldsymbol{B'}\) を計算します。
+            </p>
+            <p><strong>磁場 \(\boldsymbol{B'}\) の計算:</strong></p>
+            <div class="math-block">
+                $$ \boldsymbol{B'} = \boldsymbol{\nabla} \times \boldsymbol{A'} = \boldsymbol{\nabla} \times
+                \boldsymbol{A} + \boldsymbol{\nabla} \times (\boldsymbol{\nabla} \chi) = \boldsymbol{B} + \boldsymbol{0}
+                = \boldsymbol{B} $$
+            </div>
+            <p><strong>電場 \(\boldsymbol{E'}\) の計算:</strong></p>
+            <div class="math-block">
+                $$ \boldsymbol{E'} = -\boldsymbol{\nabla} \phi' - \frac{\partial \boldsymbol{A'}}{\partial t} =
+                \left(-\boldsymbol{\nabla}\phi - \frac{\partial \boldsymbol{A}}{\partial t}\right) +
+                \boldsymbol{\nabla}\left(\frac{\partial \chi}{\partial t}\right) - \frac{\partial}{\partial
+                t}(\boldsymbol{\nabla}\chi) = \boldsymbol{E} $$
+            </div>
+            <p><span class="important">結論:</span> \(\boldsymbol{E'} = \boldsymbol{E}\), \(\boldsymbol{B'} =
+                \boldsymbol{B}\) となり、電場と磁場はゲージ変換に対して不変です。</p>
+        </section>
+
+        <section id="conclusion">
+            <h2>まとめ</h2>
+            <p>以上が演習問題の解答解説です。講義資料の内容と照らし合わせながら、線形性、重ね合わせの原理、ベクトル恒等式、そしてポテンシャルとゲージ変換についての理解を深めてください。</p>
+        </section>
+
+    </main>
+
+    <!-- 共通フッター -->
+    <footer>
+        <p>© 2025 総合解説プラットフォーム. All rights reserved.</p>
+    </footer>
+
+    <!-- トップへ戻るボタン -->
+    <button id="scrollTopBtn" title="トップへ戻る">⇧</button>
+
+    <!-- 外部JavaScriptの読み込み (順序が重要) -->
+    <script src="../js/article-list.js"></script>
+    <script src="../js/common.js"></script>
+</body>
+
+</html>
