@@ -29,19 +29,20 @@
             padding: 8px 12px;
             border-radius: 5px;
             cursor: pointer;
-            opacity: 0.2;
-            /* 初期状態では半透明 */
             transition: opacity 0.2s, background-color 0.2s;
             z-index: 10;
         }
 
-        .pre-wrapper:hover button {
-            opacity: 1;
-            /* ホバーで表示 */
-        }
-
         .pre-wrapper button:hover {
             background-color: #777;
+        }
+
+        .warning {
+            background-color: #fffbeb;
+            border-left: 5px solid #f59e0b;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 5px;
         }
     </style>
 </head>
@@ -65,7 +66,7 @@
 
     <!-- メインコンテンツ -->
     <main class="article-container">
-        <h1>GitHubリポジトリの全ファイルを安全に入れ替える方法【VS Code対応版】</h1>
+        <h1>GitHubリポジトリの全ファイルを安全に入れ替える方法</h1>
 
         <!-- タグはJavaScriptによってこの位置に自動挿入されます -->
 
@@ -108,7 +109,7 @@
                         <td>強制プッシュ</td>
                         <td>★★☆</td>
                         <td>★☆☆</td>
-                        <td><span class="important">完全に消える</span></td>
+                        <td><strong style="color:red;">完全に消える</strong></td>
                         <td>履歴をリセットしたい特殊な場合のみ（非推奨）</td>
                     </tr>
                 </tbody>
@@ -123,40 +124,53 @@
             <p>
                 既存のリポジトリを一度ローカルにクローンし、その中身を空にしてから新しいファイルをコピーします。これにより、Gitの履歴を壊すことなく、安全に総入れ替えが可能です。
             </p>
-
-            <h3>ステップ1：作業場所の確保とVS Codeの起動</h3>
+            
+            <h3>ステップ1：準備（作業場所の確保とVS Codeの起動）</h3>
             <ol>
                 <li>Visual Studio Codeを起動します。</li>
                 <li>メニューバーから「ターミナル」→「新しいターミナル」を選択し、VS Code内にターミナルを開きます。</li>
             </ol>
-
+            
             <h3>ステップ2：作業用フォルダへの移動とリポジトリのクローン</h3>
             <p>
                 ターミナルで、リポジトリをダウンロード（クローン）したい場所（例：デスクトップ）に移動します。
             </p>
+            <h4>a. Windowsでデスクトップに移動する場合</h4>
+            <pre><code>cd C:\Users\YourUserName\Desktop</code></pre>
+
+            <h4>b. Mac/Linuxでデスクトップに移動する場合</h4>
             <pre><code>cd ~/Desktop</code></pre>
             <p>
                 次に、その場所に入れ替え対象のGitHubリポジトリをクローンします。<code>[YOUR-URL]</code> の部分を、あなたのリポジトリのURLに書き換えてください。
             </p>
+            <p>
+                例：<code>git clone https://github.com/YourUserName/YOUR-REPOSITORY-NAME</code>
+            </p>
             <pre><code>git clone [YOUR-URL]</code></pre>
-
+            
             <h3>ステップ3：作業フォルダをVS Codeで開く</h3>
             <p>
                 今クローンしたフォルダにターミナルで移動し、そのフォルダをVS Codeで開き直します。
             </p>
-            <pre><code>cd [YOUR-REPOSITORY-NAME]
-code . -r</code></pre>
+            <h4>1. クローンしたフォルダに移動 (フォルダ名は通常リポジトリ名と同じ)</h4>
+            <p>
+                例：<code>cd C:\Users\YourUserName\Desktop\YOUR-REPOSITORY-NAME</code>
+            </p>
+            <pre><code>cd [YOUR-REPOSITORY-NAME]</code></pre>
 
+            <h4>2. VS Codeでこのフォルダを開き直す</h4>
+            <pre><code>code . -r</code></pre>
+            
             <h3>ステップ4：リポジトリ内を空にする</h3>
             <p>
                 VS Codeのウィンドウがリロードされたら、再度ターミナルを開き、以下のコマンドを実行して、Gitが管理しているファイルとフォルダをすべて削除します。
             </p>
             <pre><code>git rm -r *</code></pre>
-            <div class="highlight">
+            <div class="warning">
                 <strong>解説:</strong> このコマンドは、Gitの追跡対象からファイルを削除し、同時に物理ファイルも削除します。リポジトリの心臓部である <code>.git</code>
                 フォルダは削除されないため、<strong>過去のコミット履歴は安全に保たれます。</strong>
             </div>
-
+            
             <h3>ステップ5：新しいファイルのコピー（手動操作）</h3>
             <p>
                 新しいファイル群を、今空にしたリポジトリフォルダにコピーします。
@@ -166,24 +180,23 @@ code . -r</code></pre>
                 <li><strong>入れ替えたい新しいファイルが揃っているフォルダ</strong>の中身をすべて選択してコピーします。</li>
                 <li><strong>今作業しているリポジトリのフォルダ</strong>に貼り付けます。</li>
             </ol>
-
+            
             <h3>ステップ6：Git操作（ステージング、コミット、プッシュ）</h3>
             <p>
                 最後に、この「総入れ替え」という変更を記録し、GitHubに反映させます。
             </p>
             <h4>1. 変更をステージング</h4>
             <pre><code>git add .</code></pre>
-
+            
             <h4>2. 変更をコミット</h4>
             <pre><code>git commit -m "feat: Replace all project files with new version"</code></pre>
-
+            
             <h4>3. 変更をGitHubにプッシュ</h4>
             <pre><code>git push origin main</code></pre>
-            <div class="highlight">
-                <strong>注意:</strong> あなたのリポジトリのデフォルトブランチが <code>master</code> の場合は、<code>git push origin master</code>
-                と入力してください。
+            <div class="warning">
+                <strong>注意:</strong> あなたのリポジトリのデフォルトブランチが <code>master</code> の場合は、<code>git push origin master</code> と入力してください。
             </div>
-        </section>
+                </section>
 
         <section id="conclusion">
             <h2>最終確認</h2>
