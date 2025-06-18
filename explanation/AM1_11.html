@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>RLC回路の強制振動解析 - フーリエ級数による定常電流の導出 - 総合解説プラットフォーム</title>
+
+    <meta name="article-number" content="000017">
+<!-- 共通CSSファイルの読み込み -->
+<link rel="stylesheet" href="../css/common.css">
+<link rel="stylesheet" href="../css/article.css">
+
+<!-- MathJax関連スクリプト -->
+<script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+<script src="../js/mathjax-config.js"></script>
+<script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+</head>
+
+<body>
+    <header>
+        <a href="../index.html" class="header-link">
+            <h1>総合解説プラットフォーム <span class="subtitle">あらゆる疑問に、明快な解答を。</span></h1>
+        </a>
+    </header>
+
+    <nav>
+        <ul>
+            <li><a href="../index.html">トップ</a></li>
+            <li><a href="../contents.html">コンテンツ</a></li>
+            <li><a href="../tags.html">タグ検索</a></li>
+        </ul>
+    </nav>
+
+    <main class="article-container">
+        <h1>RLC回路の強制振動解析：フーリエ級数による定常電流の導出</h1>
+
+        <!-- タグはJavaScriptによってこの位置に自動挿入されます -->
+
+        <p>
+            本記事では、RLC直列回路に周期的な電圧を加えた際の<span
+                class="important">定常電流</span>を求める問題を解説します。微分方程式の右辺（駆動関数）をフーリエ級数に展開し、各周波数成分の応答を重ね合わせることで定常解を求める一連の計算プロセスを丁寧に追います。
+        </p>
+
+        <section id="problem-overview">
+            <h2>1. 問題の確認と解析方針</h2>
+            <p>
+                まず、対象となる問題を整理します。直列RLC回路に周期 $2\pi$ の電圧 $E(t)$ を加えたときの定常電流 $I(t)$ を求めることが目標です。
+            </p>
+            <ul>
+                <li>回路方程式: $LI'' + RI' + \frac{1}{C}I = E'(t)$</li>
+                <li>パラメータ: $R = 100\,\Omega$, $L = 10\,\text{H}$, $C = 10^{-2}\,\text{F}$</li>
+                <li>入力電圧: $E(t) = \begin{cases} 100(\pi t + t^2) & (-\pi &lt; t &lt; 0) \\ 100(\pi t - t^2) & (0 &lt; t &lt; \pi)
+                        \end{cases}$</li>
+            </ul>
+            <p>
+                与えられたパラメータを回路方程式に代入し、両辺を $L=10$ で割ると、解くべき微分方程式は次のようになります。
+            </p>
+            <div class="math-block">
+                $I''(t) + 10I'(t) + 10I(t) = \frac{1}{10}E'(t)$
+            </div>
+            <p>
+                この方程式は、右辺を<span class="highlight">駆動関数 $r(t) = \frac{1}{10}E'(t)$</span>とする2階線形非斉次微分方程式です。
+                解析の方針は以下の通りです。
+            </p>
+            <ol>
+                <li>駆動関数 $r(t)$ を求め、それをフーリエ級数に展開する。</li>
+                <li>定常電流 $I(t)$ もフーリエ級数の形で仮定し、微分方程式に代入して係数を決定する。</li>
+            </ol>
+        </section>
+
+        <section id="fourier-expansion">
+            <h2>2. 駆動関数 $r(t)$ のフーリエ級数展開</h2>
+            <p>
+                解析の第一歩として、微分方程式の右辺である駆動関数 $r(t)$ をフーリエ級数で表現します。
+            </p>
+
+            <h3>2.1. 駆動関数の具体的な形</h3>
+            <p>まず、電圧 $E(t)$ を微分して $E'(t)$ を求めます。</p>
+            <div class="math-block">
+                $E'(t) =
+                \begin{cases}
+                \frac{d}{dt} [100(\pi t + t^2)] = 100(\pi + 2t) & (-\pi &lt; t &lt; 0) \\ \frac{d}{dt} [100(\pi t -
+                    t^2)]=100(\pi - 2t) & (0 &lt; t &lt; \pi) \end{cases} $</div>
+                    <p>
+                        これにより、駆動関数 $r(t) = \frac{1}{10}E'(t)$ は次のように定義されます。
+                    </p>
+                    <div class="math-block">
+                        $r(t) =
+                        \begin{cases}
+                        10(\pi + 2t) & (-\pi &lt; t &lt; 0) \\ 10(\pi - 2t) & (0 &lt; t &lt; \pi) \end{cases} $</div>
+
+                            <h3>2.2. フーリエ係数の計算</h3>
+                            <p>
+                                この関数 $r(t)$ は、グラフを描くと<span class="important">偶関数</span>であることがわかります。したがって、フーリエ正弦係数 $b_n$
+                                はすべてゼロ ($b_n=0$) となり、フーリエ余弦級数で展開できます。
+                            </p>
+
+                            <h4>直流成分 $a_0$ の計算</h4>
+                            <div class="math-block">
+                                $a_0 = \frac{1}{\pi} \int_{-\pi}^{\pi} r(t) dt = \frac{2}{\pi} \int_{0}^{\pi} 10(\pi -
+                                2t) dt \\
+                                = \frac{20}{\pi} \left[ \pi t - t^2 \right]_0^\pi = \frac{20}{\pi} (\pi^2 - \pi^2) = 0$
+                            </div>
+                            <p>平均値（直流成分）は0です。</p>
+
+                            <h4>フーリエ余弦係数 $a_n$ の計算</h4>
+                            <p>部分積分を用いて係数 $a_n$ を計算します。</p>
+                            <div class="math-block">
+                                \begin{aligned}
+                                a_n &= \frac{2}{\pi} \int_{0}^{\pi} r(t) \cos(nt) dt = \frac{2}{\pi} \int_{0}^{\pi}
+                                10(\pi - 2t) \cos(nt) dt \\
+                                &= \frac{20}{\pi} \left[ (\pi - 2t) \frac{\sin(nt)}{n} \right]_0^\pi - \frac{20}{\pi}
+                                \int_{0}^{\pi} (-2) \frac{\sin(nt)}{n} dt \\
+                                &= \frac{20}{\pi} \left( 0 - 0 \right) + \frac{40}{n\pi} \int_{0}^{\pi} \sin(nt) dt \\
+                                &= \frac{40}{n\pi} \left[ -\frac{\cos(nt)}{n} \right]_0^\pi \\
+                                &= \frac{40}{n^2\pi} \left( -\cos(n\pi) - (-\cos(0)) \right) \\
+                                &= \frac{40}{n^2\pi} (1 - (-1)^n)
+                                \end{aligned}
+                            </div>
+                            <p>
+                                この結果から、
+                            </p>
+                            <ul>
+                                <li>$n$ が偶数のとき: $a_n = \frac{40}{n^2\pi} (1 - 1) = 0$</li>
+                                <li>$n$ が奇数のとき: $a_n = \frac{40}{n^2\pi} (1 - (-1)) = \frac{80}{\pi n^2}$</li>
+                            </ul>
+
+                            <h3>2.3. 駆動関数のフーリエ級数表現</h3>
+                            <p>以上の計算から、駆動関数 $r(t)$ は次のようにフーリエ級数で表せます。</p>
+                            <div class="math-block">
+                                $r(t) = \sum_{n=1,3,5,\dots}^{\infty} \frac{80}{\pi n^2} \cos(nt)$
+                            </div>
+        </section>
+
+        <section id="steady-current">
+            <h2>3. 定常電流 $I(t)$ の導出</h2>
+            <p>
+                次に、この駆動関数によって引き起こされる<span class="important">定常電流 $I(t)$</span>
+                を求めます。定常電流も駆動関数と同じ周期を持つため、フーリエ級数の形で仮定できます。
+            </p>
+            <div class="math-block">
+                $I(t) = \frac{A_0}{2} + \sum_{n=1}^{\infty} (A_n \cos(nt) + B_n \sin(nt))$
+            </div>
+            <p>
+                この $I(t)$ とその導関数 $I'(t), I''(t)$ を元の微分方程式 $I'' + 10I' + 10I = r(t)$ に代入し、両辺の $\cos(nt)$ と $\sin(nt)$
+                の係数を比較します。
+            </p>
+            <p>
+                代入後の左辺の $\cos(nt)$ と $\sin(nt)$ の係数はそれぞれ次のようになります。
+            </p>
+            <ul>
+                <li>$\cos(nt)$ の係数:<div class="math-block">$(-n^2 A_n + 10n B_n + 10A_n) = (10-n^2)A_n + 10nB_n$</div></li>
+                <li>$\sin(nt)$ の係数:<div class="math-block">$(-n^2 B_n - 10n A_n + 10B_n) = -10nA_n + (10-n^2)B_n$</div></li>
+            </ul>
+            <p>
+                右辺 $r(t)$ のフーリエ級数と比較して、以下の連立方程式を得ます。
+            </p>
+            <div class="math-block">
+                $\begin{cases}
+                (10 - n^2)A_n + 10nB_n = a_n & \dots(1) \\
+                -10nA_n + (10 - n^2)B_n = 0 & \dots(2)
+                \end{cases}$
+            </div>
+            <p>
+                この連立方程式を解くと、係数 $A_n, B_n$ は次のように求まります。
+            </p>
+            <div class="math-block">
+                $A_n = a_n \frac{10 - n^2}{(10 - n^2)^2 + (10n)^2}$
+            </div>
+            <div class="math-block">
+                $B_n = a_n \frac{10n}{(10 - n^2)^2 + 100n^2}$
+            </div>
+            <p>
+                $a_0=0$ なので $A_0=0$ です。また、$n$ が偶数のときは $a_n=0$ なので $A_n=B_n=0$ となります。
+                $n$ が奇数のとき（$a_n = \frac{80}{\pi n^2}$）の係数は、
+            </p>
+            <div class="math-block">
+                $A_n = \frac{80}{\pi n^2} \frac{10 - n^2}{(10 - n^2)^2 + 100n^2} = \frac{80(10 - n^2)}{\pi n^2((10 -
+                n^2)^2 + 100n^2)}$
+            </div>
+            <div class="math-block">
+                $B_n = \frac{80}{\pi n^2} \frac{10n}{(10 - n^2)^2 + 100n^2} = \frac{800}{\pi n((10 - n^2)^2 + 100n^2)}$
+            </div>
+        </section>
+
+        <section id="final-answer">
+            <h2>4. 解答：定常電流 $I(t)$</h2>
+            <p>
+                以上の結果をすべて統合すると、求める定常電流 $I(t)$ は以下のフーリエ級数で与えられます。和は奇数の $n$ についてのみ取ります。
+            </p>
+            <div class="math-block">
+                $I(t) = \sum_{n=1,3,5,\dots}^{\infty} \left[ A_n \cos(nt) + B_n \sin(nt) \right]$
+            </div>
+            <p>ここで、各係数は次の通りです。</p>
+            <div class="math-block">
+                $A_n = \frac{80(10 - n^2)}{\pi n^2 \left((10 - n^2)^2 + 100n^2\right)}$
+            </div>
+            <div class="math-block">
+                $B_n = \frac{800}{\pi n \left((10 - n^2)^2 + 100n^2\right)}$
+            </div>
+        </section>
+
+        <section id="conclusion">
+            <h2>まとめ</h2>
+            <p>
+                本記事では、RLC回路における強制振動の問題をフーリエ級数を用いて解析しました。解析のポイントは以下の通りです。
+            </p>
+            <ul>
+                <li>複雑な周期関数である駆動関数を、単純な三角関数の無限和である<span class="highlight">フーリエ級数に展開</span>する。</li>
+                <li>線形微分方程式の重ね合わせの原理を利用し、各周波数成分 ($n$) ごとに応答を計算する。</li>
+                <li>各成分の応答をすべて足し合わせることで、最終的な定常解を得る。</li>
+            </ul>
+            <p>
+                このアプローチは、電気回路だけでなく、機械系の振動問題など、周期的な外力を受ける多くの物理システムに応用可能な、非常に強力な解析手法です。
+            </p>
+        </section>
+    </main>
+
+    <footer>
+        <p>© 2025 総合解説プラットフォーム. All rights reserved.</p>
+    </footer>
+
+    <button id="scrollTopBtn" title="トップへ戻る">⇧</button>
+
+    <script src="../js/article-list.js"></script>
+    <script src="../js/common.js"></script>
+</body>
+
+</html>
