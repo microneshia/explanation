@@ -88,62 +88,69 @@
             </p>
             <h4>回路図と動作波形</h4>
             <div class="figure-container">
-                <svg viewBox="0 0 500 240" xmlns="http://www.w3.org/2000/svg">
+                <svg viewBox="0 0 500 200" xmlns="http://www.w3.org/2000/svg">
                     <style>
                         .circuit-line { stroke: black; stroke-width: 2; }
-                        .component { fill: none; stroke: black; stroke-width: 2; }
+                        .component { fill: #fff; stroke: black; stroke-width: 2; }
                         .label { font-family: sans-serif; font-size: 14px; text-anchor: middle; }
                         .waveform { fill: none; stroke-width: 1.5; }
-                        .axis { stroke: #888; stroke-width: 1; }
+                        .axis { stroke: #888; stroke-width: 1; marker-end: url(#small_arrow); }
+                        .legend-box { fill: rgba(255,255,255,0.8); stroke: #ccc; }
                     </style>
+                    <defs>
+                        <marker id="small_arrow" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="4" markerHeight="4" orient="auto-start-reverse">
+                            <path d="M 0 0 L 10 5 L 0 10 z" fill="#888" />
+                        </marker>
+                    </defs>
                     <!-- 回路図 -->
-                    <g transform="translate(20, 20)">
-                        <text x="75" y="-5" class="label">包絡線検波回路</text>
+                    <g transform="translate(10, 20)">
                         <line x1="0" y1="50" x2="30" y2="50" class="circuit-line" />
                         <text x="10" y="40" class="label">Vin</text>
-                        <!-- ダイオード -->
-                        <polygon points="30,40 30,60 50,50" class="component" fill="#fff" />
+                        <polygon points="30,40 30,60 50,50" class="component" />
                         <line x1="50" y1="40" x2="50" y2="60" class="component" />
                         <text x="40" y="30" class="label">D</text>
                         <line x1="50" y1="50" x2="100" y2="50" class="circuit-line" />
                         <line x1="100" y1="50" x2="140" y2="50" class="circuit-line" />
                         <text x="120" y="40" class="label">Vout</text>
-                        <!-- コンデンサ -->
                         <line x1="100" y1="50" x2="100" y2="80" class="circuit-line" />
                         <line x1="95" y1="80" x2="105" y2="80" class="component" />
                         <line x1="95" y1="85" x2="105" y2="85" class="component" />
                         <text x="115" y="85" class="label">C</text>
                         <line x1="100" y1="85" x2="100" y2="100" class="circuit-line" />
-                        <!-- 抵抗 -->
-                        <rect x="90" y="100" width="20" height="40" class="component" fill="#fff"/>
+                        <rect x="90" y="100" width="20" height="40" class="component" />
                         <text x="120" y="120" class="label">R</text>
                         <line x1="100" y1="100" x2="100" y2="140" class="circuit-line" />
                         <line x1="0" y1="140" x2="140" y2="140" class="circuit-line" />
                     </g>
                     <!-- 波形図 -->
-                    <g transform="translate(180, 20)">
-                        <text x="150" y="-5" class="label">動作波形</text>
+                    <g transform="translate(170, 20)">
+                        <line x1="0" y1="150" x2="320" y2="150" class="axis" />
+                        <line x1="0" y1="180" x2="0" y2="0" class="axis" />
+                        <text x="315" y="165" class="label" font-size="12">t</text>
+                        <text x="-15" y="10" class="label" font-size="12">V</text>
                         <!-- 入力AM波 -->
-                        <line x1="0" y1="40" x2="300" y2="40" class="axis"/>
-                        <path d="M0,40 C10,0 20,80 30,40 S50,0 60,40 S80,80 90,40 S110,0 120,40 S140,80 150,40 S170,0 180,40 S200,80 210,40 S230,0 240,40 S260,80 270,40 S290,0 300,40" class="waveform" stroke="#3498db" />
-                        <path d="M0,40 C10,80 20,0 30,40 S50,80 60,40 S80,0 90,40 S110,80 120,40 S140,0 150,40 S170,80 180,40 S200,0 210,40 S230,80 240,40 S260,0 270,40 S290,80 300,40" class="waveform" stroke="#3498db" />
-                        <text x="-20" y="40" class="label">入力</text>
+                        <path d="M0,80 C10,40 20,120 30,80 S50,40 60,80 S80,120 90,80 S110,40 120,80 S140,120 150,80 S170,40 180,80 S200,120 210,80 S230,40 240,80 S260,120 270,80 S290,40 300,80" class="waveform" stroke="#3498db" />
+                        <path d="M0,80 C10,120 20,40 30,80 S50,120 60,80 S80,40 90,80 S110,120 120,80 S140,40 150,80 S170,120 180,80 S200,40 210,80 S230,120 240,80 S260,40 270,80 S290,120 300,80" class="waveform" stroke="#3498db" opacity="0.5"/>
                         <!-- 整流後 -->
-                        <line x1="0" y1="110" x2="300" y2="110" class="axis"/>
-                        <path d="M0,110 C10,70 20,150 30,110 S50,70 60,110 S80,150 90,110 S110,70 120,110 S140,150 150,110 S170,70 180,110 S200,150 210,110 S230,70 240,110 S260,150 270,110 S290,70 300,110" class="waveform" stroke="#e67e22" stroke-dasharray="2 2" />
-                        <text x="-20" y="110" class="label">整流後</text>
+                        <path d="M0,80 C10,40 20,120 30,80 S50,40 60,80 S80,120 90,80 S110,40 120,80 S140,120 150,80 S170,40 180,80 S200,120 210,80 S230,40 240,80 S260,120 270,80 S290,40 300,80" class="waveform" stroke="#e67e22" stroke-dasharray="3 3"/>
                         <!-- 出力 -->
-                        <line x1="0" y1="180" x2="300" y2="180" class="axis"/>
-                        <path d="M0,180 C50,140 100,140 150,180 S250,220 300,180" class="waveform" stroke="#2ecc71" />
-                        <text x="-20" y="180" class="label">出力</text>
+                        <path d="M0,120 C50,120 60,118 90,120 S120,80 150,80 C180,80 210,120 240,120 S270,118 300,120" stroke="#2ecc71" stroke-width="2.5" fill="none"/>
+                        <!-- 凡例 -->
+                        <g transform="translate(200, 10)">
+                           <rect x="0" y="0" width="110" height="60" class="legend-box"/>
+                           <circle cx="10" cy="15" r="4" fill="#3498db"/><text x="20" y="19" class="label" text-anchor="start">入力(Vin)</text>
+                           <circle cx="10" cy="35" r="4" fill="#e67e22"/><text x="20" y="39" class="label" text-anchor="start">整流後(D出力)</text>
+                           <circle cx="10" cy="55" r="4" fill="#2ecc71"/><text x="20" y="59" class="label" text-anchor="start">出力(Vout)</text>
+                        </g>
                     </g>
                 </svg>
                 <figcaption>図1. 包絡線検波回路と各部の波形</figcaption>
             </div>
+
             <h4>動作原理</h4>
             <ol>
-                <li><strong>整流:</strong> ダイオード(D)を用いてAM波の正（または負）の部分だけを取り出します（半波整流）。図中の「入力」波形がダイオードを通過すると、「整流後」の波形のように、波の下半分がカットされます。</li>
-                <li><strong>平滑化:</strong> コンデンサ(C)と抵抗(R)からなるローパスフィルタ(LPF)に通します。入力電圧が上昇するとコンデンサは急速に充電され、下降するとゆっくり放電します。この充放電により、整流後のギザギザした波形が滑らかにされ、最終的な「出力」波形が得られます。</li>
+                <li><strong>整流:</strong> ダイオード(D)を用いてAM波の正（または負）の部分だけを取り出します（半波整流）。図中の青い「入力」波形がダイオードを通過すると、オレンジの点線で示す「整流後」の波形のように、波の下半分がカットされます。</li>
+                <li><strong>平滑化:</strong> コンデンサ(C)と抵抗(R)からなるローパスフィルタ(LPF)に通します。入力電圧が上昇するとコンデンサは急速に充電され、下降するとゆっくり放電します。この充放電により、整流後のギザギザした波形が滑らかにされ、緑の実線で示す最終的な「出力」波形が得られます。</li>
             </ol>
             <p>
                 このとき、RC回路の時定数 \(\tau = RC\) が、<span class="important">搬送波の周期より十分長く、かつ、信号波の周期より十分短い</span>ことが重要です。これにより、搬送波の高周波成分は除去され、信号波のゆっくりとした変動（包絡線）のみが効率的に取り出せます。
@@ -279,36 +286,36 @@
                     <!-- Axes -->
                     <line x1="10" y1="120" x2="490" y2="120" class="axis" marker-end="url(#arrow_spec)"/>
                     <line x1="250" y1="180" x2="250" y2="20" class="axis" marker-end="url(#arrow_spec)"/>
-                    <text x="480" y="135" class="math-label">ω</text>
+                    <text x="485" y="135" class="math-label">f</text>
                     <text x="265" y="30" class="label">振幅</text>
                     <text x="250" y="135" class="label">0</text>
-
+                    
                     <!-- Positive Frequency Spectrums -->
                     <line x1="370" y1="120" x2="370" y2="40" class="spec" /> <!-- Carrier -->
                     <text x="370" y="35" class="label">Ac/2</text>
-                    <text x="370" y="135" class="math-label">ωc</text>
+                    <text x="370" y="135" class="math-label">f<tspan dy="5" font-size="10">c</tspan></text>
 
                     <line x1="440" y1="120" x2="440" y2="90" class="spec" /> <!-- USB -->
                     <text x="440" y="85" class="label">Ac·mF/4</text>
-                    <text x="440" y="135" class="math-label">ωc+ωs</text>
+                    <text x="440" y="140" class="math-label">f<tspan dy="5" font-size="10">c</tspan>+f<tspan dy="5" font-size="10">s</tspan></text>
                     
                     <line x1="300" y1="120" x2="300" y2="150" class="spec" /> <!-- LSB -->
                     <text x="300" y="165" class="label">-Ac·mF/4</text>
-                    <text x="300" y="135" class="math-label">ωc-ωs</text>
+                    <text x="300" y="140" class="math-label">f<tspan dy="5" font-size="10">c</tspan>-f<tspan dy="5" font-size="10">s</tspan></text>
                     
                     <!-- Negative Frequency Spectrums -->
                     <line x1="130" y1="120" x2="130" y2="40" class="spec" /> <!-- -Carrier -->
-                    <text x="130" y="135" class="math-label">-ωc</text>
+                    <text x="130" y="140" class="math-label">-f<tspan dy="5" font-size="10">c</tspan></text>
 
                     <line x1="60" y1="120" x2="60" y2="90" class="spec" /> <!-- -USB -->
-                    <text x="60" y="135" class="math-label">-ωc-ωs</text>
+                    <text x="60" y="145" class="math-label">-f<tspan dy="5" font-size="10">c</tspan>-f<tspan dy="5" font-size="10">s</tspan></text>
 
                     <line x1="200" y1="120" x2="200" y2="150" class="spec" /> <!-- -LSB -->
-                    <text x="200" y="135" class="math-label">-ωc+ωs</text>
+                    <text x="200" y="145" class="math-label">-f<tspan dy="5" font-size="10">c</tspan>+f<tspan dy="5" font-size="10">s</tspan></text>
                 </svg>
                 <figcaption>図3. 狭帯域FMの周波数スペクトラム</figcaption>
             </div>
-            <p>このスペクトルは、搬送波 \(\omega_c\)、上側波帯 \(\omega_c+\omega_s\)、下側波帯 \(\omega_c-\omega_s\) の3つの周波数成分を持ちます。AM変調との大きな違いは、<span class="important">下側波帯の位相が搬送波に対して反転している</span>点です。</p>
+            <p>このスペクトルは、搬送波 \(f_c\)、上側波帯 \(f_c+f_s\)、下側波帯 \(f_c-f_s\) の3つの周波数成分を持ちます。AM変調との大きな違いは、<span class="important">下側波帯の位相が搬送波に対して反転している</span>点です。</p>
         </section>
 
         <section id="q3">
@@ -320,7 +327,7 @@
             <p>変調したい信号 \(s(t)\) をこの逆バイアス電圧に重畳させることで、\(s(t)\) の振幅に応じて発振周波数が変動し、FM波が生成されます。</p>
 
             <h3>(2) FM波と包絡線検波</h3>
-            <div class="problem-box"><p><strong>問題3-(2):</strong> 信号が余弦波のとき、式(4)を用いて、包絡線検波でFM波が復調できる理由を説明せよ。</p></div>
+            <div class="problem-box"><p><strong>問題3-(2):</strong> 信号が余弦波のとき、与えられたFM波の式を用いて、包絡線検波でFM波が復調できる理由を説明せよ。</p></div>
             <p>FM波は振幅が一定なため、<span class="highlight">そのままでは包絡線検波で復調できません</span>。しかし、ある前処理を施すことで可能になります。</p>
             <ol>
                 <li><strong>周波数-振幅変換:</strong> まず、FM波を<span class="important">微分回路</span>に通します。微分器の出力は入力の時間微分に比例するため、出力波形の振幅が元のFM波の瞬時周波数 \(f_i(t)\) に比例するようになります。</li>
