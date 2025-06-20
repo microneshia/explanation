@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- 記事のタイトル -->
+    <title>情報通信工学 演習問題10 詳細解説 - 総合解説プラットフォーム</title>
+
+    <!-- 記事の連番 -->
+    <meta name="article-number" content="000018">
+
+    <!-- 共通CSSファイルの読み込み -->
+    <link rel="stylesheet" href="../css/common.css">
+    <link rel="stylesheet" href="../css/article.css">
+
+    <!-- MathJax関連スクリプト -->
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script src="../js/mathjax-config.js"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+</head>
+
+<body>
+    <!-- 共通ヘッダー -->
+    <header>
+        <a href="../index.html" class="header-link">
+            <h1>総合解説プラットフォーム <span class="subtitle">あらゆる疑問に、明快な解答を。</span></h1>
+        </a>
+    </header>
+
+    <!-- 共通ナビゲーションバー -->
+    <nav>
+        <ul>
+            <li><a href="../index.html">トップ</a></li>
+            <li><a href="../contents.html">コンテンツ</a></li>
+            <li><a href="../tags.html">タグ検索</a></li>
+        </ul>
+    </nav>
+
+    <!-- メインコンテンツ -->
+    <main class="article-container">
+        <h1>情報通信工学 演習問題10 詳細解説</h1>
+
+        <!-- タグはJavaScriptによってこの位置に自動挿入されます -->
+
+        <p>
+            本記事では、情報通信工学における重要なテーマである「変調」に焦点を当て、特にFM波の数学的表現、スペクトル、変復調方式について、大学の演習問題をベースに詳しく解説します。AM波の復調方式との比較を通じて、各変調技術の原理と特性への理解を深めます。
+        </p>
+
+        <section id="q1">
+            <h2>問1. AM信号の復調方法</h2>
+            <p>AM信号から元の情報信号を取り出す復調方式について、代表的な2つの方法を解説します。</p>
+            
+            <h3>(1) 包絡線検波 (Envelope Detection)</h3>
+            <p>
+                包絡線検波は、AM波から元の信号（包絡線）を簡単かつ安価に取り出すための最も一般的な復調方式です。
+            </p>
+            <h4>動作原理</h4>
+            <ol>
+                <li><strong>整流:</strong> ダイオードを用いてAM波の正（または負）の部分だけを取り出します（半波整流）。</li>
+                <li><strong>平滑化:</strong> コンデンサ(C)と抵抗(R)からなるローパスフィルタ(LPF)に通します。入力電圧が上昇するとコンデンサは急速に充電され、下降するとゆっくり放電します。</li>
+            </ol>
+            <p>
+                このとき、RC回路の時定数 \(\tau = RC\) が、<span class="important">搬送波の周期より十分長く、かつ、信号波の周期より十分短い</span>ことが重要です。これにより、搬送波の高周波成分は除去され、信号波のゆっくりとした変動（包絡線）のみが効率的に取り出せます。
+            </p>
+
+            <h3>(2) 同期検波 (Synchronous Detection)</h3>
+            <p>
+                同期検波は、送信側と同一の周波数・位相を持つ搬送波（ローカルキャリア）を乗算することで、高品質な復調を実現する方式です。
+            </p>
+            <h4>動作原理（数式による説明）</h4>
+            <p>
+                信号を \(s(t)\) としたAM波 \(f_{AM}(t) = A_c (1 + k s(t)) \cos(\omega_c t)\) に、ローカルキャリア \(\cos(\omega_c t)\) を乗算します。
+            </p>
+            <div class="math-block">
+                $$ v(t) = f_{AM}(t) \cdot \cos(\omega_c t) = A_c (1 + k s(t)) \cos^2(\omega_c t) $$
+            </div>
+            <p>三角関数の公式 \(\cos^2(\theta) = \frac{1+\cos(2\theta)}{2}\) を用いて変形すると、</p>
+            <div class="math-block">
+                $$ v(t) = \frac{A_c}{2} (1 + k s(t)) + \frac{A_c}{2} (1 + k s(t)) \cos(2\omega_c t) $$
+            </div>
+            <p>
+                この信号をローパスフィルタ（LPF）に通すと、高周波成分である第2項（\(2\omega_c\) の項）が除去され、出力は \(f_{out}(t) = \frac{A_c}{2} (1 + k s(t))\) となります。この信号から直流成分を取り除けば、元の信号 \(s(t)\) が復元できます。
+            </p>
+        </section>
+
+        <section id="q2">
+            <h2>問2. FM信号の数学的解析</h2>
+            <p>信号 \(s(t) = \cos(\omega_s t)\) で周波数変調された信号 \(f_{FM}(t) = A_c\cos[\omega_c t + m_f\int s(t)dt]\) について解析します。</p>
+
+            <h3>(1) 瞬間周波数の導出</h3>
+            <p>波形の位相部分 \(\theta(t)\) を時間微分すると、瞬間角周波数 \(\omega_i(t)\) が得られます。</p>
+            <div class="math-block">
+                $$ \theta(t) = \omega_c t + m_f \int \cos(\omega_s t)dt = \omega_c t + \frac{m_f}{\omega_s} \sin(\omega_s t) $$
+                $$ \omega_i(t) = \frac{d\theta(t)}{dt} = \omega_c + m_f \cos(\omega_s t) $$
+            </div>
+            <p>よって、瞬間周波数 \(f_i(t) = \omega_i(t) / 2\pi\) は以下のようになります。</p>
+            <div class="math-block">
+                $$ f_i(t) = f_c + \frac{m_f}{2\pi} \cos(\omega_s t) $$
+            </div>
+
+            <h3>(2) 最大周波数偏移と変調指数</h3>
+            <p>瞬間角周波数 \(\omega_i(t)\) の式から、中心角周波数 \(\omega_c\) からのズレは \(m_f \cos(\omega_s t)\) です。</p>
+            <ul>
+                <li><strong>最大角周波数偏移 \(\Delta\omega\):</strong> \(\cos(\omega_s t)\)の最大値が1なので、<span class="highlight">\(\Delta\omega = m_f\)</span> となります。</li>
+                <li><strong>最大周波数偏移 \(\Delta f\):</strong> \(\Delta f = \Delta\omega / 2\pi = m_f / 2\pi\)。</li>
+                <li><strong>変調指数 \(m_F\):</strong> \(m_F = \Delta\omega / \omega_s = m_f / \omega_s\)。</li>
+            </ul>
+
+            <h3>(3) カーソンの法則 (Carson's Rule)</h3>
+            <p>FM信号の占有周波数帯域幅 \(B_{FM}\) を近似的に求める経験則です。角周波数で表すと次のようになります。</p>
+            <div class="math-block">
+                $$ B_{FM} \approx 2(\Delta\omega + \omega_s) = 2(m_F \omega_s + \omega_s) = 2(m_F + 1)\omega_s $$
+            </div>
+
+            <h3>(4) 狭帯域FMの近似 (Narrowband FM)</h3>
+            <p>変調指数 \(m_F \ll 1\) の場合、\(\cos(x) \approx 1\), \(\sin(x) \approx x\) の近似が使えます。FM波の式を展開し、この近似を適用すると、</p>
+            <div class="math-block">
+                \begin{align*}
+                f_{FM}(t) & = A_c [\cos(\omega_c t)\cos(m_F\sin(\omega_s t)) - \sin(\omega_c t)\sin(m_F\sin(\omega_s t))] \\
+                & \approx A_c [\cos(\omega_c t) \cdot 1 - \sin(\omega_c t) \cdot (m_F\sin(\omega_s t))] \\
+                & = A_c\cos(\omega_c t) - A_c m_F \sin(\omega_c t)\sin(\omega_s t)
+                \end{align*}
+            </div>
+            <p>さらに積和の公式を適用すると、</p>
+            <div class="math-block">
+                 $$ f_{FM}(t) \approx A_c\cos(\omega_c t) - \frac{A_c m_F}{2}\cos((\omega_c-\omega_s)t) + \frac{A_c m_F}{2}\cos((\omega_c+\omega_s)t) $$
+            </div>
+
+            <h3>(5) 狭帯域FMの周波数スペクトラム</h3>
+            <p>(4)の結果から、狭帯域FMのスペクトラムは以下の3つの周波数成分から構成されます。</p>
+            <ul>
+                <li><strong>搬送波:</strong> 周波数 \(\pm\omega_c\) に振幅 \(A_c/2\) のスペクトル</li>
+                <li><strong>下側波帯 (LSB):</strong> 周波数 \(\pm(\omega_c-\omega_s)\) に振幅 \(-A_c m_F/4\) のスペクトル（位相が180°反転）</li>
+                <li><strong>上側波帯 (USB):</strong> 周波数 \(\pm(\omega_c+\omega_s)\) に振幅 \(A_c m_F/4\) のスペクトル</li>
+            </ul>
+        </section>
+
+        <section id="q3">
+            <h2>問3. FM信号の変復調技術</h2>
+            
+            <h3>(1) LC発振器によるFM波の発生</h3>
+            <p>LC発振器の発振周波数は \(f_c = 1 / (2\pi\sqrt{LC})\) で決まります。この \(C\) の部分に<span class="important">可変容量ダイオード（バラクタダイオード）</span>を接続します。バラクタダイオードは、逆バイアス電圧によって静電容量が変化する素子です。</p>
+            <p>変調したい信号 \(s(t)\) をこの逆バイアス電圧に重畳させることで、\(s(t)\) の振幅に応じて発振周波数が変動し、FM波が生成されます。</p>
+
+            <h3>(2) FM波と包絡線検波</h3>
+            <p>FM波は振幅が一定なため、<span class="highlight">そのままでは包絡線検波で復調できません</span>。しかし、ある前処理を施すことで可能になります。</p>
+            <ol>
+                <li><strong>周波数-振幅変換:</strong> まず、FM波を<span class="important">微分回路</span>に通します。微分器の出力は入力の時間微分に比例するため、出力波形の振幅が元のFM波の瞬時周波数 \(f_i(t)\) に比例するようになります。</li>
+                <li><strong>包絡線検波:</strong> この「振幅が変化する波」を包絡線検波器に入力することで、振幅の変動、すなわち元の信号 \(s(t)\) を取り出すことができます。</li>
+            </ol>
+            <p>このように、微分回路を用いて「周波数変化」を「振幅変化」に変換することが、包絡線検波によるFM復調の鍵となります。</p>
+        </section>
+        
+        <section id="conclusion">
+            <h2>まとめ</h2>
+            <p>
+                本演習を通じて、AM波とFM波の変復調における基本的ながら重要な概念を網羅的に確認しました。特に、FM波の数学的表現からスペクトル、そして具体的な変復調回路の動作原理までを理解することは、高度な通信システムを学ぶ上での強固な土台となります。
+            </p>
+        </section>
+    </main>
+
+    <!-- 共通フッター -->
+    <footer>
+        <p>© 2025 総合解説プラットフォーム. All rights reserved.</p>
+    </footer>
+
+    <!-- トップへ戻るボタン -->
+    <button id="scrollTopBtn" title="トップへ戻る">⇧</button>
+
+    <!-- 外部JavaScriptの読み込み (順序が重要) -->
+    <script src="../js/article-list.js"></script>
+    <script src="../js/common.js"></script>
+</body>
+
+</html>
