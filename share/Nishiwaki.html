@@ -16,6 +16,7 @@
             --bg-white: #ffffff;
             --plan-a-color: #28a745; /* 晴れプラン */
             --plan-b-color: #6f42c1; /* 雨プラン */
+            --warning-color: #dc3545;
         }
 
         html {
@@ -166,6 +167,31 @@
         }
         .timeline .content h4 i { margin-right: 8px; }
         .timeline .content p { margin: 0 0 10px 0; font-size: 0.9em; }
+        
+        .timeline .content .sub-info {
+            font-size: 0.85em;
+            background: var(--bg-white);
+            padding: 10px;
+            border: 1px solid #e9ecef;
+            border-radius: 6px;
+            margin-top: 10px;
+        }
+        .timeline .content .sub-info p {
+            margin: 0 0 5px 0;
+            padding-left: 20px;
+            position: relative;
+        }
+        .timeline .content .sub-info p:last-child { margin-bottom: 0; }
+        .timeline .content .sub-info p i {
+            position: absolute;
+            left: 0;
+            top: 4px;
+            width: 16px;
+            text-align: center;
+        }
+        .timeline .content .sub-info p .fa-traffic-light { color: var(--warning-color); }
+        .timeline .content .sub-info p .fa-triangle-exclamation { color: var(--accent-color); }
+
 
         .timeline .time-info {
             position: absolute;
@@ -198,7 +224,7 @@
         .info-box h3 { background-color: transparent; margin: 0 0 10px 0; padding: 0; border-bottom: none; font-size: 1.2em; }
         .info-box table { width: 100%; border-collapse: collapse; }
         .info-box th, .info-box td { padding: 8px; text-align: left; border-bottom: 1px solid #e9ecef; }
-        .info-box th { width: 40%; font-weight: normal; color: #495057; }
+        .info-box th { width: 45%; font-weight: normal; color: #495057; }
         .info-box .total { font-weight: bold; background-color: #e0f7fa; }
 
         /* マップと施設詳細のスタイル */
@@ -226,7 +252,7 @@
     <div class="container">
         <header class="header">
             <h1>大阪→西脇 日帰りドライブ</h1>
-            <p>2024.06.21(Sat)</p>
+            <p>2025.06.21(Sat)</p>
         </header>
         
         <section class="section">
@@ -241,10 +267,20 @@
             <ul class="timeline">
                 <li><div class="icon"><i class="fa-solid fa-key"></i></div><div class="content"><span class="time-info">9:30</span><h4><i class="fa-solid fa-car-side"></i> レンタカー出発</h4><p>2名で出発！まずは1人目のピックアップへGO！</p></div></li>
                 <li><div class="icon"><i class="fa-solid fa-user-plus"></i></div><div class="content"><span class="time-info">9:45</span><h4><i class="fa-solid fa-map-pin"></i> 1人目ピックアップ</h4><p>3人合流！次のピックアップ場所へ。</p></div></li>
-                <li><div class="icon"><i class="fa-solid fa-users"></i></div><div class="content"><span class="time-info">10:10</span><h4><i class="fa-solid fa-handshake"></i> 全員集合！</h4><p>4人揃って、いよいよ西脇へ！BGMをかけて気分を上げよう！</p></div></li>
-                <li><div class="icon"><i class="fa-solid fa-road"></i></div><div class="content"><span class="time-info">10:15頃</span><h4><i class="fa-solid fa-highway"></i> 行き：玉出ICから高速へ</h4><p>阪神高速と中国道を乗り継いで滝野社ICを目指します。（約1時間5分）</p>
-                <div class="highway-route"><ul><li><div class="route-icon"><i class="fa-solid fa-car-on"></i></div><div class="route-info"><span class="location">玉出IC</span><span class="road-name">阪神高速15号堺線</span></div></li><li><div class="route-icon"><i class="fa-solid fa-code-merge"></i></div><div class="route-info"><span class="location">湊町JCT</span><span class="road-name">→ 1号環状線</span></div></li><li><div class="route-icon"><i class="fa-solid fa-code-merge"></i></div><div class="route-info"><span class="location">中之島JCT</span><span class="road-name">→ 11号池田線</span></div></li><li><div class="route-icon"><i class="fa-solid fa-road"></i></div><div class="route-info"><span class="location">中国池田IC</span><span class="road-name">→ 中国自動車道</span></div></li><li><div class="route-icon"><i class="fa-solid fa-flag-checkered"></i></div><div class="route-info"><span class="location">滝野社IC</span><span class="road-name">到着</span></div></li></ul></div></div></li>
-                <li><div class="icon"><i class="fa-solid fa-utensils"></i></div><div class="content"><span class="time-info">12:00頃</span><h4><i class="fa-solid fa-bowl-food"></i> 昼食：西脇大橋ラーメン</h4><p>まずは腹ごしらえ！甘めのスープが特徴の「播州ラーメン」を代表する人気店。</p>
+                <li><div class="icon"><i class="fa-solid fa-users"></i></div><div class="content"><span class="time-info">10:10</span><h4><i class="fa-solid fa-handshake"></i> 全員集合！</h4><p>4人揃って、いよいよ西脇へ！高速に乗るまで下道ドライブ！</p></div></li>
+                <li><div class="icon"><i class="fa-solid fa-road-bridge"></i></div><div class="content"><span class="time-info">10:20頃〜11:30</span><h4><i class="fa-solid fa-city"></i> 一般道で池田へ</h4><p>大阪市内から中国池田ICまで、一般道を走行します。（約1時間10分）</p></div></li>
+                <li><div class="icon"><i class="fa-solid fa-road"></i></div><div class="content"><span class="time-info">11:30頃</span><h4><i class="fa-solid fa-highway"></i> 行き：中国池田IC → 滝野社IC</h4><p>中国自動車道で滝野社ICを目指します。（所要時間 約37分）</p>
+                <div class="highway-route">
+                <ul>
+                    <li><div class="route-icon"><i class="fa-solid fa-car-on"></i></div><div class="route-info"><span class="location">中国池田IC</span><span class="road-name">中国自動車道</span></div></li>
+                    <li><div class="route-icon" style="background-color: var(--plan-a-color);"><i class="fa-solid fa-mug-saucer"></i></div><div class="route-info"><span class="location">西宮名塩SA (11:40頃)</span><span class="road-name">最初の休憩ポイント</span></div></li>
+                    <li><div class="route-icon" style="background-color: var(--plan-a-color);"><i class="fa-solid fa-mug-saucer"></i></div><div class="route-info"><span class="location">赤松PA (11:51頃)</span><span class="road-name">ガソリンスタンドあり</span></div></li>
+                    <li><div class="route-icon" style="background-color: var(--plan-a-color);"><i class="fa-solid fa-mug-saucer"></i></div><div class="route-info"><span class="location">社PA (12:04頃)</span><span class="road-name">目的地まであと少し</span></div></li>
+                    <li><div class="route-icon"><i class="fa-solid fa-flag-checkered"></i></div><div class="route-info"><span class="location">滝野社IC</span><span class="road-name">到着 (12:07頃)</span></div></li>
+                </ul>
+                </div>
+                </div></li>
+                <li><div class="icon"><i class="fa-solid fa-utensils"></i></div><div class="content"><span class="time-info">12:30頃</span><h4><i class="fa-solid fa-bowl-food"></i> 昼食：西脇大橋ラーメン</h4><p>まずは腹ごしらえ！甘めのスープが特徴の「播州ラーメン」を代表する人気店。</p>
                 <div class="facility-details"><a href="https://local-prime.com/news/oohashiramen/" target="_blank"><i class="fa-solid fa-globe"></i>関連サイト</a><div class="map-container"><iframe src="https://www.google.com/maps/embed?pb=!1m14!1m8!1m3!1d3268.5859421960495!2d134.97715426903386!3d34.99203479540781!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x35553561d32e7bf1%3A0x2efaaf7cfea5982b!2z6KW_6ISH5aSn5qmL44Op44O844Oh44Oz!5e0!3m2!1sja!2sjp!4v1749886897725!5m2!1sja!2sjp" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe></div></div></div></li>
             </ul>
         </section>
@@ -280,11 +316,24 @@
         <section class="section">
             <h2><i class="fa-solid fa-route"></i>基本スケジュール (帰り〜解散)</h2>
             <ul class="timeline">
-                <li><div class="icon"><i class="fa-solid fa-road"></i></div><div class="content"><span class="time-info">17:00</span><h4><i class="fa-solid fa-highway"></i> 帰り：滝野社ICから高速へ</h4><p>中国自動車道を大阪方面へ。中国池田ICで降ります。（約40分）</p>
-                <div class="highway-route"><ul><li><div class="route-icon"><i class="fa-solid fa-car-on"></i></div><div class="route-info"><span class="location">滝野社IC</span><span class="road-name">中国自動車道</span></div></li><li><div class="route-icon"><i class="fa-solid fa-flag-checkered"></i></div><div class="route-info"><span class="location">中国池田IC</span><span class="road-name">到着</span></div></li></ul></div></div></li>
-                <li><div class="icon"><i class="fa-solid fa-burger"></i></div><div class="content"><span class="time-info">18:00頃</span><h4><i class="fa-solid fa-comments"></i> 夕食</h4><p>中国池田ICで高速を降りて、駐車場のあるお店で夕食。ファミレスや焼肉など、気分で決めよう！</p></div></li>
-                <li><div class="icon"><i class="fa-solid fa-house-user"></i></div><div class="content"><span class="time-info">20:30頃</span><h4><i class="fa-solid fa-people-arrows"></i> メンバー降ろし①</h4><p>夕食後、下道で玉出周辺へ向かい、1人目を降ろします。（約40分〜）</p></div></li>
-                <li><div class="icon"><i class="fa-solid fa-house-user"></i></div><div class="content"><span class="time-info">21:00頃</span><h4><i class="fa-solid fa-people-arrows"></i> メンバー降ろし②</h4><p>玉出周辺から平野駅周辺へ向かい、2人目を降ろします。（約20分）</p></div></li>
+                <li><div class="icon"><i class="fa-solid fa-road"></i></div><div class="content"><span class="time-info">17:00</span><h4><i class="fa-solid fa-highway"></i> 帰り：滝野社IC → 中国池田IC</h4><p>中国自動車道を大阪方面へ。夕方の渋滞を考慮して、余裕をもって出発しましょう。</p>
+                <div class="highway-route">
+                 <ul>
+                    <li><div class="route-icon"><i class="fa-solid fa-car-on"></i></div><div class="route-info"><span class="location">滝野社IC</span><span class="road-name">中国自動車道</span></div></li>
+                    <li><div class="route-icon" style="background-color: var(--plan-a-color);"><i class="fa-solid fa-mug-saucer"></i></div><div class="route-info"><span class="location">社PA (17:03頃)</span><span class="road-name">出発後すぐの休憩所</span></div></li>
+                    <li><div class="route-icon" style="background-color: var(--plan-a-color);"><i class="fa-solid fa-mug-saucer"></i></div><div class="route-info"><span class="location">赤松PA (17:16頃)</span><span class="road-name">最後のお土産探しに</span></div></li>
+                    <li><div class="route-icon" style="background-color: var(--plan-a-color);"><i class="fa-solid fa-mug-saucer"></i></div><div class="route-info"><span class="location">西宮名塩SA (17:30頃)</span><span class="road-name">大阪まであと一息</span></div></li>
+                    <li><div class="route-icon"><i class="fa-solid fa-flag-checkered"></i></div><div class="route-info"><span class="location">中国池田IC</span><span class="road-name">到着 (17:53頃)</span></div></li>
+                 </ul>
+                </div>
+                <div class="sub-info">
+                    <p><i class="fa-solid fa-traffic-light"></i><span style="color:var(--warning-color); font-weight:bold;">渋滞予測：</span>西宮山口JCT〜宝塚IC間で渋滞の可能性大。特に宝塚西トンネル付近で混雑が予想され、通常37分のところ、<strong>約53分（+16分）</strong>かかる見込みです。</p>
+                    <p><i class="fa-solid fa-triangle-exclamation"></i><span style="font-weight:bold;">運転注意：</span>宝塚西トンネル付近は長い下り坂とカーブが連続します。渋滞時の追突事故に注意し、車間距離を十分に保ちましょう。</p>
+                </div>
+              </div></li>
+                <li><div class="icon"><i class="fa-solid fa-burger"></i></div><div class="content"><span class="time-info">18:15頃</span><h4><i class="fa-solid fa-comments"></i> 夕食</h4><p>中国池田ICで高速を降りて、駐車場のあるお店で夕食。ファミレスや焼肉など、気分で決めよう！</p></div></li>
+                <li><div class="icon"><i class="fa-solid fa-house-user"></i></div><div class="content"><span class="time-info">20:30頃</span><h4><i class="fa-solid fa-people-arrows"></i> メンバー降ろし①</h4><p>夕食後、下道で玉出周辺へ向かい、1人目を降ろします。</p></div></li>
+                <li><div class="icon"><i class="fa-solid fa-house-user"></i></div><div class="content"><span class="time-info">20:50頃</span><h4><i class="fa-solid fa-people-arrows"></i> メンバー降ろし②</h4><p>玉出周辺から平野駅周辺へ向かい、2人目を降ろします。</p></div></li>
                 <li><div class="icon"><i class="fa-solid fa-flag-checkered"></i></div><div class="content"><span class="time-info">21:30</span><h4><i class="fa-solid fa-moon"></i> レンタカー返却</h4><p>最後にレンタカーを返却。お疲れ様でした！</p></div></li>
             </ul>
         </section>
@@ -295,19 +344,19 @@
                 <h3><i class="fa-solid fa-car"></i> 車関連費 (全体)</h3>
                 <table>
                     <tr><th>レンタカー代 (12時間)</th><td>2,970円</td></tr>
-                    <tr><th>高速料金 (往復ETC)</th><td>3,080円</td></tr>
-                    <tr><th>ガソリン代 (目安)</th><td>1,600円</td></tr>
-                    <tr class="total"><th>車関連費 合計</th><td><strong>7,650円</strong></td></tr>
+                    <tr><th>高速料金 (往復ETC休日)</th><td>2,180円</td></tr>
+                    <tr><th>ガソリン代 (約180km走行)</th><td>約 2,600円</td></tr>
+                    <tr class="total"><th>車関連費 合計</th><td><strong>7,750円</strong></td></tr>
                 </table>
             </div>
             <div class="info-box">
                 <h3><i class="fa-solid fa-user"></i> 1人あたりの費用 (目安)</h3>
                 <table>
-                    <tr><th>車関連費 (7,650円÷4人)</th><td>約 1,920円</td></tr>
+                    <tr><th>車関連費 (7,750円÷4人)</th><td>約 1,940円</td></tr>
                     <tr><th>昼食代 (ラーメン)</th><td>約 1,000円</td></tr>
-                    <tr><th>夕食代 (チェーン店など)</th><td>約 1,000円</td></tr>
+                    <tr><th>夕食代 (チェーン店など)</th><td>約 1,500円</td></tr>
                     <tr><th>観光費</th><td>0円 〜 300円</td></tr>
-                    <tr class="total"><th>1人あたり 合計</th><td><strong>約 3,920円 〜 4,220円</strong></td></tr>
+                    <tr class="total"><th>1人あたり 合計</th><td><strong>約 4,440円 〜 4,740円</strong></td></tr>
                 </table>
             </div>
         </section>
