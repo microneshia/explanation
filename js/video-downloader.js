@@ -1,5 +1,5 @@
 // ========================= 本番用 URL設定 =========================
-const API_BASE_URL = 'https://downloader-backend-lw7j.onrender.com'; // ← あなたのRender URLに書き換える
+const API_BASE_URL = 'https://downloader-backend-luev.onrender.com'; // ← あなたのRender URLに書き換える
 // =================================================================
 
 // --- グローバル変数とDOM要素の初期化 ---
