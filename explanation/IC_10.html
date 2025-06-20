@@ -19,31 +19,22 @@
     <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
     <script src="../js/mathjax-config.js"></script>
     <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
-    
+
     <!-- このページ固有のスタイル -->
     <style>
-        .figure-container {
-            margin: 25px auto;
-            padding: 15px;
-            border: 1px solid #dee2e6;
-            border-radius: 8px;
-            background-color: #f8f9fa;
-            text-align: center;
-        }
-        .figure-container svg {
-            max-width: 100%;
-            height: auto;
-        }
-        .figure-container figcaption {
-            margin-top: 10px;
-            font-size: 0.9em;
-            color: #495057;
-        }
         .problem-box {
             background-color: #eef3f7;
             border-left: 5px solid #007bff;
             padding: 15px 20px;
             margin: 20px 0;
+            border-radius: 5px;
+        }
+
+        .how-to-draw {
+            background-color: #f8f9fa;
+            border: 1px dashed #ced4da;
+            padding: 15px;
+            margin-top: 15px;
             border-radius: 5px;
         }
     </style>
@@ -73,138 +64,64 @@
         <!-- タグはJavaScriptによってこの位置に自動挿入されます -->
 
         <p>
-            本記事では、情報通信工学における重要なテーマである「変調」に焦点を当て、特にFM波の数学的表現、スペクトル、変復調方式について、大学の演習問題をベースに詳しく解説します。AM波の復調方式との比較を通じて、各変調技術の原理と特性への理解を深めます。
+            本記事では、情報通信工学における重要なテーマである「変調」に焦点を当て、特にFM波の数学的表現、スペクトル、変復調方式について詳しく解説します。AM波の復調方式との比較を通じて、各変調技術の原理と特性への理解を深めます。
         </p>
 
         <section id="q1">
             <h2>問1. AM信号の復調方法</h2>
-            
+
             <h3>(1) 包絡線検波 (Envelope Detection)</h3>
             <div class="problem-box">
                 <p><strong>問題1-(1):</strong> 包絡線検波回路とその出力波形を示し、回路の動作原理を説明せよ。</p>
             </div>
-            <p>
-                包絡線検波は、AM波から元の信号（包絡線）を簡単かつ安価に取り出すための最も一般的な復調方式です。
-            </p>
-            <h4>回路図と動作波形</h4>
-            <div class="figure-container">
-                <svg viewBox="0 0 500 200" xmlns="http://www.w3.org/2000/svg">
-                    <style>
-                        .circuit-line { stroke: black; stroke-width: 2; }
-                        .component { fill: #fff; stroke: black; stroke-width: 2; }
-                        .label { font-family: sans-serif; font-size: 14px; text-anchor: middle; }
-                        .waveform { fill: none; stroke-width: 1.5; }
-                        .axis { stroke: #888; stroke-width: 1; marker-end: url(#small_arrow); }
-                        .legend-box { fill: rgba(255,255,255,0.8); stroke: #ccc; }
-                    </style>
-                    <defs>
-                        <marker id="small_arrow" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="4" markerHeight="4" orient="auto-start-reverse">
-                            <path d="M 0 0 L 10 5 L 0 10 z" fill="#888" />
-                        </marker>
-                    </defs>
-                    <!-- 回路図 -->
-                    <g transform="translate(10, 20)">
-                        <line x1="0" y1="50" x2="30" y2="50" class="circuit-line" />
-                        <text x="10" y="40" class="label">Vin</text>
-                        <polygon points="30,40 30,60 50,50" class="component" />
-                        <line x1="50" y1="40" x2="50" y2="60" class="component" />
-                        <text x="40" y="30" class="label">D</text>
-                        <line x1="50" y1="50" x2="100" y2="50" class="circuit-line" />
-                        <line x1="100" y1="50" x2="140" y2="50" class="circuit-line" />
-                        <text x="120" y="40" class="label">Vout</text>
-                        <line x1="100" y1="50" x2="100" y2="80" class="circuit-line" />
-                        <line x1="95" y1="80" x2="105" y2="80" class="component" />
-                        <line x1="95" y1="85" x2="105" y2="85" class="component" />
-                        <text x="115" y="85" class="label">C</text>
-                        <line x1="100" y1="85" x2="100" y2="100" class="circuit-line" />
-                        <rect x="90" y="100" width="20" height="40" class="component" />
-                        <text x="120" y="120" class="label">R</text>
-                        <line x1="100" y1="100" x2="100" y2="140" class="circuit-line" />
-                        <line x1="0" y1="140" x2="140" y2="140" class="circuit-line" />
-                    </g>
-                    <!-- 波形図 -->
-                    <g transform="translate(170, 20)">
-                        <line x1="0" y1="150" x2="320" y2="150" class="axis" />
-                        <line x1="0" y1="180" x2="0" y2="0" class="axis" />
-                        <text x="315" y="165" class="label" font-size="12">t</text>
-                        <text x="-15" y="10" class="label" font-size="12">V</text>
-                        <!-- 入力AM波 -->
-                        <path d="M0,80 C10,40 20,120 30,80 S50,40 60,80 S80,120 90,80 S110,40 120,80 S140,120 150,80 S170,40 180,80 S200,120 210,80 S230,40 240,80 S260,120 270,80 S290,40 300,80" class="waveform" stroke="#3498db" />
-                        <path d="M0,80 C10,120 20,40 30,80 S50,120 60,80 S80,40 90,80 S110,120 120,80 S140,40 150,80 S170,120 180,80 S200,40 210,80 S230,120 240,80 S260,40 270,80 S290,120 300,80" class="waveform" stroke="#3498db" opacity="0.5"/>
-                        <!-- 整流後 -->
-                        <path d="M0,80 C10,40 20,120 30,80 S50,40 60,80 S80,120 90,80 S110,40 120,80 S140,120 150,80 S170,40 180,80 S200,120 210,80 S230,40 240,80 S260,120 270,80 S290,40 300,80" class="waveform" stroke="#e67e22" stroke-dasharray="3 3"/>
-                        <!-- 出力 -->
-                        <path d="M0,120 C50,120 60,118 90,120 S120,80 150,80 C180,80 210,120 240,120 S270,118 300,120" stroke="#2ecc71" stroke-width="2.5" fill="none"/>
-                        <!-- 凡例 -->
-                        <g transform="translate(200, 10)">
-                           <rect x="0" y="0" width="110" height="60" class="legend-box"/>
-                           <circle cx="10" cy="15" r="4" fill="#3498db"/><text x="20" y="19" class="label" text-anchor="start">入力(Vin)</text>
-                           <circle cx="10" cy="35" r="4" fill="#e67e22"/><text x="20" y="39" class="label" text-anchor="start">整流後(D出力)</text>
-                           <circle cx="10" cy="55" r="4" fill="#2ecc71"/><text x="20" y="59" class="label" text-anchor="start">出力(Vout)</text>
-                        </g>
-                    </g>
-                </svg>
-                <figcaption>図1. 包絡線検波回路と各部の波形</figcaption>
+
+            <div class="how-to-draw">
+                <h4>図の描き方：回路図と動作波形</h4>
+                <p><strong>【回路図】</strong></p>
+                <ol>
+                    <li><strong>入力端子 (Vin):</strong> 回路の左側に配置します。</li>
+                    <li><strong>ダイオード (D):</strong> 入力信号を一方向にのみ流す整流作用を持ちます。記号は三角形と縦線で表します。</li>
+                    <li><strong>出力端子 (Vout) と RC並列回路:</strong>
+                        ダイオードの後に、出力端子を設けます。その出力端子とグラウンド（回路の基準電位）の間に、コンデンサ(C)と抵抗(R)を並列に接続します。これが平滑化を行うローパスフィルタとなります。</li>
+                </ol>
+                <p><strong>【動作波形】</strong></p>
+                <p>一つのグラフに時間軸を共有して、以下の3つの波形を重ねて描くと分かりやすいです。</p>
+                <ul>
+                    <li><strong>入力AM波:</strong> 振幅がゆっくり変化する高周波の波形。上下対称に描きます。</li>
+                    <li><strong>整流波:</strong> 入力AM波の山の部分だけをなぞった波形。（点線などで表現）</li>
+                    <li><strong>出力波形:</strong> 整流波の山々をなだらかに結んだ線。これが元の信号の形です。（実線で表現）</li>
+                </ul>
             </div>
 
             <h4>動作原理</h4>
             <ol>
-                <li><strong>整流:</strong> ダイオード(D)を用いてAM波の正（または負）の部分だけを取り出します（半波整流）。図中の青い「入力」波形がダイオードを通過すると、オレンジの点線で示す「整流後」の波形のように、波の下半分がカットされます。</li>
-                <li><strong>平滑化:</strong> コンデンサ(C)と抵抗(R)からなるローパスフィルタ(LPF)に通します。入力電圧が上昇するとコンデンサは急速に充電され、下降するとゆっくり放電します。この充放電により、整流後のギザギザした波形が滑らかにされ、緑の実線で示す最終的な「出力」波形が得られます。</li>
+                <li><strong>整流:</strong> ダイオード(D)がAM波の正の部分だけを通過させます（半波整流）。これにより、波形の上半分（または下半分）のみが残ります。</li>
+                <li><strong>平滑化:</strong>
+                    RC並列回路がローパスフィルタとして機能します。ダイオードを通過した電圧が上昇するとコンデンサ(C)は急速に充電され、電圧が下降すると抵抗(R)を通じてゆっくり放電します。この充放電により、搬送波の高周波成分（細かいギザギザ）が取り除かれ、元の信号の形（包絡線）に近い滑らかな出力電圧が得られます。
+                </li>
             </ol>
-            <p>
-                このとき、RC回路の時定数 \(\tau = RC\) が、<span class="important">搬送波の周期より十分長く、かつ、信号波の周期より十分短い</span>ことが重要です。これにより、搬送波の高周波成分は除去され、信号波のゆっくりとした変動（包絡線）のみが効率的に取り出せます。
-            </p>
 
             <h3>(2) 同期検波 (Synchronous Detection)</h3>
             <div class="problem-box">
                 <p><strong>問題1-(2):</strong> 同期検波の構成を図示し、数式を用いてその動作原理を説明せよ。</p>
             </div>
-            <p>
-                同期検波は、送信側と同一の周波数・位相を持つ搬送波（ローカルキャリア）を乗算することで、高品質な復調を実現する方式です。
-            </p>
-            <h4>構成図</h4>
-            <div class="figure-container">
-                 <svg viewBox="0 0 450 120" xmlns="http://www.w3.org/2000/svg">
-                    <style>
-                        .block { fill: #fff; stroke: black; stroke-width: 2; }
-                        .line { fill: none; stroke: black; stroke-width: 2; marker-end: url(#arrow); }
-                        .label { font-family: sans-serif; font-size: 14px; text-anchor: middle; }
-                    </style>
-                    <defs>
-                        <marker id="arrow" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
-                            <path d="M 0 0 L 10 5 L 0 10 z" fill="black" />
-                        </marker>
-                    </defs>
-                    
-                    <text x="25" y="55" class="label">入力AM波</text>
-                    <line x1="50" y1="60" x2="100" y2="60" class="line"/>
 
-                    <!-- 乗算器 -->
-                    <rect x="100" y="40" width="80" height="40" rx="5" class="block"/>
-                    <text x="140" y="65" class="label">乗算器</text>
-                    <circle cx="140" cy="60" r="10" stroke="black" stroke-width="2" fill="none"/>
-                    <text x="140" y="66" font-size="18px" text-anchor="middle">×</text>
-                    <line x1="180" y1="60" x2="250" y2="60" class="line"/>
-
-                    <!-- ローカル発振器 -->
-                    <rect x="100" y="90" width="80" height="25" rx="5" class="block"/>
-                    <text x="140" y="108" class="label">cos(ωct)</text>
-                    <line x1="140" y1="90" x2="140" y2="80" class="line"/>
-
-                    <!-- LPF -->
-                    <rect x="250" y="40" width="80" height="40" rx="5" class="block"/>
-                    <text x="290" y="65" class="label">LPF</text>
-                    <line x1="330" y1="60" x2="380" y2="60" class="line"/>
-
-                    <text x="410" y="65" class="label">出力信号</text>
-                </svg>
-                <figcaption>図2. 同期検波の構成ブロック図</figcaption>
+            <div class="how-to-draw">
+                <h4>構成図の描き方</h4>
+                <p>同期検波の構成は、以下の3つのブロックを左から右へ線でつなぐことで表現できます。</p>
+                <ol>
+                    <li><strong>乗算器 (Mixer):</strong> 入力AM波とローカルキャリアを掛け合わせるブロック。円の中に「×」を描いて表現します。2つの入力と1つの出力を持ちます。</li>
+                    <li><strong>ローカル発振器:</strong> 送信側と同一周波数・位相の搬送波 \(\cos(\omega_c t)\) を生成するブロック。この出力を乗算器の一方の入力に接続します。
+                    </li>
+                    <li><strong>ローパスフィルタ (LPF):</strong>
+                        高周波成分を除去し、低周波の信号成分のみを通過させるブロック。乗算器の出力をこのブロックの入力に接続します。このブロックの出力が、最終的な復調信号となります。</li>
+                </ol>
             </div>
 
             <h4>動作原理（数式による説明）</h4>
             <p>
-                信号を \(s(t)\) としたAM波 \(f_{AM}(t) = A_c (1 + k s(t)) \cos(\omega_c t)\) に、ローカル発振器で生成したキャリア \(\cos(\omega_c t)\) を乗算します。
+                信号を \(s(t)\) としたAM波 \(f_{AM}(t) = A_c (1 + k s(t)) \cos(\omega_c t)\) に、ローカルキャリア \(\cos(\omega_c t)\)
+                を乗算します。
             </p>
             <div class="math-block">
                 $$ v(t) = f_{AM}(t) \cdot \cos(\omega_c t) = A_c (1 + k s(t)) \cos^2(\omega_c t) $$
@@ -214,22 +131,27 @@
                 $$ v(t) = \frac{A_c}{2} (1 + k s(t)) + \frac{A_c}{2} (1 + k s(t)) \cos(2\omega_c t) $$
             </div>
             <p>
-                この信号をローパスフィルタ（LPF）に通すと、高周波成分である第2項（\(2\omega_c\) の項）が除去され、出力は \(f_{out}(t) = \frac{A_c}{2} (1 + k s(t))\) となります。この信号から直流成分を取り除けば、元の信号 \(s(t)\) が復元できます。
+                この信号をローパスフィルタ（LPF）に通すと、高周波成分である第2項（\(2\omega_c\) の項）が除去され、出力は \(f_{out}(t) = \frac{A_c}{2} (1 + k
+                s(t))\) となります。この信号から直流成分を取り除けば、元の信号 \(s(t)\) が復元できます。
             </p>
         </section>
 
         <section id="q2">
             <h2>問2. FM信号の数学的解析</h2>
             <div class="problem-box">
-                <p><strong>問題2:</strong> 信号 \(s(t) = \cos(\omega_s t)\) で搬送波 \(f(t) = A_c \cos(\omega_c t)\) を周波数変調させたとき、変調後の信号 \(f_{FM}(t)\) は以下の式で表される。以下の(1)～(5)の問いに答えよ。</p>
-                 <div class="math-block">$$ f_{FM}(t) = A_c\cos\left[\omega_c t + m_f\int s(t)dt\right] $$</div>
+                <p><strong>問題2:</strong> 信号 \(s(t) = \cos(\omega_s t)\) で搬送波 \(f(t) = A_c \cos(\omega_c t)\)
+                    を周波数変調させたとき、変調後の信号 \(f_{FM}(t)\) は以下の式で表される。以下の(1)～(5)の問いに答えよ。</p>
+                <div class="math-block">$$ f_{FM}(t) = A_c\cos\left[\omega_c t + m_f\int s(t)dt\right] $$</div>
             </div>
 
             <h3>(1) 瞬間周波数の導出</h3>
-             <div class="problem-box"><p><strong>問題2-(1):</strong> \(f_{FM}(t)\) の瞬間周波数 \(f_i\) を求めよ。</p></div>
+            <div class="problem-box">
+                <p><strong>問題2-(1):</strong> \(f_{FM}(t)\) の瞬間周波数 \(f_i\) を求めよ。</p>
+            </div>
             <p>波形の位相部分 \(\theta(t)\) を時間微分すると、瞬間角周波数 \(\omega_i(t)\) が得られます。</p>
             <div class="math-block">
-                $$ \theta(t) = \omega_c t + m_f \int \cos(\omega_s t)dt = \omega_c t + \frac{m_f}{\omega_s} \sin(\omega_s t) $$
+                $$ \theta(t) = \omega_c t + m_f \int \cos(\omega_s t)dt = \omega_c t + \frac{m_f}{\omega_s}
+                \sin(\omega_s t) $$
                 $$ \omega_i(t) = \frac{d\theta(t)}{dt} = \omega_c + m_f \cos(\omega_s t) $$
             </div>
             <p>よって、瞬間周波数 \(f_i(t) = \omega_i(t) / 2\pi\) は以下のようになります。</p>
@@ -238,104 +160,95 @@
             </div>
 
             <h3>(2) 最大周波数偏移と変調指数</h3>
-            <div class="problem-box"><p><strong>問題2-(2):</strong> \(m_f\) を用いて、\(f_{FM}(t)\) の最大周波数偏移 \(\Delta\omega\), \(\Delta f\) と、変調指数 \(m_F\) をそれぞれ求めよ。</p></div>
+            <div class="problem-box">
+                <p><strong>問題2-(2):</strong> \(m_f\) を用いて、\(f_{FM}(t)\) の最大周波数偏移 \(\Delta\omega\), \(\Delta f\) と、変調指数
+                    \(m_F\) をそれぞれ求めよ。</p>
+            </div>
             <p>瞬間角周波数 \(\omega_i(t)\) の式から、中心角周波数 \(\omega_c\) からのズレは \(m_f \cos(\omega_s t)\) です。</p>
             <ul>
-                <li><strong>最大角周波数偏移 \(\Delta\omega\):</strong> \(\cos(\omega_s t)\)の最大値が1なので、<span class="highlight">\(\Delta\omega = m_f\)</span> となります。</li>
+                <li><strong>最大角周波数偏移 \(\Delta\omega\):</strong> \(\cos(\omega_s t)\)の最大値が1なので、<span
+                        class="highlight">\(\Delta\omega = m_f\)</span> となります。</li>
                 <li><strong>最大周波数偏移 \(\Delta f\):</strong> \(\Delta f = \Delta\omega / 2\pi = m_f / 2\pi\)。</li>
                 <li><strong>変調指数 \(m_F\):</strong> \(m_F = \Delta\omega / \omega_s = m_f / \omega_s\)。</li>
             </ul>
 
             <h3>(3) カーソンの法則 (Carson's Rule)</h3>
-            <div class="problem-box"><p><strong>問題2-(3):</strong> カーソンの法則より、FM信号の(角)周波数帯域幅 \(B_{FM}\) を、変調指数 \(m_F\) と信号角周波数 \(\omega_s\) を用いて表せ。</p></div>
+            <div class="problem-box">
+                <p><strong>問題2-(3):</strong> カーソンの法則より、FM信号の(角)周波数帯域幅 \(B_{FM}\) を、変調指数 \(m_F\) と信号角周波数 \(\omega_s\)
+                    を用いて表せ。</p>
+            </div>
             <p>FM信号の占有周波数帯域幅 \(B_{FM}\) を近似的に求める経験則です。角周波数で表すと次のようになります。</p>
             <div class="math-block">
                 $$ B_{FM} \approx 2(\Delta\omega + \omega_s) = 2(m_F \omega_s + \omega_s) = 2(m_F + 1)\omega_s $$
             </div>
 
             <h3>(4) 狭帯域FMの近似 (Narrowband FM)</h3>
-            <div class="problem-box"><p><strong>問題2-(4):</strong> 狭帯域FM (\(m_F \ll 1\)) の \(f_{FM}(t)\) を求めよ。</p></div>
+            <div class="problem-box">
+                <p><strong>問題2-(4):</strong> 狭帯域FM (\(m_F \ll 1\)) の \(f_{FM}(t)\) を求めよ。</p>
+            </div>
             <p>変調指数 \(m_F \ll 1\) の場合、\(\cos(x) \approx 1\), \(\sin(x) \approx x\) の近似が使えます。FM波の式を展開し、この近似を適用すると、</p>
             <div class="math-block">
                 \begin{align*}
-                f_{FM}(t) & = A_c [\cos(\omega_c t)\cos(m_F\sin(\omega_s t)) - \sin(\omega_c t)\sin(m_F\sin(\omega_s t))] \\
+                f_{FM}(t) & = A_c [\cos(\omega_c t)\cos(m_F\sin(\omega_s t)) - \sin(\omega_c t)\sin(m_F\sin(\omega_s
+                t))] \\
                 & \approx A_c [\cos(\omega_c t) \cdot 1 - \sin(\omega_c t) \cdot (m_F\sin(\omega_s t))] \\
                 & = A_c\cos(\omega_c t) - A_c m_F \sin(\omega_c t)\sin(\omega_s t)
                 \end{align*}
             </div>
             <p>さらに積和の公式を適用すると、</p>
             <div class="math-block">
-                 $$ f_{FM}(t) \approx A_c\cos(\omega_c t) - \frac{A_c m_F}{2}\cos((\omega_c-\omega_s)t) + \frac{A_c m_F}{2}\cos((\omega_c+\omega_s)t) $$
+                $$ f_{FM}(t) \approx A_c\cos(\omega_c t) - \frac{A_c m_F}{2}\cos((\omega_c-\omega_s)t) + \frac{A_c
+                m_F}{2}\cos((\omega_c+\omega_s)t) $$
             </div>
 
             <h3>(5) 狭帯域FMの周波数スペクトラム</h3>
-            <div class="problem-box"><p><strong>問題2-(5):</strong> 狭帯域 \(f_{FM}(t)\) の周波数スペクトラム（負の周波数も考慮）を図示せよ。</p></div>
-            <div class="figure-container">
-                <svg viewBox="0 0 500 200" xmlns="http://www.w3.org/2000/svg">
-                    <style>
-                        .axis { stroke: black; stroke-width: 1.5; }
-                        .spec { stroke: #e74c3c; stroke-width: 2.5; marker-end: url(#arrow_spec); }
-                        .label { font-family: sans-serif; font-size: 12px; text-anchor: middle; }
-                        .math-label { font-family: 'Times New Roman', serif; font-style: italic; font-size: 14px; text-anchor: middle; }
-                    </style>
-                    <defs>
-                        <marker id="arrow_spec" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse">
-                            <path d="M 0 0 L 10 5 L 0 10 z" fill="#e74c3c" />
-                        </marker>
-                    </defs>
-                    <!-- Axes -->
-                    <line x1="10" y1="120" x2="490" y2="120" class="axis" marker-end="url(#arrow_spec)"/>
-                    <line x1="250" y1="180" x2="250" y2="20" class="axis" marker-end="url(#arrow_spec)"/>
-                    <text x="485" y="135" class="math-label">f</text>
-                    <text x="265" y="30" class="label">振幅</text>
-                    <text x="250" y="135" class="label">0</text>
-                    
-                    <!-- Positive Frequency Spectrums -->
-                    <line x1="370" y1="120" x2="370" y2="40" class="spec" /> <!-- Carrier -->
-                    <text x="370" y="35" class="label">Ac/2</text>
-                    <text x="370" y="135" class="math-label">f<tspan dy="5" font-size="10">c</tspan></text>
-
-                    <line x1="440" y1="120" x2="440" y2="90" class="spec" /> <!-- USB -->
-                    <text x="440" y="85" class="label">Ac·mF/4</text>
-                    <text x="440" y="140" class="math-label">f<tspan dy="5" font-size="10">c</tspan>+f<tspan dy="5" font-size="10">s</tspan></text>
-                    
-                    <line x1="300" y1="120" x2="300" y2="150" class="spec" /> <!-- LSB -->
-                    <text x="300" y="165" class="label">-Ac·mF/4</text>
-                    <text x="300" y="140" class="math-label">f<tspan dy="5" font-size="10">c</tspan>-f<tspan dy="5" font-size="10">s</tspan></text>
-                    
-                    <!-- Negative Frequency Spectrums -->
-                    <line x1="130" y1="120" x2="130" y2="40" class="spec" /> <!-- -Carrier -->
-                    <text x="130" y="140" class="math-label">-f<tspan dy="5" font-size="10">c</tspan></text>
-
-                    <line x1="60" y1="120" x2="60" y2="90" class="spec" /> <!-- -USB -->
-                    <text x="60" y="145" class="math-label">-f<tspan dy="5" font-size="10">c</tspan>-f<tspan dy="5" font-size="10">s</tspan></text>
-
-                    <line x1="200" y1="120" x2="200" y2="150" class="spec" /> <!-- -LSB -->
-                    <text x="200" y="145" class="math-label">-f<tspan dy="5" font-size="10">c</tspan>+f<tspan dy="5" font-size="10">s</tspan></text>
-                </svg>
-                <figcaption>図3. 狭帯域FMの周波数スペクトラム</figcaption>
+            <div class="problem-box">
+                <p><strong>問題2-(5):</strong> 狭帯域 \(f_{FM}(t)\) の周波数スペクトラム（負の周波数も考慮）を図示せよ。</p>
             </div>
-            <p>このスペクトルは、搬送波 \(f_c\)、上側波帯 \(f_c+f_s\)、下側波帯 \(f_c-f_s\) の3つの周波数成分を持ちます。AM変調との大きな違いは、<span class="important">下側波帯の位相が搬送波に対して反転している</span>点です。</p>
+            <div class="how-to-draw">
+                <h4>スペクトラム図の描き方</h4>
+                <p>(4)で求めた式を元に、スペクトラム（周波数ごとの信号強度）を図示します。</p>
+                <ol>
+                    <li><strong>軸を描く:</strong> 横軸を周波数 \(f\)、縦軸を振幅とし、中央に原点(0)を置きます。</li>
+                    <li><strong>搬送波:</strong> 周波数 \(f_c\) の位置に、振幅 \(A_c/2\) の線スペクトルを上向きに描きます。</li>
+                    <li><strong>上側波帯 (USB):</strong> 周波数 \(f_c+f_s\) の位置に、振幅 \(A_c m_F/4\)
+                        の線スペクトルを上向きに描きます。通常、搬送波より小さい振幅になります。</li>
+                    <li><strong>下側波帯 (LSB):</strong> 周波数 \(f_c-f_s\) の位置に、振幅が \(-A_c m_F/4\) なので、<span
+                            class="important">下向き</span>に線スペクトルを描きます。この位相の反転がAMとの大きな違いです。</li>
+                    <li><strong>負の周波数:</strong> 上記の3つのスペクトルを、縦軸に対して線対称になるように、\(-f_c\)、\(-(f_c+f_s)\)、\(-(f_c-f_s)\)
+                        の位置にもそれぞれ描きます。</li>
+                </ol>
+            </div>
         </section>
 
         <section id="q3">
             <h2>問3. FM信号の変復調技術</h2>
-            
+
             <h3>(1) LC発振器によるFM波の発生</h3>
-            <div class="problem-box"><p><strong>問題3-(1):</strong> LC発振器を用いたFM波の発生方法について説明せよ。</p></div>
-            <p>LC発振器の発振周波数は \(f_c = 1 / (2\pi\sqrt{LC})\) で決まります。この \(C\) の部分に<span class="important">可変容量ダイオード（バラクタダイオード）</span>を接続します。バラクタダイオードは、逆バイアス電圧によって静電容量が変化する素子です。</p>
-            <p>変調したい信号 \(s(t)\) をこの逆バイアス電圧に重畳させることで、\(s(t)\) の振幅に応じて発振周波数が変動し、FM波が生成されます。</p>
+            <div class="problem-box">
+                <p><strong>問題3-(1):</strong> LC発振器を用いたFM波の発生方法について説明せよ。</p>
+            </div>
+            <p>LC発振器の発振周波数は \(f_c = 1 / (2\pi\sqrt{LC})\)
+                で決まります。この式から、L（インダクタンス）かC（キャパシタンス）の値を変化させれば、発振周波数を変えられることがわかります。この原理を利用するのがFM変調です。</p>
+            <p>具体的には、回路の \(C\) の部分に<span
+                    class="important">可変容量ダイオード（バラクタダイオード）</span>を接続します。バラクタダイオードは、加える逆方向の電圧によって静電容量が変化する特殊なダイオードです。ここに変調したい信号
+                \(s(t)\) を電圧として加えることで、\(s(t)\) の振幅に応じて発振周波数がリアルタイムに変動し、結果としてFM波が生成されます。</p>
 
             <h3>(2) FM波と包絡線検波</h3>
-            <div class="problem-box"><p><strong>問題3-(2):</strong> 信号が余弦波のとき、与えられたFM波の式を用いて、包絡線検波でFM波が復調できる理由を説明せよ。</p></div>
-            <p>FM波は振幅が一定なため、<span class="highlight">そのままでは包絡線検波で復調できません</span>。しかし、ある前処理を施すことで可能になります。</p>
+            <div class="problem-box">
+                <p><strong>問題3-(2):</strong> 信号が余弦波のとき、FM波を包絡線検波で復調できる理由を説明せよ。</p>
+            </div>
+            <p>FM波は振幅が一定なため、<span class="highlight">そのままでは包絡線検波（振幅の変化を検出する回路）で復調できません</span>。しかし、ある前処理を施すことで可能になります。</p>
             <ol>
-                <li><strong>周波数-振幅変換:</strong> まず、FM波を<span class="important">微分回路</span>に通します。微分器の出力は入力の時間微分に比例するため、出力波形の振幅が元のFM波の瞬時周波数 \(f_i(t)\) に比例するようになります。</li>
-                <li><strong>包絡線検波:</strong> この「振幅が変化する波」を包絡線検波器に入力することで、振幅の変動、すなわち元の信号 \(s(t)\) を取り出すことができます。</li>
+                <li><strong>周波数-振幅変換:</strong> まず、FM波を<span
+                        class="important">微分回路</span>に通します。微分回路は、入力信号の周波数が高いほど出力信号の振幅が大きくなる特性を持ちます。FM波は周波数が変化する信号なので、微分回路を通すことで、周波数の変化が振幅の変化に変換されます。
+                </li>
+                <li><strong>包絡線検波:</strong> このようにして「振幅が変化する波」に変換された信号を、問1-(1)で解説した包絡線検波器に入力します。すると、振幅の変動、すなわち元の信号
+                    \(s(t)\) を取り出すことができるのです。</li>
             </ol>
-            <p>このように、微分回路を用いて「周波数変化」を「振幅変化」に変換することが、包絡線検波によるFM復調の鍵となります。</p>
+            <p>結論として、微分回路を用いて「周波数変化」を「振幅変化」に変換することが、包絡線検波によるFM復調の鍵となります。</p>
         </section>
-        
+
         <section id="conclusion">
             <h2>まとめ</h2>
             <p>
