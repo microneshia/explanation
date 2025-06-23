@@ -53,7 +53,7 @@
             transform: translateY(-2px);
         }
 
-        /* article.cssのul/olスタイルを少し調整 */
+        /* PCでのリストスタイル調整 */
         .article-container ul, .article-container ol {
             padding-left: 25px;
         }
@@ -69,18 +69,36 @@
             list-style-position: inside; 
             padding-left: 15px; 
         }
-        /* ネストされたリストのマージン調整 */
         .tip ol ul {
             margin-top: 10px;
         }
 
-        /* ▼▼▼ 長い文字列がはみ出さないように修正 ▼▼▼ */
         .article-container code {
-            /* 既存のcodeスタイル（common.css or article.css）を上書き・補強 */
-            white-space: pre-wrap;      /* pre同様の折り返しを許可 */
-            overflow-wrap: break-word;  /* 長い単語を強制的に折り返す */
-            word-wrap: break-word;      /* 古いブラウザ用のフォールバック */
-            word-break: break-all;      /* CJK以外の単語も厳密に改行 */
+            white-space: pre-wrap;
+            overflow-wrap: break-word;
+            word-wrap: break-word;
+            word-break: break-all;
+        }
+        
+        /* ▼▼▼ スマートフォン表示の最適化 ▼▼▼ */
+        @media (max-width: 768px) {
+            /* 箇条書きのインデントを減らし、見やすくする */
+            .article-container ul, .article-container ol {
+                margin-left: 0;
+                padding-left: 20px; /* パディングのみに統一し、値を減らす */
+            }
+
+            /* .step要素のインデントも減らす */
+            .step {
+                padding-left: 15px;
+                padding-right: 15px;
+                border-left-width: 3px;
+            }
+
+            /* .tip内のネストされたリストも調整 */
+            .tip ol ul {
+                padding-left: 20px;
+            }
         }
     </style>
 </head>
