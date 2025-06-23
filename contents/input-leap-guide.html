@@ -2,67 +2,29 @@
 <html lang="ja">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>Input Leap 設定ガイド</title>
-    <!-- ▼▼▼ サイト用のメタ情報を追加 ▼▼▼ -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <!-- 記事のタイトルとメタ情報を保持 -->
+    <title>Input Leap 設定ガイド - 総合解説プラットフォーム</title>
     <meta name="article-number" content="000017">
     <meta name="description" content="MacBookのキーボードとマウスでWindows PCを操作できる「Input Leap」の設定手順を、初心者でも分かるように丁寧に解説します。">
 
-    <!-- ▼▼▼ フローティングナビゲーション用のCSSを読み込み ▼▼▼ -->
-    <link rel="stylesheet" href="../css/nav-menu.css">
+    <!-- ▼▼▼ 解説記事用のCSSに差し替え ▼▼▼ -->
+    <link rel="stylesheet" href="../css/common.css">
+    <link rel="stylesheet" href="../css/article.css">
 
+    <!-- このページ固有のスタイル（article.cssで定義されていないものを中心に） -->
     <style>
-        /* 基本スタイル */
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Hiragino Kaku Gothic ProN", "Meiryo", sans-serif;
-            line-height: 1.8;
-            color: #333;
-            background-color: #f4f7f9;
-            margin: 0;
-            padding: 20px;
-            overflow-y: auto; /* スクロールを許可 */
-        }
-        .container {
-            max-width: 800px;
-            margin: 0 auto;
-            background-color: #fff;
-            padding: 40px;
-            border-radius: 12px;
-            box-shadow: 0 6px 20px rgba(0,0,0,0.08);
-        }
-        h1, h2, h3 {
-            border-bottom: 2px solid #007bff;
-            padding-bottom: 12px;
-            margin-top: 40px;
-        }
-        h1 {
-            font-size: 2.2em;
-            color: #007bff;
-        }
-        h2 {
-            font-size: 1.7em;
-        }
-        h3 {
-            font-size: 1.4em;
-            border-bottom: 1px solid #ccc;
-        }
-        code {
-            background-color: #e9ecef;
-            padding: 3px 7px;
-            border-radius: 5px;
-            font-family: "Courier New", Courier, monospace;
-            color: #c7254e;
-            word-wrap: break-word;
-        }
-        strong, .strong {
-            color: #d9534f;
-            font-weight: bold;
-        }
+        /* article-container内の見出しに適用されるスタイルはarticle.cssに任せる */
+
         .step {
             margin-bottom: 30px;
-            padding-left: 20px;
+            padding: 20px;
             border-left: 4px solid #007bff;
+            background-color: #f8f9fa;
+            border-radius: 5px;
         }
+
         .tip {
             background-color: #d4edda;
             border: 1px solid #c3e6cb;
@@ -74,11 +36,12 @@
         .tip strong {
             color: #155724;
         }
+
         a.button {
             display: inline-block;
             padding: 12px 24px;
             background-color: #007bff;
-            color: #fff !important;
+            color: #fff !important; /* リンク色を上書き */
             text-decoration: none;
             border-radius: 8px;
             font-weight: bold;
@@ -89,214 +52,220 @@
             background-color: #0056b3;
             transform: translateY(-2px);
         }
-        ul, ol {
+
+        /* article.cssのul/olスタイルを少し調整 */
+        .article-container ul, .article-container ol {
             padding-left: 25px;
         }
-        li {
+        .article-container li {
             margin-bottom: 12px;
         }
-        .placeholder-img {
-            border: 2px dashed #ccc;
-            padding: 20px;
-            text-align: center;
-            color: #888;
+
+        .tip ol {
+            background-color: #e9f5ff;
+            padding: 15px;
             border-radius: 5px;
-            margin: 15px 0;
-            background-color: #fafafa;
+            margin-top: 10px;
+            /* ▼▼▼ この行を追加して、マーカーが内側に来るように修正 ▼▼▼ */
+            list-style-position: inside; 
+            padding-left: 15px; /* 内側に配置したので、左のパディングを少し調整 */
         }
-        .caption {
-            font-size: 0.9em;
-            color: #666;
-            text-align: center;
-            margin-top: 5px;
-            margin-bottom: 15px;
-        }
-        hr {
-            border: none;
-            border-top: 1px solid #ddd;
-            margin: 40px 0;
+        /* ネストされたリストのマージン調整 */
+        .tip ol ul {
+            margin-top: 10px;
         }
 
-        /* スマートフォン用のスタイル */
-        @media (max-width: 600px) {
-            body {
-                padding: 10px;
-                -webkit-text-size-adjust: 100%;
-            }
-            .container {
-                padding: 20px;
-            }
-            h1 { font-size: 1.8em; }
-            h2 { font-size: 1.5em; }
-            h3 { font-size: 1.2em; }
-            
-            ul, ol {
-                padding-left: 20px;
-            }
-        }
     </style>
 </head>
 <body>
-    <!-- ▼▼▼ フローティングナビゲーションメニューを追加 ▼▼▼ -->
-    <div id="menu-toggle-icon">≡</div>
-    <div id="floating-menu">
-        <a href="../index.html">トップページへ</a>
-        <a href="../contents.html">コンテンツ一覧へ</a>
-    </div>
+    <!-- ▼▼▼ 共通ヘッダーとナビゲーションに差し替え ▼▼▼ -->
+    <header>
+        <a href="../index.html" class="header-link">
+            <h1>総合解説プラットフォーム <span class="subtitle">あらゆる疑問に、明快な解答を。</span></h1>
+        </a>
+    </header>
+    <nav>
+        <ul>
+            <li><a href="../index.html">トップ</a></li>
+            <li><a href="../contents.html">コンテンツ</a></li>
+            <li><a href="../tags.html">タグ検索</a></li>
+        </ul>
+    </nav>
 
-    <div class="container">
+    <!-- ▼▼▼ mainタグとarticle-containerクラスでコンテンツを囲む ▼▼▼ -->
+    <main class="article-container">
         <h1>Input Leap 設定ガイド</h1>
+        
+        <!-- タグはJavaScriptによってこの位置に自動挿入されます -->
+        
         <p><strong>MacBookのキーボードとマウスで、隣のWindows PCをラクラク操作！</strong></p>
         
-        <h2>はじめに：目標と準備</h2>
-        <div class="step">
-            <h3>このガイドで出来るようになること</h3>
-            <p>MacBookのキーボードとトラックパッドを使い、マウスカーソルをMacの画面からWindowsの画面へシームレスに移動させて、そのままWindows PCを操作できるようになります。</p>
+        <section id="s-intro">
+            <h2>はじめに：目標と準備</h2>
+            <div class="step">
+                <h3>このガイドで出来るようになること</h3>
+                <p>MacBookのキーボードとトラックパッドを使い、マウスカーソルをMacの画面からWindowsの画面へシームレスに移動させて、そのままWindows PCを操作できるようになります。</p>
 
-            <h3>準備するもの</h3>
-            <ul>
-                <li>MacBook (macOS)</li>
-                <li>Windows デスクトップPC</li>
-                <li><strong>共通のネットワーク接続</strong>（例：両方のPCが同じ家庭用Wi-Fiルーターに接続されている状態）</li>
-            </ul>
-            
-            <h3>全体像：サーバーとクライアント</h3>
-            <p>2台のPCの役割を決めます。このように覚えると簡単です。</p>
-            <ul>
-                <li><strong>サーバー（親機）：</strong>命令を出すPC。キーボードやマウスがつながっている方です。→ 今回は <span class="strong">MacBook</span></li>
-                <li><strong>クライアント（子機）：</strong>命令を受け取るPC。操作される方です。→ 今回は <span class="strong">Windows PC</span></li>
-            </ul>
-        </div>
-
-        <h2>ステップ1：Input Leapのダウンロードとインストール</h2>
-        <div class="step">
-            <p>まず、MacとWindowsの両方のパソコンにInput Leapをインストールします。ここでは、インストーラーが提供されている<strong>v3.0.2</strong>を例に解説します。</p>
-            <ol>
-                <li>
-                    <strong>Input Leapの公式リリース一覧ページを開きます。</strong><br>
-                    <a href="https://github.com/input-leap/input-leap/releases" target="_blank" class="button">Input Leap 公式リリース・ページ</a>
-                </li>
-                <li>
-                    <strong>v3.0.2のリリースを探し、お使いのPCに合ったファイルをダウンロードします。</strong>
-                    <p>ページを少しスクロールして「v3.0.2」の項目を見つけ、その下の「Assets」という部分をクリックしてファイル一覧を表示します。</p>
-
-                    <div class="tip">
-                        <strong>【Windowsの方】</strong><br>
-                        ファイル一覧の中から、<code>InputLeap_3.0.2_windows_qt6.exe</code> というファイルをダウンロードしてください。これがWindows用のインストーラーです。
-                    </div>
-
-                    <div class="tip">
-                        <strong>【Macの方】どちらの<code>.dmg</code>ファイルを選べばいいの？</strong><br>
-                        Mac用には2種類のファイルがあります。お使いのMacの心臓部である「チップ（CPU）」の種類によって、ダウンロードするファイルが異なります。以下の方法で確認しましょう。
-
-                        <ol style="background-color: #e9f5ff; padding: 15px; border-radius: 5px; margin-top: 10px;">
-                            <li>画面左上の <strong>Appleのリンゴマーク ()</strong> をクリックします。</li>
-                            <li>メニューから<strong>「このMacについて」</strong>を選択します。</li>
-                            <li>開いたウィンドウに表示されている項目を確認します。
-                                <ul>
-                                    <li><strong>「チップ」</strong>という項目に「<span class="strong">Apple M1</span>」や「<span class="strong">Apple M2</span>」のように書かれている場合 → あなたのMacは <span class="strong">Apple Silicon</span> です。</li>
-                                    <li><strong>「プロセッサ」</strong>という項目に「<span class="strong">Intel Core i5</span>」のように書かれている場合 → あなたのMacは <span class="strong">Intel</span> です。</li>
-                                </ul>
-                            </li>
-                        </ol>
-                        
-                        <p style="margin-top:15px;">確認できたら、対応するファイルをダウンロードしてください。</p>
-                        <ul>
-                            <li>Apple Silicon の場合 → <code>InputLeap_3.0.2_macos_AppleSilicon.dmg</code></li>
-                            <li>Intel の場合 → <code>InputLeap_3.0.2_macos_x86_64.dmg</code></li>
-                        </ul>
-                    </div>
-                </li>
-                <li>
-                    <strong>それぞれのパソコンでインストールします。</strong>
-                    <p><strong>【Macでのインストール】</strong><br>
-                    ダウンロードした<code>.dmg</code>ファイルを開き、出てきた「Input Leap」アイコンを「Applications」フォルダにドラッグ＆ドロップします。</p>
-                    
-                    <p><strong>【Windowsでのインストール】</strong><br>
-                    ダウンロードした<code>.exe</code>ファイルをダブルクリックし、画面の指示に従って「Next」や「Install」を押して進めれば完了です。</p>
-                </li>
-            </ol>
-        </div>
-
-        <h2>ステップ2：サーバーの設定 (MacBook側)</h2>
-        <div class="step">
-            <p>ここからの作業は<span class="strong">MacBook</span>で行います。</p>
-             <ol>
-                <li><strong>Input Leapを起動し、「Server」を選びます。</strong><br>
-                    「アプリケーション」フォルダからInput Leapを起動し、<strong>「Server」</strong>を選択します。
-                </li>
-
-                <li><strong>IPアドレスをメモします。</strong><br>
-                    メイン画面の <code>IP addresses:</code> に表示されているIPアドレス（例：<code>192.168.1.5</code>）を、<strong>正確にメモしてください。</strong>後でWindows側で使います。
-                </li>
-
-                <li><strong>サーバー設定画面を開き、PCを配置します。</strong><br>
-                    <strong>「Configure Server...」</strong>をクリックし、設定画面右上の<strong>PCアイコンをマス目の中にドラッグ＆ドロップ</strong>します。Windows PCが机の上にある物理的な位置に合わせると直感的です。
-                </li>
-
-                <li><strong>クライアント（Windows PC）の名前を設定します。</strong><br>
-                    今置いたPCアイコン（"Unnamed"）を<strong>ダブルクリック</strong>し、<strong>「Screen name」</strong>の欄に、後でWindows側で確認する「スクリーン名」と<span class="strong">全く同じ名前</span>を入力します。（例: <code>Windows-PC</code>）
-                </li>
+                <h3>準備するもの</h3>
+                <ul>
+                    <li>MacBook (macOS)</li>
+                    <li>Windows デスクトップPC</li>
+                    <li><strong>共通のネットワーク接続</strong>（例：両方のPCが同じ家庭用Wi-Fiルーターに接続されている状態）</li>
+                </ul>
                 
-                <li><strong>【最重要】Macのセキュリティ設定を許可します。</strong>
-                     <ul>
-                        <li>Input Leapのメイン画面で<strong>「Start」</strong>ボタンを押します。</li>
-                        <li>「アクセシビリティ」に関する警告が出たら、<strong>「"システム設定"を開く」</strong>をクリックします。</li>
-                        <li>「プライバシーとセキュリティ」＞「アクセシビリティ」の画面で、<strong>「Input Leap」</strong>のスイッチを<strong>オン</strong>にします。（パスワードを求められます）</li>
-                        <li>設定後、一度Input Leapを「Stop」し、再度<strong>「Start」</strong>を押して「running」状態にしておきましょう。</li>
-                    </ul>
-                </li>
-            </ol>
-        </div>
-        
-        <h2>ステップ3：クライアントの設定 (Windows PC側)</h2>
-        <div class="step">
-            <p>ここからの作業は<span class="strong">Windows PC</span>で行います。</p>
-            <ol>
-                <li><strong>Input Leapを起動し、「Client」を選びます。</strong><br>
-                    <strong>「Client」</strong>にチェックが入っていることを確認します。
-                </li>
-                
-                <li><strong>スクリーン名を確認し、Mac側の設定と合わせます。</strong><br>
-                    画面上部の <code>Screen name:</code> を確認します。この名前が、Mac側で設定した名前と<span class="strong">完全に一致</span>しているか確認してください。違っていたらMac側を修正します。
-                </li>
-                
-                <li><strong>サーバーのIPアドレスを入力します。</strong><br>
-                    「Server IP」の空欄に、<strong>メモしたMacBookのIPアドレス</strong>を正確に入力します。
-                </li>
-                
-                <li><strong>Windowsファイアウォールを許可します。</strong><br>
-                    <strong>「Start」</strong>ボタンを押した際に「Windows Defender ファイアウォール」の警告が出たら、<strong>「プライベート ネットワーク」にチェック</strong>を入れて<strong>「アクセスを許可する」</strong>をクリックします。
-                </li>
-            </ol>
-        </div>
+                <h3>全体像：サーバーとクライアント</h3>
+                <p>2台のPCの役割を決めます。このように覚えると簡単です。</p>
+                <ul>
+                    <li><strong>サーバー（親機）：</strong>命令を出すPC。キーボードやマウスがつながっている方です。→ 今回は<span class="important">MacBook</span></li>
+                    <li><strong>クライアント（子機）：</strong>命令を受け取るPC。操作される方です。→ 今回は<span class="important">Windows PC</span></li>
+                </ul>
+            </div>
+        </section>
 
-        <h2>ステップ4：接続確認とトラブルシューティング</h2>
-        <div class="step">
-            <h3>接続完了！</h3>
-            <p>両方のPCで「Start」を押し<code>Input Leap is running</code>と表示されれば準備完了です。Macのマウスカーソルを画面の端に持っていき、Windows側に移動すれば成功です！</p>
-            
-            <h3>うまくいかない場合のチェックリスト</h3>
-            <div class="tip">
-                <strong>あわてずに、ひとつずつ確認してみてください！</strong>
+        <section id="s-download">
+            <h2>ステップ1：Input Leapのダウンロードとインストール</h2>
+            <div class="step">
+                <p>まず、MacとWindowsの両方のパソコンにInput Leapをインストールします。ここでは、インストーラーが提供されている<strong>v3.0.2</strong>を例に解説します。</p>
                 <ol>
-                    <li><strong>IPアドレスは正しいですか？</strong> (MacのIPをWindowsに正確に入力しましたか？)</li>
-                    <li><strong>スクリーン名は完全に一致していますか？</strong> (大文字・小文字・ハイフンもすべて同じですか？)</li>
-                    <li><strong>Macの「アクセシビリティ」許可は有効ですか？</strong> (これが一番多い原因です。再度確認を！)</li>
-                    <li><strong>同じネットワークに接続していますか？</strong> (両方とも同じWi-Fiですか？)</li>
-                    <li><strong>アプリを正しい順番で再起動しましたか？</strong> (両方Stop → ①サーバー(Mac)をStart → ②クライアント(Win)をStart の順で試してください。)</li>
-                    <!-- ▼▼▼ ここに新しいチェック項目を追加しました ▼▼▼ -->
-                    <li><strong>キーボードのScroll Lockが有効になっていませんか？</strong> (Scroll Lockがオンになっていると、画面間の移動がロックされることがあります。キーボードのScroll Lockランプが消えているか確認してください。)</li>
-                    <li><strong>PCを再起動してみましたか？</strong> (最終手段ですが、効果的な場合も多いです。)</li>
+                    <li>
+                        <strong>Input Leapの公式リリース一覧ページを開きます。</strong><br>
+                        <a href="https://github.com/input-leap/input-leap/releases" target="_blank" class="button">Input Leap 公式リリース・ページ</a>
+                    </li>
+                    <li>
+                        <strong>v3.0.2のリリースを探し、お使いのPCに合ったファイルをダウンロードします。</strong>
+                        <p>ページを少しスクロールして「v3.0.2」の項目を見つけ、その下の「Assets」という部分をクリックしてファイル一覧を表示します。</p>
+
+                        <div class="tip">
+                            <strong>【Windowsの方】</strong><br>
+                            ファイル一覧の中から、<code>InputLeap_3.0.2_windows_qt6.exe</code> というファイルをダウンロードしてください。これがWindows用のインストーラーです。
+                        </div>
+
+                        <div class="tip">
+                            <strong>【Macの方】どちらの<code>.dmg</code>ファイルを選べばいいの？</strong><br>
+                            Mac用には2種類のファイルがあります。お使いのMacの心臓部である「チップ（CPU）」の種類によって、ダウンロードするファイルが異なります。以下の方法で確認しましょう。
+                            <ol>
+                                <li>画面左上の <strong>Appleのリンゴマーク ()</strong> をクリックします。</li>
+                                <li>メニューから<strong>「このMacについて」</strong>を選択します。</li>
+                                <li>開いたウィンドウに表示されている項目を確認します。
+                                    <ul>
+                                        <li><strong>「チップ」</strong>という項目に「<span class="important">Apple M1</span>」や「<span class="important">Apple M2</span>」のように書かれている場合 → あなたのMacは <span class="important">Apple Silicon</span> です。</li>
+                                        <li><strong>「プロセッサ」</strong>という項目に「<span class="important">Intel Core i5</span>」のように書かれている場合 → あなたのMacは <span class="important">Intel</span> です。</li>
+                                    </ul>
+                                </li>
+                            </ol>
+                            
+                            <p style="margin-top:15px;">確認できたら、対応するファイルをダウンロードしてください。</p>
+                            <ul>
+                                <li>Apple Silicon の場合 → <code>InputLeap_3.0.2_macos_AppleSilicon.dmg</code></li>
+                                <li>Intel の場合 → <code>InputLeap_3.0.2_macos_x86_64.dmg</code></li>
+                            </ul>
+                        </div>
+                    </li>
+                    <li>
+                        <strong>それぞれのパソコンでインストールします。</strong>
+                        <p><strong>【Macでのインストール】</strong><br>
+                        ダウンロードした<code>.dmg</code>ファイルを開き、出てきた「Input Leap」アイコンを「Applications」フォルダにドラッグ＆ドロップします。</p>
+                        
+                        <p><strong>【Windowsでのインストール】</strong><br>
+                        ダウンロードした<code>.exe</code>ファイルをダブルクリックし、画面の指示に従って「Next」や「Install」を押して進めれば完了です。</p>
+                    </li>
                 </ol>
             </div>
-        </div>
-        
-        <hr>
-        <p style="text-align:center; font-size:0.9em; color:#888;">これで設定は以上です。快適なPCライフをお楽しみください！</p>
-    </div>
+        </section>
 
-    <!-- ▼▼▼ フローティングナビゲーション用のJavaScriptを読み込み ▼▼▼ -->
-    <script src="../js/nav-menu.js"></script>
+        <section id="s-server">
+            <h2>ステップ2：サーバーの設定 (MacBook側)</h2>
+            <div class="step">
+                 <ol>
+                    <li><strong>Input Leapを起動し、「Server」を選びます。</strong><br>
+                        「アプリケーション」フォルダからInput Leapを起動し、<strong>「Server」</strong>を選択します。
+                    </li>
+
+                    <li><strong>IPアドレスをメモします。</strong><br>
+                        メイン画面の <code>IP addresses:</code> に表示されているIPアドレス（例：<code>192.168.1.5</code>）を、<strong>正確にメモしてください。</strong>後でWindows側で使います。
+                    </li>
+
+                    <li><strong>サーバー設定画面を開き、PCを配置します。</strong><br>
+                        <strong>「Configure Server...」</strong>をクリックし、設定画面右上の<strong>PCアイコンをマス目の中にドラッグ＆ドロップ</strong>します。Windows PCが机の上にある物理的な位置に合わせると直感的です。
+                    </li>
+
+                    <li><strong>クライアント（Windows PC）の名前を設定します。</strong><br>
+                        今置いたPCアイコン（"Unnamed"）を<strong>ダブルクリック</strong>し、<strong>「Screen name」</strong>の欄に、後でWindows側で確認する「スクリーン名」と<span class="important">全く同じ名前</span>を入力します。（例: <code>Windows-PC</code>）
+                    </li>
+                    
+                    <li><strong>【最重要】Macのセキュリティ設定を許可します。</strong>
+                         <ul>
+                            <li>Input Leapのメイン画面で<strong>「Start」</strong>ボタンを押します。</li>
+                            <li>「アクセシビリティ」に関する警告が出たら、<strong>「"システム設定"を開く」</strong>をクリックします。</li>
+                            <li>「プライバシーとセキュリティ」＞「アクセシビリティ」の画面で、<strong>「Input Leap」</strong>のスイッチを<strong>オン</strong>にします。（パスワードを求められます）</li>
+                            <li>設定後、一度Input Leapを「Stop」し、再度<strong>「Start」</strong>を押して「running」状態にしておきましょう。</li>
+                        </ul>
+                    </li>
+                </ol>
+            </div>
+        </section>
+        
+        <section id="s-client">
+            <h2>ステップ3：クライアントの設定 (Windows PC側)</h2>
+            <div class="step">
+                <ol>
+                    <li><strong>Input Leapを起動し、「Client」を選びます。</strong><br>
+                        <strong>「Client」</strong>にチェックが入っていることを確認します。
+                    </li>
+                    
+                    <li><strong>スクリーン名を確認し、Mac側の設定と合わせます。</strong><br>
+                        画面上部の <code>Screen name:</code> を確認します。この名前が、Mac側で設定した名前と<span class="important">完全に一致</span>しているか確認してください。違っていたらMac側を修正します。
+                    </li>
+                    
+                    <li><strong>サーバーのIPアドレスを入力します。</strong><br>
+                        「Server IP」の空欄に、<strong>メモしたMacBookのIPアドレス</strong>を正確に入力します。
+                    </li>
+                    
+                    <li><strong>Windowsファイアウォールを許可します。</strong><br>
+                        <strong>「Start」</strong>ボタンを押した際に「Windows Defender ファイアウォール」の警告が出たら、<strong>「プライベート ネットワーク」にチェック</strong>を入れて<strong>「アクセスを許可する」</strong>をクリックします。
+                    </li>
+                </ol>
+            </div>
+        </section>
+
+        <section id="s-troubleshooting">
+            <h2>ステップ4：接続確認とトラブルシューティング</h2>
+            <div class="step">
+                <h3>接続完了！</h3>
+                <p>両方のPCで「Start」を押し<code>Input Leap is running</code>と表示されれば準備完了です。Macのマウスカーソルを画面の端に持っていき、Windows側に移動すれば成功です！</p>
+                
+                <h3>うまくいかない場合のチェックリスト</h3>
+                <div class="tip">
+                    <strong>あわてずに、ひとつずつ確認してみてください！</strong>
+                    <ol>
+                        <li><strong>IPアドレスは正しいですか？</strong> (MacのIPをWindowsに正確に入力しましたか？)</li>
+                        <li><strong>スクリーン名は完全に一致していますか？</strong> (大文字・小文字・ハイフンもすべて同じですか？)</li>
+                        <li><strong>Macの「アクセシビリティ」許可は有効ですか？</strong> (これが一番多い原因です。再度確認を！)</li>
+                        <li><strong>同じネットワークに接続していますか？</strong> (両方とも同じWi-Fiですか？)</li>
+                        <li><strong>アプリを正しい順番で再起動しましたか？</strong> (両方Stop → ①サーバー(Mac)をStart → ②クライアント(Win)をStart の順で試してください。)</li>
+                        <li><strong>キーボードのScroll Lockが有効になっていませんか？</strong> (Scroll Lockがオンになっていると、画面間の移動がロックされることがあります。キーボードのScroll Lockランプが消えているか確認してください。)</li>
+                        <li><strong>PCを再起動してみましたか？</strong> (最終手段ですが、効果的な場合も多いです。)</li>
+                    </ol>
+                </div>
+            </div>
+        </section>
+        
+        <section id="conclusion">
+            <h2>まとめ</h2>
+            <p>これで設定は以上です。このガイドが、あなたのPC作業効率化の一助となれば幸いです。快適なPCライフをお楽しみください！</p>
+        </section>
+
+    </main>
+
+    <!-- ▼▼▼ 共通フッターとトップへ戻るボタンに差し替え ▼▼▼ -->
+    <footer>
+        <p>© 2025 総合解説プラットフォーム. All rights reserved.</p>
+    </footer>
+
+    <button id="scrollTopBtn" title="トップへ戻る">⇧</button>
+
+    <!-- ▼▼▼ 共通スクリプトに差し替え ▼▼▼ -->
+    <script src="../js/article-list.js"></script>
+    <script src="../js/common.js"></script>
 </body>
 </html>
