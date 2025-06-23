@@ -30,6 +30,7 @@ const explanationArticles = [
 
 // その他のコンテンツ (contents/ フォルダ内) のファイル名とタグ情報を管理
 const contents = [
+    { file: 'input-leap-guide.html',    tags: ['PCツール', 'Windows', 'macOS', 'Input Leap', 'ソフトウェアKVM'] },  // 17
     { file: 'gitguide.html',            tags: ['コンテンツ', 'Git', 'GitHub', 'VS Code', 'チュートリアル'] },  // 16
     { file: 'bad-ui-showcase.html',     tags: ['コンテンツ', 'ジョーク', 'UI/UX', 'Webデザイン', 'JavaScript'] },  // 15
     { file: 'music.html',               tags: ['コンテンツ', 'ツール', '音楽', 'メディアプレーヤー', 'Web Audio API'] },  // 14
