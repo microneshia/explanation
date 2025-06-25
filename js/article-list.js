@@ -8,6 +8,7 @@
 
 // 解説記事 (explanation/ フォルダ内) のファイル名とタグ情報を管理
 const explanationArticles = [
+    { file: 'AM1_12.html',      tags: ['解説', '応用数学', 'フーリエ級数', 'パーセバルの等式', '完備性'] },  // 20
     { file: 'IC_11.html',       tags: ['解説', '情報通信工学', '信号処理', 'サンプリング定理', 'エイリアシング', '量子化', 'SNR'] },  // 19
     { file: 'IC_10.html',       tags: ['解説', '情報通信工学', '変調', 'FM', 'AM', 'フーリエ級数', '信号処理'] },  // 18
     { file: 'AM1_11.html',      tags: ['解説', '応用数学Ⅰ', 'フーリエ解析', '強制振動', 'RLC回路', '微分方程式'] },  // 17
@@ -42,7 +43,7 @@ const contents = [
     { file: 'CH_ex2.html',              tags: ['コンテンツ', 'コンピュータ科学', 'ハードウェア', '試験対策', 'クイズ'] },  // 10
     { file: 'CH_ex1.html',              tags: ['コンテンツ', 'コンピュータ科学', 'ハードウェア', '試験対策', 'クイズ'] },  // 9
     { file: 'slot.html',                tags: ['コンテンツ', 'ゲーム', 'JavaScript', 'Web開発'] },  // 8
-    { file: 'screensaber.html',         tags: ['コンテンツ', 'ツール', 'JavaScript', 'アニメーション'] },  // 7
+    { file: 'screensaver.html',         tags: ['コンテンツ', 'ツール', 'JavaScript', 'アニメーション'] },  // 7
     { file: 'images.html',              tags: ['コンテンツ', 'ツール', 'JavaScript', 'API'] },  // 6
     { file: 'words.html',               tags: ['コンテンツ', 'ツール', 'JavaScript', 'API'] },  // 5
     { file: 'robocheck.html',           tags: ['コンテンツ', 'ジョーク', 'JavaScript'] },  // 4
