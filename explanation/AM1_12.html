@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- 記事のタイトル -->
+    <title>パーセバルの等式とフーリエ級数の完備性 - 総合解説プラットフォーム</title>
+
+    <!-- 記事の連番 -->
+    <meta name="article-number" content="000020">
+
+    <!-- 共通CSSファイルの読み込み -->
+    <link rel="stylesheet" href="../css/common.css">
+    <link rel="stylesheet" href="../css/article.css">
+
+    <!-- MathJax関連スクリプト -->
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script src="../js/mathjax-config.js"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+
+    <!-- このページ固有のスタイル -->
+    <style>
+        .problem-box {
+            background-color: #f0f8ff;
+            border-left: 5px solid #4682b4;
+            padding: 20px;
+            margin: 25px 0;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- 共通ヘッダー -->
+    <header>
+        <a href="../index.html" class="header-link">
+            <h1>総合解説プラットフォーム <span class="subtitle">あらゆる疑問に、明快な解答を。</span></h1>
+        </a>
+    </header>
+
+    <!-- 共通ナビゲーションバー -->
+    <nav>
+        <ul>
+            <li><a href="../index.html">トップ</a></li>
+            <li><a href="../contents.html">コンテンツ</a></li>
+            <li><a href="../tags.html">タグ検索</a></li>
+        </ul>
+    </nav>
+
+    <!-- メインコンテンツ -->
+    <main class="article-container">
+        <h1>パーセバルの等式とフーリエ級数の完備性</h1>
+
+        <!-- タグはJavaScriptによってこの位置に自動挿入されます -->
+
+        <p>
+            フーリエ級数は、複雑な周期関数を単純な三角関数の無限和で表現する強力なツールです。しかし、この無限級数を有限の項で打ち切って近似した場合、その近似はどの程度「良い」のでしょうか？この記事では、<span
+                class="highlight">フーリエ級数が「最良の近似」を与える</span>ことを数学的に示し、そこから導かれる重要な関係式である<span
+                class="important">パーセバルの等式</span>について解説します。最後に、この等式を用いて無限級数の和を求める具体的な問題を解いていきます。
+        </p>
+
+        <section id="s1">
+            <h2>1. フーリエ級数による近似と「最良近似問題」</h2>
+            <p>
+                周期 \(p=2\pi\) の関数 \(f(x)\) のフーリエ級数は、以下のように表されます。
+            </p>
+            <div class="math-block">
+                $$ f(x) \sim \frac{a_0}{2} + \sum_{n=1}^{\infty} (a_n \cos(nx) + b_n \sin(nx)) $$
+            </div>
+            <p>
+                この無限級数を有限個の項、例えば第 \(N\) 項までの部分和で打ち切ることを考えます。これを<span
+                    class="important">三角多項式</span>による近似と呼び、一般的に次のように書くことができます。
+            </p>
+            <div class="math-block">
+                $$ F_N(x) = A_0 + \sum_{n=1}^{N} (A_n \cos(nx) + B_n \sin(nx)) $$
+            </div>
+            <p>
+                ここで、係数 \(A_n, B_n\) はまだ決まっていません。ここでの疑問は、「元の関数 \(f(x)\) に最も近くなるように \(F_N(x)\) を作るには、係数 \(A_n, B_n\)
+                をどのように選べばよいか？」ということです。これを<span class="highlight">最良近似問題</span>と呼びます。
+            </p>
+        </section>
+
+        <section id="s2">
+            <h2>2. 誤差の指標：全二乗誤差</h2>
+            <p>
+                「近さ」を測るための指標として、<span class="important">全二乗誤差</span>（または平均二乗誤差）\(E_N\) を定義します。これは、関数 \(f(x)\) と近似式
+                \(F_N(x)\) の差を二乗し、一周期にわたって積分したものです。
+            </p>
+            <div class="math-block">
+                $$ E_N = \int_{-\pi}^{\pi} (f(x) - F_N(x))^2 dx $$
+            </div>
+            <p>
+                二乗することで差が常に正の値となり、全体の誤差の大きさを評価できます。私たちの目標は、この \(E_N\) を最小にするような係数 \(A_n, B_n\) を見つけることです。
+            </p>
+            <p>
+                この \(E_N\) を展開し、複雑な計算を行うと（ここでは結果のみを示します）、次のような形に変形できます。
+            </p>
+            <div class="math-block">
+                $$ E_N = \pi \left[ 2(A_0 - \frac{a_0}{2})^2 + \sum_{n=1}^{N} \left( (A_n - a_n)^2 + (B_n - b_n)^2
+                \right) \right] + E_N^* $$
+            </div>
+            <p>
+                ここで、\(a_n, b_n\) は \(f(x)\) のフーリエ係数であり、\(E_N^*\) は \(A_n, B_n\) に依存しない項です。
+            </p>
+            <p>
+                この式から明らかなように、二乗の項は常に0以上なので、\(E_N\) が最小になるのは、すべての二乗の項が0になるときです。すなわち、
+            </p>
+            <div class="math-block">
+                $$ A_0 = \frac{a_0}{2}, \quad A_n = a_n, \quad B_n = b_n $$
+            </div>
+            <p>
+                この驚くべき結果は、<span class="highlight">「関数を有限の三角多項式で最も良く近似する係数は、フーリエ係数そのものである」</span>という<span
+                    class="important">フーリエ係数の最良性</span>を示しています。
+            </p>
+        </section>
+
+        <section id="s3">
+            <h2>3. パーセバルの等式と完備性</h2>
+            <p>
+                係数をフーリエ係数に選んだとき、誤差は最小値 \(E_N^*\) をとります。
+            </p>
+            <div class="math-block">
+                $$ E_N^* = \int_{-\pi}^{\pi} f(x)^2 dx - \pi \left( \frac{a_0^2}{2} + \sum_{n=1}^{N} (a_n^2 + b_n^2)
+                \right) $$
+            </div>
+            <p>
+                誤差 \(E_N^*\) は常に0以上でなければならないので、次の<span class="important">ベッセルの不等式</span>が常に成り立ちます。
+            </p>
+            <div class="math-block">
+                $$ \frac{a_0^2}{2} + \sum_{n=1}^{\infty} (a_n^2 + b_n^2) \le \frac{1}{\pi} \int_{-\pi}^{\pi} f(x)^2 dx
+                $$
+            </div>
+            <p>
+                さらに、関数 \(f(x)\) が区分的に滑らかであるなど、多くの実用的な関数では、近似の項数 \(N\) を無限大にすると誤差が0に収束します (\(\lim_{N\to\infty} E_N^*
+                = 0\))。このとき、ベッセルの不等式の等号が成立し、これを<span class="important">パーセバルの等式</span>と呼びます。
+            </p>
+            <div class="math-block">
+                $$ \frac{1}{\pi} \int_{-\pi}^{\pi} f(x)^2 dx = \frac{a_0^2}{2} + \sum_{n=1}^{\infty} (a_n^2 + b_n^2) $$
+            </div>
+            <p>
+                この等式が成り立つとき、三角関数系 \(\{1, \cos(nx), \sin(nx)\}\) は「完備」であるといい、フーリエ級数が元の関数を「平均的な意味で」完全に表現できることを意味します。
+            </p>
+        </section>
+
+        <section id="kadai">
+            <h2>課題12：パーセバルの等式の応用</h2>
+            <div class="problem-box">
+                <p><strong>問題:</strong> 関数 \(f(x)\) は周期 \(2\pi\) であり、</p>
+                <div class="math-block">
+                    $$ f(x) = \begin{cases} 1 & (|x| &lt; \pi/2) \\ -1 & (\pi/2 &lt; |x| &lt; \pi) \end{cases} $$ </div>
+                        <p>を満たす。パーセバルの等式を使って、無限級数 \(\displaystyle \sum_{m=1}^{\infty} \frac{1}{(2m-1)^2}\) を求めよ。</p>
+                </div>
+
+                <h3>ステップ1: 関数の対称性を確認し、フーリエ係数を求める</h3>
+                <p>
+                    与えられた関数 \(f(x)\) は \(f(-x) = f(x)\) を満たす<span class="highlight">偶関数</span>です。したがって、フーリエ正弦係数 \(b_n\)
+                    はすべて
+                    \(b_n = 0\) となります。フーリエ余弦係数 \(a_0, a_n\) を計算します。
+                </p>
+                <h4>\(a_0\) の計算:</h4>
+                <div class="math-block">
+                    $$ a_0 = \frac{1}{\pi} \int_{-\pi}^{\pi} f(x) dx = \frac{2}{\pi} \int_{0}^{\pi} f(x) dx =
+                    \frac{2}{\pi}
+                    \left( \int_{0}^{\pi/2} 1 \,dx + \int_{\pi/2}^{\pi} (-1) \,dx \right) \\
+                    = \frac{2}{\pi} \left( [x]_0^{\pi/2} - [x]_{\pi/2}^{\pi} \right) = \frac{2}{\pi} \left(
+                    \frac{\pi}{2} -
+                    (\pi - \frac{\pi}{2}) \right) = \frac{2}{\pi} \left( \frac{\pi}{2} - \frac{\pi}{2} \right) = 0 $$
+                </div>
+                <h4>\(a_n\) の計算:</h4>
+                <div class="math-block">
+                    \begin{align*}
+                    a_n &= \frac{2}{\pi} \int_{0}^{\pi} f(x)\cos(nx) dx = \frac{2}{\pi} \left( \int_{0}^{\pi/2} \cos(nx)
+                    \,dx
+                    + \int_{\pi/2}^{\pi} (-\cos(nx)) \,dx \right) \\
+                    &= \frac{2}{\pi} \left( \left[\frac{\sin(nx)}{n}\right]_0^{\pi/2} -
+                    \left[\frac{\sin(nx)}{n}\right]_{\pi/2}^{\pi}
+                    \right) \\
+                    &= \frac{2}{\pi} \left( \left(\frac{\sin(n\pi/2)}{n} - 0\right) - \left(\frac{\sin(n\pi)}{n} -
+                    \frac{\sin(n\pi/2)}{n}\right) \right) \\
+                    &= \frac{4}{n\pi} \sin\left(\frac{n\pi}{2}\right)
+                    \end{align*}
+                </div>
+                <p>\(\sin(n\pi/2)\) の値は \(n\) によって周的に変化します。</p>
+                <ul>
+                    <li>\(n\)が偶数 (\(n=2, 4, \dots\)) のとき、\(\sin(n\pi/2) = 0\)。よって \(a_n=0\)。</li>
+                    <li>\(n\)が奇数で \(n=4k-3\) (例: 1, 5, 9, ...) のとき、\(\sin(n\pi/2) = 1\)。よって \(a_n = \frac{4}{n\pi}\)。
+                    </li>
+                    <li>\(n\)が奇数で \(n=4k-1\) (例: 3, 7, 11, ...) のとき、\(\sin(n\pi/2) = -1\)。よって \(a_n = -\frac{4}{n\pi}\)。
+                    </li>
+                </ul>
+
+                <h3>ステップ2: パーセバルの等式を適用する</h3>
+                <p>パーセバルの等式に求めた係数を代入します。</p>
+                <div class="math-block">
+                    $$ \frac{1}{\pi} \int_{-\pi}^{\pi} f(x)^2 dx = \frac{a_0^2}{2} + \sum_{n=1}^{\infty} (a_n^2 + b_n^2)
+                    $$
+                </div>
+                <h4>左辺の計算:</h4>
+                <p>関数 \(f(x)\) は \(1\) または \(-1\) の値しかとらないため、\(f(x)^2 = 1\) です。</p>
+                <div class="math-block">
+                    $$ \frac{1}{\pi} \int_{-\pi}^{\pi} 1^2 dx = \frac{1}{\pi} [x]_{-\pi}^{\pi} = \frac{1}{\pi} (2\pi) =
+                    2 $$
+                </div>
+                <h4>右辺の計算:</h4>
+                <p>\(a_0=0, b_n=0\) であり、\(a_n\) は奇数の \(n\) でのみ値を持ちます。\(n=2m-1\) (m=1, 2, ...) とおくと、</p>
+                <div class="math-block">
+                    $$ \frac{a_0^2}{2} + \sum_{n=1}^{\infty} a_n^2 = \sum_{m=1}^{\infty} a_{2m-1}^2 =
+                    \sum_{m=1}^{\infty}
+                    \left( \frac{4}{(2m-1)\pi} \sin\left(\frac{(2m-1)\pi}{2}\right) \right)^2 $$
+                </div>
+                <p>\(\sin^2((2m-1)\pi/2)\) は常に \(1\) なので、</p>
+                <div class="math-block">
+                    $$ = \sum_{m=1}^{\infty} \left( \frac{4}{(2m-1)\pi} \right)^2 = \frac{16}{\pi^2} \sum_{m=1}^{\infty}
+                    \frac{1}{(2m-1)^2} $$
+                </div>
+
+                <h3>ステップ3: 無限級数の値を求める</h3>
+                <p>左辺と右辺を等しいとおきます。</p>
+                <div class="math-block">
+                    $$ 2 = \frac{16}{\pi^2} \sum_{m=1}^{\infty} \frac{1}{(2m-1)^2} $$
+                </div>
+                <p>これを求めたい級数について解くと、</p>
+                <div class="math-block">
+                    $$ \sum_{m=1}^{\infty} \frac{1}{(2m-1)^2} = 2 \times \frac{\pi^2}{16} = \frac{\pi^2}{8} $$
+                </div>
+                <p><strong>解答:</strong> \(\displaystyle \sum_{m=1}^{\infty} \frac{1}{(2m-1)^2} = \frac{\pi^2}{8}\)</p>
+        </section>
+
+    </main>
+
+    <!-- 共通フッター -->
+    <footer>
+        <p>© 2025 総合解説プラットフォーム. All rights reserved.</p>
+    </footer>
+
+    <!-- トップへ戻るボタン -->
+    <button id="scrollTopBtn" title="トップへ戻る">⇧</button>
+
+    <!-- 外部JavaScriptの読み込み (順序が重要) -->
+    <script src="../js/article-list.js"></script>
+    <script src="../js/common.js"></script>
+</body>
+
+</html>
