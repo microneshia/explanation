@@ -8,7 +8,8 @@
 
 // 解説記事 (explanation/ フォルダ内) のファイル名とタグ情報を管理
 const explanationArticles = [
-    { file: 'IC_10.html',       tags: ['解説', '情報通信工学', '変調', 'FM', 'AM', 'フーリエ級数', '信号処理']},  // 18
+    { file: 'IC_11.html',       tags: ['解説', '情報通信工学', '信号処理', 'サンプリング定理', 'エイリアシング', '量子化', 'SNR'] },  // 19
+    { file: 'IC_10.html',       tags: ['解説', '情報通信工学', '変調', 'FM', 'AM', 'フーリエ級数', '信号処理'] },  // 18
     { file: 'AM1_11.html',      tags: ['解説', '応用数学Ⅰ', 'フーリエ解析', '強制振動', 'RLC回路', '微分方程式'] },  // 17
     { file: 'CE1_09.html',      tags: ['解説', '制御工学Ⅰ', 'ラプラス変換', '微分方程式', '線形代数'] },  // 16
     { file: 'ET_09.html',       tags: ['解説', '電磁界理論', '静電気学', 'ガウスの法則', 'ポアソン方程式'] },  // 15
@@ -30,8 +31,8 @@ const explanationArticles = [
 
 // その他のコンテンツ (contents/ フォルダ内) のファイル名とタグ情報を管理
 const contents = [
-    { file: 'ball.html',                tags: ['ゲーム', 'ガジェット', 'JavaScript', 'HTML5'] },  // 18
-    { file: 'input-leap-guide.html',    tags: ['PCツール', 'Windows', 'macOS', 'Input Leap', 'ソフトウェアKVM'] },  // 17
+    { file: 'ball.html',                tags: ['コンテンツ', 'ゲーム', 'ガジェット', 'JavaScript', 'HTML5'] },  // 18
+    { file: 'input-leap-guide.html',    tags: ['コンテンツ', 'PCツール', 'Windows', 'macOS', 'Input Leap', 'ソフトウェアKVM'] },  // 17
     { file: 'gitguide.html',            tags: ['コンテンツ', 'Git', 'GitHub', 'VS Code', 'チュートリアル'] },  // 16
     { file: 'bad-ui-showcase.html',     tags: ['コンテンツ', 'ジョーク', 'UI/UX', 'Webデザイン', 'JavaScript'] },  // 15
     { file: 'music.html',               tags: ['コンテンツ', 'ツール', '音楽', 'メディアプレーヤー', 'Web Audio API'] },  // 14
