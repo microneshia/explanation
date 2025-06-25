@@ -1,0 +1,428 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>ボール転がし - 総合解説プラットフォーム</title>
+    <meta name="article-number" content="000019">
+    <meta name="description" content="iPhoneやPCの傾きセンサー、またはマウスを使ってボールを操作し、穴を避けながら星を集めるゲームです。">
+
+    <!-- フローティングナビゲーションメニュー用のCSS -->
+    <link rel="stylesheet" href="../css/nav-menu.css">
+
+    <!-- このコンテンツ固有のスタイル -->
+    <style>
+        :root {
+            --game-bg: #f0f2f5;
+            --text-color: #1c1e21;
+            --button-bg: #1877f2;
+            --button-text: white;
+            --button-disabled-bg: #a0a0a0;
+            --board-bg: #fff;
+            --board-border: #ccc;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            text-align: center;
+            margin: 0;
+            padding: 10px;
+            background-color: var(--game-bg);
+            color: var(--text-color);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            overflow: hidden;
+            touch-action: none;
+            box-sizing: border-box;
+        }
+
+        h1 { margin: 0 0 5px 0; }
+        #stage-display { font-size: 1.2em; font-weight: bold; color: #65676b; margin-bottom: 5px; }
+        #control-info { font-size: 0.9em; color: #65676b; height: 1.2em; margin-bottom: 5px; }
+
+        .controls { margin-bottom: 10px; }
+
+        button {
+            font-size: 16px;
+            padding: 10px 20px;
+            cursor: pointer;
+            border-radius: 8px;
+            border: none;
+            background-color: var(--button-bg);
+            color: var(--button-text);
+            font-weight: bold;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+            transition: all 0.2s;
+        }
+
+        button:active:not(:disabled) { transform: scale(0.98); }
+        button:disabled { background-color: var(--button-disabled-bg); box-shadow: none; cursor: not-allowed; }
+
+        #settings-panel {
+            background-color: #e9ebee;
+            padding: 10px;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            width: 90%;
+            max-width: 380px;
+        }
+
+        .setting-item { display: flex; align-items: center; justify-content: space-between; margin: 5px 0; }
+        #sensitivity-slider { flex-grow: 1; margin: 0 10px; }
+        #calibrate-btn { width: 100%; background-color: #42b72a; }
+        .feedback { background-color: #2a8b18 !important; }
+
+        #game-area {
+            width: 90vw;
+            height: 90vw;
+            max-width: 400px;
+            max-height: 400px;
+            background-color: var(--board-bg);
+            border: 2px solid var(--board-border);
+            border-radius: 12px;
+            margin: 0 auto;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            cursor: crosshair;
+        }
+
+        .game-object { position: absolute; border-radius: 50%; pointer-events: none; }
+        #ball {
+            width: 25px;
+            height: 25px;
+            background-image: radial-gradient(circle at 8px 8px, #ff8a80, #d32f2f);
+            box-shadow: 1px 1px 3px rgba(0, 0, 0, 0.4);
+        }
+
+        .hole {
+            width: 40px;
+            height: 40px;
+            background-image: radial-gradient(circle, #333, #000);
+            box-shadow: inset 2px 2px 5px rgba(0, 0, 0, 0.5);
+        }
+
+        .star {
+            width: 30px;
+            height: 30px;
+            font-size: 28px;
+            text-align: center;
+            line-height: 30px;
+            animation: pulse 1.5s infinite;
+            background-color: transparent;
+        }
+
+        @keyframes pulse {
+            0%, 100% { text-shadow: 0 0 5px gold; }
+            50% { text-shadow: 0 0 15px gold; }
+        }
+
+        .collected { transform: scale(0) !important; transition: transform 0.3s ease-in-out; }
+
+        #message-overlay {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            background-color: rgba(0, 0, 0, 0.65); color: white;
+            display: none; flex-direction: column; justify-content: center; align-items: center;
+            font-size: 2.2em; font-weight: bold; text-shadow: 2px 2px 5px #000;
+            -webkit-backdrop-filter: blur(4px); backdrop-filter: blur(4px);
+            border-radius: 10px;
+            z-index: 100;
+        }
+        #message-overlay button { margin-top: 20px; background-color: #36a420; }
+    </style>
+</head>
+
+<body>
+    <!-- フローティングナビゲーションメニュー -->
+    <div id="menu-toggle-icon">≡</div>
+    <div id="floating-menu">
+        <a href="../index.html">トップページへ</a>
+        <a href="../contents.html">コンテンツ一覧へ</a>
+    </div>
+
+    <!-- ゲームのHTML要素 -->
+    <h1>ボール転がし</h1>
+    <div id="stage-display">Stage 1</div>
+    <div id="control-info"></div>
+
+    <div id="settings-panel">
+        <div class="setting-item">
+            <button id="calibrate-btn" disabled>傾きリセット (センサー用)</button>
+        </div>
+        <div class="setting-item">
+            <label for="sensitivity-slider">感度:</label>
+            <input type="range" id="sensitivity-slider" min="0.005" max="0.05" step="0.001" value="0.02" disabled>
+            <span id="sensitivity-value">0.020</span>
+        </div>
+    </div>
+
+    <div class="controls">
+        <button id="start-btn">ゲーム開始</button>
+        <button id="reset-btn" disabled>ステージ1から</button>
+    </div>
+
+    <div id="game-area">
+        <div id="ball" class="game-object"></div>
+        <div id="message-overlay"></div>
+    </div>
+
+    <!-- 共通のナビゲーションメニュー用スクリプト -->
+    <script src="../js/nav-menu.js"></script>
+
+    <!-- ゲームのロジック -->
+    <script>
+        class Game {
+            static FRICTION = 0.95;
+            static WALL_BOUNCE = -0.4;
+
+            constructor() {
+                // DOM要素
+                this.gameArea = document.getElementById('game-area');
+                this.controlInfo = document.getElementById('control-info');
+                this.stageDisplay = document.getElementById('stage-display');
+                this.messageOverlay = document.getElementById('message-overlay');
+                this.startButton = document.getElementById('start-btn');
+                this.resetButton = document.getElementById('reset-btn');
+                this.ballElement = document.getElementById('ball');
+                this.calibrateButton = document.getElementById('calibrate-btn');
+                this.sensitivitySlider = document.getElementById('sensitivity-slider');
+                this.sensitivityValueLabel = document.getElementById('sensitivity-value');
+
+                // ゲーム状態
+                this.gameState = 'uninitialized';
+                this.controlMode = 'none';
+                this.stage = 1;
+
+                // 設定値
+                this.sensitivity = 0.02;
+                this.offsetX = 0; this.offsetY = 0;
+
+                // センサー/マウス値
+                this.latestGamma = 0; this.latestBeta = 0;
+                this.mouseTarget = { x: 0, y: 0 };
+
+                this.motionHandler = this.handleMotion.bind(this);
+                this.mouseHandler = this.handleMouse.bind(this);
+                this.gameLoop = this.gameLoop.bind(this);
+            }
+
+            init() {
+                this.startButton.onclick = () => this.requestControlAccess();
+                this.resetButton.onclick = () => this.fullReset();
+                this.calibrateButton.onclick = () => this.calibrate();
+                this.sensitivitySlider.oninput = () => this.updateSensitivity();
+
+                this.updateSensitivity();
+                requestAnimationFrame(() => { this.setupNewGame(); });
+            }
+
+            calibrate() {
+                if (this.controlMode !== 'motion') return;
+                this.offsetX = this.latestGamma;
+                this.offsetY = this.latestBeta;
+                this.calibrateButton.classList.add('feedback');
+                setTimeout(() => this.calibrateButton.classList.remove('feedback'), 400);
+            }
+            updateSensitivity() {
+                this.sensitivity = parseFloat(this.sensitivitySlider.value);
+                this.sensitivityValueLabel.textContent = this.sensitivity.toFixed(3);
+            }
+            fullReset() {
+                this.stage = 1;
+                this.setupNewGame();
+            }
+
+            setupNewGame() {
+                this.gameState = 'ready';
+                this.stageDisplay.textContent = `Stage ${this.stage}`;
+                this.messageOverlay.style.display = 'none';
+                this.startButton.disabled = false;
+                this.resetButton.disabled = true;
+
+                if (this.animationFrameId) cancelAnimationFrame(this.animationFrameId);
+                
+                if (this.holes) this.holes.forEach(h => h.element.remove());
+                if (this.stars) this.stars.forEach(s => s.element.remove());
+
+                this.ball = { element: this.ballElement, radius: 12.5, x: 50, y: 50, vx: 0, vy: 0 };
+                this.holes = [];
+                this.stars = [];
+
+                this.placeObjects();
+                this.draw();
+            }
+
+            placeObjects() {
+                const width = this.gameArea.clientWidth; const height = this.gameArea.clientHeight;
+                if (width === 0) return;
+                
+                const numHoles = 4 + this.stage;
+                const numStars = 2 + this.stage;
+                const placedObjects = [{...this.ball}];
+                
+                const createAndPlace = (list, type, size, content) => {
+                    const item = { radius: size / 2, element: document.createElement('div') };
+                    item.element.className = `game-object ${type}`;
+                    if (content) item.element.innerHTML = content;
+                    this.gameArea.appendChild(item.element);
+                    
+                    let isOverlapping;
+                    do {
+                        isOverlapping = false;
+                        item.x = item.radius + Math.random() * (width - item.radius * 2);
+                        item.y = item.radius + Math.random() * (height - item.radius * 2);
+                        for (const placed of placedObjects) {
+                            const d = Math.sqrt((item.x-placed.x)**2 + (item.y-placed.y)**2);
+                            if (d < item.radius + placed.radius + 15) { isOverlapping = true; break; }
+                        }
+                    } while (isOverlapping);
+                    list.push(item); placedObjects.push(item);
+                };
+                
+                for (let i = 0; i < numHoles; i++) createAndPlace(this.holes, 'hole', 40);
+                for (let i = 0; i < numStars; i++) createAndPlace(this.stars, 'star', 30, '⭐');
+            }
+
+            requestControlAccess() {
+                if (this.controlMode !== 'none') { this.start(); return; }
+                
+                if (typeof DeviceMotionEvent.requestPermission === 'function') {
+                    DeviceMotionEvent.requestPermission().then(state => {
+                        if (state === 'granted') { this.activateMotionControl(); } 
+                        else { this.activateMouseControl(); }
+                    }).catch(() => this.activateMouseControl());
+                } else {
+                    let motionDetected = false;
+                    const tempMotionListener = () => {
+                        motionDetected = true;
+                        window.removeEventListener('devicemotion', tempMotionListener);
+                        this.activateMotionControl();
+                    };
+                    window.addEventListener('devicemotion', tempMotionListener);
+                    setTimeout(() => {
+                        if (!motionDetected) {
+                            window.removeEventListener('devicemotion', tempMotionListener);
+                            this.activateMouseControl();
+                        }
+                    }, 300);
+                }
+            }
+
+            activateMotionControl() {
+                this.controlMode = 'motion';
+                this.controlInfo.textContent = '📱 傾きセンサーで操作中';
+                window.addEventListener('devicemotion', this.motionHandler);
+                this.calibrateButton.disabled = false;
+                this.sensitivitySlider.min = 0.1; this.sensitivitySlider.max = 0.7;
+                this.sensitivitySlider.step = 0.05; this.sensitivitySlider.value = 0.35;
+                this.updateSensitivity();
+                this.start();
+            }
+
+            activateMouseControl() {
+                this.controlMode = 'mouse';
+                this.controlInfo.textContent = '🖱️ マウス/タッチで操作中';
+                this.gameArea.addEventListener('mousemove', this.mouseHandler);
+                this.gameArea.addEventListener('touchmove', this.mouseHandler, { passive: false });
+                this.mouseTarget = { x: this.gameArea.clientWidth / 2, y: this.gameArea.clientHeight / 2 };
+                this.start();
+            }
+            
+            start() {
+                if (this.gameState !== 'ready') return;
+                this.gameState = 'playing';
+                this.startButton.disabled = true;
+                this.resetButton.disabled = false;
+                this.sensitivitySlider.disabled = false;
+                this.animationFrameId = requestAnimationFrame(this.gameLoop);
+            }
+            
+            handleMotion(event) {
+                if (event.accelerationIncludingGravity.x !== null) {
+                    this.latestGamma = event.accelerationIncludingGravity.x || 0;
+                    this.latestBeta = -event.accelerationIncludingGravity.y || 0;
+                }
+            }
+
+            handleMouse(event) {
+                if (event.touches) event.preventDefault();
+                const touch = event.touches ? event.touches[0] : event;
+                const rect = this.gameArea.getBoundingClientRect();
+                this.mouseTarget.x = touch.clientX - rect.left;
+                this.mouseTarget.y = touch.clientY - rect.top;
+            }
+
+            gameLoop() {
+                if (this.gameState !== 'playing') return;
+                
+                if (this.controlMode === 'motion') {
+                    const adjustedGamma = this.latestGamma - this.offsetX;
+                    const adjustedBeta = this.latestBeta - this.offsetY;
+                    this.ball.vx += adjustedGamma * (this.sensitivity * 0.5);
+                    this.ball.vy += adjustedBeta * (this.sensitivity * 0.5);
+                } else if (this.controlMode === 'mouse') {
+                    const dx = this.mouseTarget.x - this.ball.x;
+                    const dy = this.mouseTarget.y - this.ball.y;
+                    this.ball.vx += dx * this.sensitivity;
+                    this.ball.vy += dy * this.sensitivity;
+                }
+                
+                this.ball.vx *= Game.FRICTION;
+                this.ball.vy *= Game.FRICTION;
+                this.ball.x += this.ball.vx;
+                this.ball.y += this.ball.vy;
+                
+                this.handleWallCollision();
+                this.checkCollisions();
+                this.draw();
+                
+                this.animationFrameId = requestAnimationFrame(this.gameLoop);
+            }
+            
+            handleWallCollision() {
+                const { ball } = this; const width = this.gameArea.clientWidth; const height = this.gameArea.clientHeight;
+                if (ball.x < ball.radius) { ball.x = ball.radius; ball.vx *= Game.WALL_BOUNCE; }
+                if (ball.x > width - ball.radius) { ball.x = width - ball.radius; ball.vx *= Game.WALL_BOUNCE; }
+                if (ball.y < ball.radius) { ball.y = ball.radius; ball.vy *= Game.WALL_BOUNCE; }
+                if (ball.y > height - ball.radius) { ball.y = height - ball.radius; ball.vy *= Game.WALL_BOUNCE; }
+            }
+            
+            checkCollisions() {
+                const distance = (a, b) => Math.sqrt((a.x-b.x)**2 + (a.y-b.y)**2);
+                for (const hole of this.holes) { if (distance(this.ball, hole) < hole.radius - 5) { this.endGame(false); return; } }
+                let collectedCount = 0;
+                for (const star of this.stars) {
+                    if (!star.collected && distance(this.ball, star) < this.ball.radius + star.radius) { star.collected = true; star.element.classList.add('collected'); }
+                    if (star.collected) collectedCount++;
+                }
+                if (this.stars.length > 0 && collectedCount === this.stars.length) { this.endGame(true); }
+            }
+
+            draw() {
+                const drawObj = obj => { if(obj && obj.element) obj.element.style.transform = `translate(${obj.x - obj.radius}px, ${obj.y - obj.radius}px)`; };
+                [this.ball, ...this.holes, ...this.stars].forEach(drawObj);
+            }
+            
+            endGame(isWin) {
+                cancelAnimationFrame(this.animationFrameId);
+                this.gameState = 'finished'; this.resetButton.disabled = false;
+                let message, buttonHTML;
+                if (isWin) { this.stage++; message = `Stage ${this.stage - 1} Clear!`; buttonHTML = `<button id="next-stage-btn">次のステージへ</button>`; }
+                else { message = 'Game Over'; buttonHTML = ''; }
+                this.messageOverlay.innerHTML = `<div>${message}</div>${buttonHTML}`;
+                this.messageOverlay.style.display = 'flex';
+                if (isWin) { document.getElementById('next-stage-btn').onclick = () => this.setupNewGame(); }
+            }
+        }
+
+        window.addEventListener('load', () => {
+            const game = new Game();
+            game.init();
+        });
+    </script>
+</body>
+</html>
