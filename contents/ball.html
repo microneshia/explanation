@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 <html lang="ja">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -367,6 +366,9 @@
 
             activateMotionControl() {
                 if (this.controlMode !== 'none') return;
+                // ★★★ 修正点: 傾きセンサーの情報を継続的に取得するためイベントリスナーを登録 ★★★
+                window.addEventListener('devicemotion', this.motionHandler);
+
                 this.controlMode = 'motion';
                 this.controlInfo.textContent = '📱 傾きセンサーで操作';
                 this.calibrateContainer.classList.remove('hidden');
