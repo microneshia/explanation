@@ -30,25 +30,47 @@
     </nav>
 
     <div class="main-container">
-        <h2 class="section-title">タグで検索</h2>
+        <h2 class="section-title">記事・コンテンツ検索</h2>
 
-        <button id="tag-toggle-btn">タグ一覧を表示する</button>
-
-        <div id="tag-cloud-wrapper" class="tag-cloud-wrapper">
-            <div id="tag-cloud" class="tag-cloud">
-                <p>タグを読み込み中...</p>
+        <!-- 絞り込み操作のコントロールエリア -->
+        <div class="filter-controls">
+            <!-- ★★★ HTML構造を修正 ★★★ -->
+            <div class="keyword-search-wrapper">
+                <input type="search" id="keyword-search-input" placeholder="キーワードで検索...">
+            </div>
+            <div class="tag-filter-wrapper">
+                <button id="open-filter-modal-btn">タグで絞り込み</button>
+                <div id="active-tags-display"></div>
             </div>
         </div>
 
-        <div class="clear-selection-container">
-            <button id="clear-selection-btn">選択をすべて解除</button>
-        </div>
-
+        <!-- 検索結果表示エリア -->
         <div id="search-results-container">
             <h2 id="results-title">全ての記事とコンテンツ</h2>
             <div id="results-grid" class="content-grid"></div>
-            <!-- IDをより明確に -->
             <div id="tags-pagination-container" class="pagination-container"></div>
+        </div>
+    </div>
+
+    <!-- 絞り込み用モーダルウィンドウ (変更なし) -->
+    <div id="filter-modal" class="modal-overlay">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>タグで絞り込む</h3>
+                <button id="close-filter-modal-btn" class="close-btn">×</button>
+            </div>
+            <div class="modal-body">
+                <div class="tag-search-wrapper">
+                    <input type="search" id="tag-search-input" placeholder="タグを検索...">
+                </div>
+                <div id="tag-list-container">
+                    <p>タグを読み込み中...</p>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button id="reset-tags-btn">リセット</button>
+                <button id="apply-tags-btn">この条件で表示する</button>
+            </div>
         </div>
     </div>
 
