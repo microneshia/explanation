@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ローカル音楽プレーヤー</title>
-    <meta name="article-number" content="000014">
+    <meta name="article-number" content="000013">
     <meta name="description" content="ローカルの音楽ファイルが入ったフォルダを選択して再生できる、多機能なウェブプレーヤーです。">
 
     <!-- Google FontsとナビゲーションCSSの読み込み -->
@@ -49,6 +49,8 @@
             -moz-osx-font-smoothing: grayscale;
             touch-action: manipulation;
             -webkit-touch-callout: none;
+            /* 修正: Safari互換性のためベンダープレフィックスを追加 */
+            -webkit-user-select: none;
             user-select: none;
         }
 
@@ -191,6 +193,8 @@
             cursor: pointer;
             position: relative;
             box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.05);
+            /* 修正: Safari互換性のためベンダープレフィックスを追加 */
+            -webkit-user-select: none;
             user-select: none;
         }
 
@@ -211,7 +215,6 @@
             flex-wrap: nowrap;
             overflow-x: auto;
             padding-bottom: 5px;
-            -webkit-overflow-scrolling: touch;
         }
 
         .control-btn {
@@ -229,6 +232,7 @@
             transition: all 0.3s cubic-bezier(.25, .8, .25, 1);
             box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1), 0 2px 5px rgba(0, 0, 0, 0.05);
             flex-shrink: 0;
+            -webkit-user-select: none;
             user-select: none;
         }
 
@@ -274,7 +278,6 @@
             text-align: left;
             box-shadow: inset 0 3px 8px rgba(0, 0, 0, 0.05);
             border: 1px solid var(--border-color);
-            -webkit-overflow-scrolling: touch;
         }
 
         .playlist li {
@@ -289,6 +292,7 @@
             text-overflow: ellipsis;
             display: flex;
             align-items: center;
+            -webkit-user-select: none;
             user-select: none;
         }
 
@@ -598,7 +602,7 @@
                         playPauseBtn.textContent = '❚❚';
                         updateMessage('再生中: ' + currentFile.name);
                         if ('mediaSession' in navigator) {
-                            navigator.mediaSession.metadata = new MediaMetadata({ title: currentFile.name, artist: 'ローカル音楽プレーヤー', album: 'プレイリスト' });
+                            navigator.mediaSession.metadata = new MediaMetadata({ title: currentFile.name, artist: '', album: '' });
                         }
                         updatePlaylistUI();
                     })

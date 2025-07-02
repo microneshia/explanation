@@ -1,13 +1,15 @@
 <!DOCTYPE html>
 <html lang="ja">
+
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <!-- 修正: user-scalable=no を削除し、ユーザーによるズームを許可 -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Webシンセサイザー</title>
     <!-- ▼▼▼ 新しい連番とdescriptionを追加 ▼▼▼ -->
-    <meta name="article-number" content="000013">
+    <meta name="article-number" content="000012">
     <meta name="description" content="ブラウザ上で動作する高機能なWebシンセサイザーです。">
-    
+
     <!-- ▼▼▼ 外部CSSの読み込みを追加 ▼▼▼ -->
     <link rel="stylesheet" href="../css/nav-menu.css">
     <style>
@@ -15,30 +17,44 @@
         /* UI要素のサイズや間隔を管理するための変数 */
         :root {
             /* アナライザー表示エリアの高さ設定 */
-            --analyzer-height-pc: 10vh; /* PCでのアナライザーの推奨高さ */
-            
+            --analyzer-height-pc: 10vh;
+            /* PCでのアナライザーの推奨高さ */
+
             /* 鍵盤エリアの固定高さ設定 */
-            --keyboard-fixed-height-pc: 30vh;    /* PCでの鍵盤の固定高さ */
-            --keyboard-fixed-height-mobile: 25vh; /* モバイルでの鍵盤の固定高さ */
-            --keyboard-fixed-height-tiny: 20vh;  /* 非常に小さい画面での鍵盤の固定高さ */
+            --keyboard-fixed-height-pc: 30vh;
+            /* PCでの鍵盤の固定高さ */
+            --keyboard-fixed-height-mobile: 25vh;
+            /* モバイルでの鍵盤の固定高さ */
+            --keyboard-fixed-height-tiny: 20vh;
+            /* 非常に小さい画面での鍵盤の固定高さ */
 
             /* コントロールエリアの高さ設定 */
-            --controls-area-min-height-pc: 20vh; /* PCでのコントロールエリアの最小高 */
+            --controls-area-min-height-pc: 20vh;
+            /* PCでのコントロールエリアの最小高 */
 
             /* パネル共通のパディング設定 */
-            --panel-padding-vertical: 1.5vh;   /* 上下パディング */
-            --panel-padding-horizontal: 1.5vw; /* 左右パディング */
+            --panel-padding-vertical: 1.5vh;
+            /* 上下パディング */
+            --panel-padding-horizontal: 1.5vw;
+            /* 左右パディング */
 
             /* コントロールグループ内の要素間隔設定 */
-            --control-group-gap: 1.5vh;      /* コントロールパネル内のグループ間の垂直間隔 */
-            --control-elements-gap: 0.8vh;   /* コントロールグループ内の要素間の間隔 */
-            --control-group-padding: 1vh;    /* コントロールグループの内部パディング */
+            --control-group-gap: 1.5vh;
+            /* コントロールパネル内のグループ間の垂直間隔 */
+            --control-elements-gap: 0.8vh;
+            /* コントロールグループ内の要素間の間隔 */
+            --control-group-padding: 1vh;
+            /* コントロールグループの内部パディング */
 
             /* ラベルと数値表示の幅設定 */
-            --label-width-pc: 30px;    /* PCでのラベルの最小幅 */
-            --label-width-mobile: 40px; /* モバイルでのラベルの最小幅 */
-            --label-width-tiny: 35px;  /* 非常に小さい画面でのラベルの最小幅 */
-            --value-display-width: 45px; /* 数値表示の幅 */
+            --label-width-pc: 30px;
+            /* PCでのラベルの最小幅 */
+            --label-width-mobile: 40px;
+            /* モバイルでのラベルの最小幅 */
+            --label-width-tiny: 35px;
+            /* 非常に小さい画面でのラベルの最小幅 */
+            --value-display-width: 45px;
+            /* 数値表示の幅 */
         }
 
         /* ====================
@@ -47,36 +63,52 @@
         body {
             margin: 0;
             padding: 0;
-            background-color: #222; /* 全体の背景色 */
+            background-color: #222;
+            /* 全体の背景色 */
             display: flex;
-            flex-direction: column; /* 要素を縦方向に並べる */
-            justify-content: flex-start; /* 要素を上揃えにする */
-            align-items: center;   /* 要素を水平中央に配置する */
-            height: 100vh; /* ビューポートの高さ全体を使用 */
+            flex-direction: column;
+            /* 要素を縦方向に並べる */
+            justify-content: flex-start;
+            /* 要素を上揃えにする */
+            align-items: center;
+            /* 要素を水平中央に配置する */
+            height: 100vh;
+            /* ビューポートの高さ全体を使用 */
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            overflow: hidden; /* 全体スクロールバーを非表示にする */
-            touch-action: manipulation; /* タッチデバイスでのスクロールやズームジェスチャーを無効化 */
-            -webkit-user-select: none; /* iOSでのテキスト選択を無効化 */
-            user-select: none; /* その他のブラウザでのテキスト選択を無効化 */
+            overflow: hidden;
+            /* 全体スクロールバーを非表示にする */
+            touch-action: manipulation;
+            /* タッチデバイスでのスクロールやズームジェスチャーを無効化 */
+            -webkit-user-select: none;
+            /* iOSでのテキスト選択を無効化 */
+            user-select: none;
+            /* その他のブラウザでのテキスト選択を無効化 */
         }
 
         /* ====================
            アナライザー表示エリアのスタイル
            ==================== */
         #analyzer-container {
-            width: 98vw; /* ビューポート幅の98% */
-            height: 10vh; /* デフォルト高さをビューポート高さの10%に設定 */
-            max-height: var(--analyzer-height-pc); /* PCでの最大高 */
-            min-height: 40px; /* 絶対的な最小高 */
+            width: 98vw;
+            /* ビューポート幅の98% */
+            height: 10vh;
+            /* デフォルト高さをビューポート高さの10%に設定 */
+            max-height: var(--analyzer-height-pc);
+            /* PCでの最大高 */
+            min-height: 40px;
+            /* 絶対的な最小高 */
             background-color: #444;
             border-radius: 8px;
-            box-shadow: inset 0 0 8px rgba(0,0,0,0.3); /* 内側の影 */
+            box-shadow: inset 0 0 8px rgba(0, 0, 0, 0.3);
+            /* 内側の影 */
             margin-top: 1vh;
             margin-bottom: 1vh;
             overflow: hidden;
             position: relative;
-            flex-shrink: 0; /* 親コンテナが縮小されても自身は縮まない */
-            flex-grow: 0; /* 親コンテナが拡大しても自身は伸びない */
+            flex-shrink: 0;
+            /* 親コンテナが縮小されても自身は縮まない */
+            flex-grow: 0;
+            /* 親コンテナが拡大しても自身は伸びない */
         }
 
         #analyzer-canvas {
@@ -85,18 +117,22 @@
             left: 0;
             width: 100%;
             height: 100%;
-            pointer-events: none; /* Canvas上のイベントを透過させる */
+            pointer-events: none;
+            /* Canvas上のイベントを透過させる */
             z-index: 1;
             opacity: 0.9;
         }
+
         #analyzer-text {
             position: absolute;
             top: 50%;
             left: 50%;
-            transform: translate(-50%, -50%); /* 中央配置 */
+            transform: translate(-50%, -50%);
+            /* 中央配置 */
             color: rgba(255, 255, 255, 0.3);
             font-size: 1.2em;
-            pointer-events: none; /* テキスト上のイベントを透過させる */
+            pointer-events: none;
+            /* テキスト上のイベントを透過させる */
             z-index: 0;
         }
 
@@ -108,20 +144,24 @@
             width: 98vw;
             /* 鍵盤エリアの高さを固定 */
             height: var(--keyboard-fixed-height-pc);
-            min-height: 80px; /* 絶対的な最小高さをpxで設定 */
+            min-height: 80px;
+            /* 絶対的な最小高さをpxで設定 */
             background-color: #333;
             border-radius: 15px;
-            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.6); /* 外部影 */
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.6);
+            /* 外部影 */
             display: flex;
             flex-direction: column;
             padding: var(--panel-padding-vertical) var(--panel-padding-horizontal);
-            box-sizing: border-box; /* パディングを幅・高さに含める */
+            box-sizing: border-box;
+            /* パディングを幅・高さに含める */
             border: 2px solid #555;
-            flex-shrink: 0; /* 親コンテナが縮小されても自身は縮まない */
+            flex-shrink: 0;
+            /* 親コンテナが縮小されても自身は縮まない */
             /* flex-grow は削除 (高さを固定するため) */
             margin-bottom: 1vh;
         }
-        
+
         /* ====================
            鍵盤レイアウトのスタイル
            ==================== */
@@ -130,35 +170,50 @@
             height: 100%;
             width: 100%;
             position: relative;
-            overflow: hidden; /* 鍵盤がはみ出さないように隠す */
+            overflow: hidden;
+            /* 鍵盤がはみ出さないように隠す */
             border-radius: 8px;
             background-color: #444;
             flex-grow: 1;
         }
 
         .key {
-            position: absolute; /* 黒鍵を白鍵の上に重ねるために必要 */
+            position: absolute;
+            /* 黒鍵を白鍵の上に重ねるために必要 */
             box-sizing: border-box;
-            border-radius: 0 0 8px 8px; /* 下部のみ角丸 */
+            border-radius: 0 0 8px 8px;
+            /* 下部のみ角丸 */
             cursor: pointer;
+            /* 修正: Safari互換性のためベンダープレフィックスを追加 */
+            -webkit-user-select: none;
             user-select: none;
-            -webkit-tap-highlight-color: transparent; /* タップ時のハイライトを無効化 */
-            transition: background-color 0.1s, transform 0.05s, box-shadow 0.05s; /* 押下時のアニメーション */
+            -webkit-tap-highlight-color: transparent;
+            /* タップ時のハイライトを無効化 */
+            transition: background-color 0.1s, transform 0.05s, box-shadow 0.05s;
+            /* 押下時のアニメーション */
         }
 
         .key-label {
             position: absolute;
-            bottom: 5px; /* 鍵盤の下部に配置 */
+            bottom: 5px;
+            /* 鍵盤の下部に配置 */
             left: 50%;
-            transform: translateX(-50%); /* 中央揃え */
+            transform: translateX(-50%);
+            /* 中央揃え */
             font-size: 0.9em;
-            color: rgba(0, 0, 0, 0.6); /* 白鍵のラベル色 */
+            color: rgba(0, 0, 0, 0.6);
+            /* 白鍵のラベル色 */
             font-weight: bold;
-            pointer-events: none; /* クリックイベントを透過 */
-            white-space: nowrap; /* 折り返しを禁止 */
-            overflow: hidden; /* はみ出しを隠す */
-            text-overflow: clip; /* はみ出しをクリップ */
-            padding: 0 2px; /* 左右に少しパディング */
+            pointer-events: none;
+            /* クリックイベントを透過 */
+            white-space: nowrap;
+            /* 折り返しを禁止 */
+            overflow: hidden;
+            /* はみ出しを隠す */
+            text-overflow: clip;
+            /* はみ出しをクリップ */
+            padding: 0 2px;
+            /* 左右に少しパディング */
         }
 
         .white-key {
@@ -166,50 +221,69 @@
             background-color: #f0f0f0;
             border: 1px solid #aaa;
             border-top: none;
-            z-index: 1; /* 白鍵を黒鍵の下に配置 */
+            z-index: 1;
+            /* 白鍵を黒鍵の下に配置 */
             box-shadow: inset 0 -5px 10px rgba(0, 0, 0, 0.2);
-            left: 0; /* JSで動的に設定される */
-            width: 0; /* JSで動的に設定される */
+            left: 0;
+            /* JSで動的に設定される */
+            width: 0;
+            /* JSで動的に設定される */
         }
+
         /* 白鍵のアクティブ状態スタイル */
         .white-key.active {
             background-color: #ddd;
         }
+
         /* 白鍵のラベル */
         .white-key .key-label {
             color: rgba(0, 0, 0, 0.6);
         }
 
         .black-key {
-            height: 65%; /* 白鍵の高さに対する比率 */
+            height: 65%;
+            /* 白鍵の高さに対する比率 */
             background-color: #222;
             border: 1px solid #000;
             border-top: none;
-            z-index: 2; /* 黒鍵を白鍵の上に配置 */
+            z-index: 2;
+            /* 黒鍵を白鍵の上に配置 */
             box-shadow: inset 0 -3px 8px rgba(0, 0, 0, 0.5);
-            left: 0; /* JSで動的に設定される */
-            width: 0; /* JSで動的に設定される */
+            left: 0;
+            /* JSで動的に設定される */
+            width: 0;
+            /* JSで動的に設定される */
         }
+
         /* 黒鍵のアクティブ状態スタイル */
         .black-key.active {
             background-color: #000;
         }
+
         /* 黒鍵のラベル */
         .black-key .key-label {
-            color: rgba(255, 255, 255, 0.8); /* 黒鍵のラベル色 */
-            font-size: 0.6em; /* 黒鍵はスペースが狭いのでさらに小さく */
-            bottom: 8px; /* 黒鍵の表示位置を少し上に */
-            line-height: 1; /* 行の高さを詰める */
-            box-sizing: border-box; /* パディングを幅に含める */
+            color: rgba(255, 255, 255, 0.8);
+            /* 黒鍵のラベル色 */
+            font-size: 0.6em;
+            /* 黒鍵はスペースが狭いのでさらに小さく */
+            bottom: 8px;
+            /* 黒鍵の表示位置を少し上に */
+            line-height: 1;
+            /* 行の高さを詰める */
+            box-sizing: border-box;
+            /* パディングを幅に含める */
             text-align: center;
-            padding: 0; /* パディングを削除して、文字間隔を詰める余地を増やす */
-            letter-spacing: -0.5px; /* 文字間隔を詰める */
+            padding: 0;
+            /* パディングを削除して、文字間隔を詰める余地を増やす */
+            letter-spacing: -0.5px;
+            /* 文字間隔を詰める */
         }
 
         /* 鍵盤押下時のアクティブ状態スタイル */
         .key.active {
             box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.3);
-            transform: translateY(2px); /* わずかに下に移動 */
+            transform: translateY(2px);
+            /* わずかに下に移動 */
         }
 
 
@@ -218,21 +292,29 @@
            ==================== */
         #controls-area {
             width: 98vw;
-            max-width: 1280px; /* PCでのコントロールエリアの最大幅 */
+            max-width: 1280px;
+            /* PCでのコントロールエリアの最大幅 */
             background-color: #333;
             border-radius: 15px;
             box-shadow: 0 15px 30px rgba(0, 0, 0, 0.6);
             padding: var(--panel-padding-vertical) var(--panel-padding-horizontal);
             box-sizing: border-box;
             display: flex;
-            flex-wrap: wrap; /* 子要素を折り返す */
-            justify-content: center; /* 子要素を水平中央に配置 */
-            align-items: flex-start; /* 子要素を上揃えにする */
-            gap: var(--control-group-gap); /* コントロールグループ間の間隔 */
-            overflow-y: auto; /* 縦方向のコンテンツが多い場合にスクロールを許可 */
-            flex-grow: 1; /* 残りの垂直スペースを埋める */
+            flex-wrap: wrap;
+            /* 子要素を折り返す */
+            justify-content: center;
+            /* 子要素を水平中央に配置 */
+            align-items: flex-start;
+            /* 子要素を上揃えにする */
+            gap: var(--control-group-gap);
+            /* コントロールグループ間の間隔 */
+            overflow-y: auto;
+            /* 縦方向のコンテンツが多い場合にスクロールを許可 */
+            flex-grow: 1;
+            /* 残りの垂直スペースを埋める */
             margin-bottom: 1vh;
-            min-height: var(--controls-area-min-height-pc); /* コントロールエリア自体の最小高さを確保 */
+            min-height: var(--controls-area-min-height-pc);
+            /* コントロールエリア自体の最小高さを確保 */
             /* 最大高さを計算して、鍵盤やアナライザーが隠れないように調整 */
             max-height: calc(100vh - (var(--analyzer-height-pc) + 1vh + 1vh) - var(--keyboard-fixed-height-pc) - (1vh + 1vh) - (var(--panel-padding-vertical) * 2));
         }
@@ -242,38 +324,49 @@
             background-color: #444;
             border-radius: 10px;
             padding: var(--panel-padding-vertical);
-            width: 100%; /* 親（controls-area）の幅に合わせる */
-            max-width: 600px; /* PCでの最大幅 */
+            width: 100%;
+            /* 親（controls-area）の幅に合わせる */
+            max-width: 600px;
+            /* PCでの最大幅 */
             box-sizing: border-box;
             display: flex;
-            flex-wrap: wrap; /* 内部要素を折り返す */
+            flex-wrap: wrap;
+            /* 内部要素を折り返す */
             justify-content: center;
             align-items: flex-start;
             gap: var(--control-group-gap);
-            box-shadow: inset 0 0 8px rgba(0,0,0,0.3);
+            box-shadow: inset 0 0 8px rgba(0, 0, 0, 0.3);
         }
 
         /* 個々のコントロールグループ（例: ラベル＋スライダー＋数値表示） */
         .control-group {
             display: flex;
-            flex-direction: row; /* 要素を横方向に並べる */
-            flex-wrap: nowrap; /* 行内での折り返しはしない */
-            justify-content: space-between; /* 要素を両端に配置し、間にスペースを空ける */
-            align-items: center; /* 要素を垂直中央に揃える */
+            flex-direction: row;
+            /* 要素を横方向に並べる */
+            flex-wrap: nowrap;
+            /* 行内での折り返しはしない */
+            justify-content: space-between;
+            /* 要素を両端に配置し、間にスペースを空ける */
+            align-items: center;
+            /* 要素を垂直中央に揃える */
             gap: var(--control-elements-gap);
             color: #eee;
             font-size: 0.75em;
-            white-space: nowrap; /* テキストの折り返しを禁止 */
+            white-space: nowrap;
+            /* テキストの折り返しを禁止 */
             padding: var(--control-group-padding);
             border-radius: 5px;
             background-color: #555;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
             border: 1px solid #666;
             /* PCでは2列表示、モバイルでは1列表示になるように幅を調整 */
-            flex-basis: calc(50% - var(--control-group-gap) / 2); /* 50% - 半分のギャップ */
-            min-width: 150px; /* PCでのコントロールグループの最小幅 */
+            flex-basis: calc(50% - var(--control-group-gap) / 2);
+            /* 50% - 半分のギャップ */
+            min-width: 150px;
+            /* PCでのコントロールグループの最小幅 */
             box-sizing: border-box;
         }
+
         /* 幅全体を占めるコントロールグループ用 */
         .control-group.full-width {
             flex-basis: 100%;
@@ -281,21 +374,27 @@
 
         .control-group label {
             font-weight: bold;
-            flex-shrink: 0; /* 縮小しない */
+            flex-shrink: 0;
+            /* 縮小しない */
             width: auto;
-            min-width: var(--label-width-pc); /* PCでのラベル最小幅 */
+            min-width: var(--label-width-pc);
+            /* PCでのラベル最小幅 */
             text-align: left;
         }
 
         /* 数値表示用 spanのスタイル */
         .value-display {
             display: inline-block;
-            min-width: var(--value-display-width); /* 幅を固定 */
+            min-width: var(--value-display-width);
+            /* 幅を固定 */
             text-align: right;
             font-size: 0.9em;
-            color: #00bcd4; /* アクア系の色 */
-            flex-shrink: 0; /* 縮小しない */
-            vertical-align: middle; /* スライダーと高さを合わせる */
+            color: #00bcd4;
+            /* アクア系の色 */
+            flex-shrink: 0;
+            /* 縮小しない */
+            vertical-align: middle;
+            /* スライダーと高さを合わせる */
         }
 
         /* Selectボックス、ボタン、スライダーの共通スタイル */
@@ -309,13 +408,19 @@
             border-radius: 6px;
             font-size: 0.8em;
             cursor: pointer;
-            appearance: none; /* デフォルトのブラウザスタイルをリセット */
-            -webkit-appearance: none; /* Webkitブラウザ用 */
+            /* 修正: プロパティの順序を修正 */
+            -webkit-appearance: none;
+            /* Webkitブラウザ用 */
+            appearance: none;
+            /* デフォルトのブラウザスタイルをリセット */
             box-sizing: border-box;
-            height: 3.5vh; /* 高さもvhで相対的に */
-            min-height: 25px; /* 絶対的な最小高さをpxで指定 */
-            max-height: 35px; /* 絶対的な最大高さをpxで指定 */
-            box-shadow: inset 0 1px 3px rgba(0,0,0,0.3);
+            height: 3.5vh;
+            /* 高さもvhで相対的に */
+            min-height: 25px;
+            /* 絶対的な最小高さをpxで指定 */
+            max-height: 35px;
+            /* 絶対的な最大高さをpxで指定 */
+            box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.3);
         }
 
         /* フォーカス時のスタイル */
@@ -324,17 +429,22 @@
         .control-panel input[type="range"]:focus {
             outline: none;
             border-color: #00bcd4;
-            box-shadow: 0 0 0 2px rgba(0,188,212,0.5); /* フォーカスリング */
+            box-shadow: 0 0 0 2px rgba(0, 188, 212, 0.5);
+            /* フォーカスリング */
         }
 
         /* スライダーの個別のスタイル */
         .control-panel input[type="range"] {
             /* スライダーの幅を計算: 親幅からラベルと数値表示、ギャップを引く */
-            width: calc(100% - var(--label-width-pc) - var(--value-display-width) - var(--control-elements-gap) * 2); 
-            max-width: 250px; /* PCでのスライダーの最大幅 */
-            height: 1.2vh; /* スライダーバーの高さ */
-            min-height: 8px; /* 絶対的な最小高さをpxで指定 */
-            max-height: 10px; /* 絶対的な最大高さをpxで指定 */
+            width: calc(100% - var(--label-width-pc) - var(--value-display-width) - var(--control-elements-gap) * 2);
+            max-width: 250px;
+            /* PCでのスライダーの最大幅 */
+            height: 1.2vh;
+            /* スライダーバーの高さ */
+            min-height: 8px;
+            /* 絶対的な最小高さをpxで指定 */
+            max-height: 10px;
+            /* 絶対的な最大高さをpxで指定 */
             border-radius: 5px;
             /* スライダーの背景色をグラデーションで表示（つまみの位置を示す） */
             background: linear-gradient(to right, #00bcd4 0%, #00bcd4 var(--value, 50%), #888 var(--value, 50%), #888 100%);
@@ -348,17 +458,23 @@
             -webkit-appearance: none;
             width: 2.5vh;
             height: 2.5vh;
-            min-width: 20px; /* 絶対的な最小高さをpxで指定 */
+            min-width: 20px;
+            /* 絶対的な最小高さをpxで指定 */
             min-height: 20px;
-            max-width: 22px; /* 絶対的な最大高さをpxで指定 */
+            max-width: 22px;
+            /* 絶対的な最大高さをpxで指定 */
             max-height: 22px;
-            border-radius: 50%; /* 円形 */
+            border-radius: 50%;
+            /* 円形 */
             background: #fff;
-            cursor: grab; /* ドラッグ可能なカーソル */
+            cursor: grab;
+            /* ドラッグ可能なカーソル */
             border: 2px solid #00bcd4;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.4);
-            margin-top: calc(-1.25vh + 0.6vh); /* スライダーバーの中央に配置 */
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.4);
+            margin-top: calc(-1.25vh + 0.6vh);
+            /* スライダーバーの中央に配置 */
         }
+
         /* スライダーのつまみのスタイル（Firefox用） */
         .control-panel input[type="range"]::-moz-range-thumb {
             width: 2.5vh;
@@ -371,13 +487,15 @@
             background: #fff;
             cursor: grab;
             border: 2px solid #00bcd4;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.4);
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.4);
         }
 
         /* スライダーのつまみアクティブ時（ドラッグ中）のスタイル */
         .control-panel input[type="range"]:active::-webkit-slider-thumb {
-            cursor: grabbing; /* ドラッグ中のカーソル */
+            cursor: grabbing;
+            /* ドラッグ中のカーソル */
         }
+
         .control-panel input[type="range"]:active::-moz-range-thumb {
             cursor: grabbing;
         }
@@ -390,40 +508,50 @@
             padding: var(--control-group-padding);
             border-radius: 5px;
             background-color: #555;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
             border: 1px solid #666;
-            flex-basis: calc(50% - var(--control-group-gap) / 2); /* 2列表示 */
+            flex-basis: calc(50% - var(--control-group-gap) / 2);
+            /* 2列表示 */
             min-width: 150px;
             box-sizing: border-box;
             white-space: nowrap;
         }
+
         .octave-controls label {
-             font-weight: bold;
-             flex-shrink: 0;
-             width: auto;
-             min-width: var(--label-width-pc);
-             text-align: left;
+            font-weight: bold;
+            flex-shrink: 0;
+            width: auto;
+            min-width: var(--label-width-pc);
+            text-align: left;
         }
+
         .octave-control-buttons {
             display: flex;
             gap: 5px;
             align-items: center;
         }
+
         .octave-control-buttons button {
-            padding: 0.5vh 0.8vw; /* ボタンのパディング調整 */
+            padding: 0.5vh 0.8vw;
+            /* ボタンのパディング調整 */
             font-size: 1.2em;
             height: 3vh;
-            min-height: 25px; /* 絶対的な最小高さをpxで指定 */
-            max-height: 35px; /* 絶対的な最大高さをpxで指定 */
-            width: 30px; /* 固定幅をpxで指定 */
+            min-height: 25px;
+            /* 絶対的な最小高さをpxで指定 */
+            max-height: 35px;
+            /* 絶対的な最大高さをpxで指定 */
+            width: 30px;
+            /* 固定幅をpxで指定 */
             text-align: center;
             line-height: 1;
             box-sizing: border-box;
             flex-shrink: 0;
         }
+
         #current-octave-display {
             font-size: 1em;
-            min-width: 1.5em; /* 数字に合わせて幅を調整 */
+            min-width: 1.5em;
+            /* 数字に合わせて幅を調整 */
             text-align: center;
             color: #eee;
             flex-shrink: 0;
@@ -433,11 +561,15 @@
         #midi-start-button {
             transition: background-color 0.3s;
         }
+
         #midi-start-button.connected {
-            background-color: #4CAF50; /* 緑色（接続済み） */
+            background-color: #4CAF50;
+            /* 緑色（接続済み） */
         }
+
         #midi-start-button.error {
-            background-color: #f44336; /* 赤色（エラー） */
+            background-color: #f44336;
+            /* 赤色（エラー） */
         }
 
         /* ====================
@@ -445,62 +577,85 @@
            ==================== */
         @media (max-width: 768px) {
             #analyzer-container {
-                height: 8vh; /* モバイルでのアナライザー高さを調整 */
+                height: 8vh;
+                /* モバイルでのアナライザー高さを調整 */
                 margin-top: 0.5vh;
                 margin-bottom: 0.5vh;
             }
+
             #synth-container {
-                height: var(--keyboard-fixed-height-mobile); /* モバイルでの鍵盤固定高さ */
-                min-height: 80px; /* 絶対的な最小高さ */
+                height: var(--keyboard-fixed-height-mobile);
+                /* モバイルでの鍵盤固定高さ */
+                min-height: 80px;
+                /* 絶対的な最小高さ */
                 margin-bottom: 0.5vh;
                 padding: 1vh;
             }
+
             #controls-area {
                 padding: 1vh;
                 gap: 0.8vh;
                 /* max-heightを調整し、鍵盤が適切に表示されるように */
-                max-height: calc(100vh - 40px - 1vh - 1vh - var(--keyboard-fixed-height-mobile) - 0.5vh - 0.5vh - (1vh * 2)); /* analyzer min-height + its margins + synth fixed height + its margins + controls area paddings */
-                min-height: min(150px, var(--controls-area-min-height-pc)); /* 絶対的な最小高さとvhのminで決定 */
+                max-height: calc(100vh - 40px - 1vh - 1vh - var(--keyboard-fixed-height-mobile) - 0.5vh - 0.5vh - (1vh * 2));
+                /* analyzer min-height + its margins + synth fixed height + its margins + controls area paddings */
+                min-height: min(150px, var(--controls-area-min-height-pc));
+                /* 絶対的な最小高さとvhのminで決定 */
             }
+
             .control-panel {
                 padding: 0.8vh;
                 gap: 0.8vh;
-                flex-basis: 100%; /* 1列表示を基本に */
+                flex-basis: 100%;
+                /* 1列表示を基本に */
             }
+
             .control-group {
                 font-size: 0.75em;
                 padding: 0.6vh;
-                flex-basis: 100%; /* 1列表示 */
+                flex-basis: 100%;
+                /* 1列表示 */
             }
+
             .control-group label {
                 min-width: var(--label-width-mobile);
             }
+
             .control-panel input[type="range"] {
                 width: calc(100% - var(--label-width-mobile) - var(--value-display-width) - var(--control-elements-gap) * 2);
                 max-width: 180px;
             }
+
             #midi-start-button {
                 padding: 0.8vh 1vw;
             }
+
             /* オクターブコントロールのモバイル調整 */
             .octave-controls {
-                 flex-basis: 100%; /* 1列表示 */
+                flex-basis: 100%;
+                /* 1列表示 */
             }
+
             .octave-control-buttons button {
-                padding: 0.4vh 0.7vw; /* ボタンのパディング調整 */
+                padding: 0.4vh 0.7vw;
+                /* ボタンのパディング調整 */
                 font-size: 1.1em;
                 width: 28px;
             }
+
             #current-octave-display {
-                 font-size: 0.9em;
+                font-size: 0.9em;
             }
+
             /* モバイルでの鍵盤ラベル調整 */
             .key-label {
-                font-size: 0.65em; /* 基本のフォントサイズを小さく */
+                font-size: 0.65em;
+                /* 基本のフォントサイズを小さく */
                 bottom: 3px;
             }
+
             .black-key .key-label {
-                font-size: 0.55em; /* 黒鍵のフォントサイズをさらに小さく */
+                font-size: 0.55em;
+                /* 黒鍵のフォントサイズをさらに小さく */
                 bottom: 5px;
             }
         }
@@ -508,29 +663,38 @@
         /* 非常に小さい画面向け（画面幅480px以下） */
         @media (max-width: 480px) {
             #analyzer-container {
-                height: 7vh; /* さらに高さを制限 */
+                height: 7vh;
+                /* さらに高さを制限 */
             }
+
             #synth-container {
-                height: var(--keyboard-fixed-height-tiny); /* さらに固定高さを制限 */
-                min-height: 80px; /* さらに最小高さを制限 */
+                height: var(--keyboard-fixed-height-tiny);
+                /* さらに固定高さを制限 */
+                min-height: 80px;
+                /* さらに最小高さを制限 */
             }
+
             #controls-area {
                 padding: 0.8vh;
                 gap: 0.6vh;
                 max-height: calc(100vh - 40px - 1vh - 1vh - var(--keyboard-fixed-height-tiny) - 0.5vh - 0.5vh - (1vh * 2));
                 min-height: 120px;
             }
+
             .control-panel {
                 padding: 0.6vh;
                 gap: 0.6vh;
             }
+
             .control-group {
                 font-size: 0.7em;
                 padding: 0.5vh;
             }
+
             .control-group label {
                 min-width: var(--label-width-tiny);
             }
+
             .control-panel select,
             .control-panel button,
             .control-panel input[type="range"] {
@@ -539,31 +703,40 @@
                 min-height: 22px;
                 padding: 0.5vh 0.8vw;
             }
+
             .control-panel input[type="range"] {
                 width: calc(100% - var(--label-width-tiny) - var(--value-display-width) - var(--control-elements-gap) * 2);
                 max-width: 120px;
             }
+
             .octave-control-buttons button {
                 padding: 0.3vh 0.5vw;
                 font-size: 0.8em;
                 width: 22px;
             }
+
             #current-octave-display {
-                 font-size: 0.8em;
+                font-size: 0.8em;
             }
+
             /* 非常に小さい画面での鍵盤ラベル調整 */
             .key-label {
-                font-size: 0.55em; /* さらに小さく */
+                font-size: 0.55em;
+                /* さらに小さく */
                 bottom: 2px;
             }
+
             .black-key .key-label {
-                font-size: 0.45em; /* 黒鍵のフォントサイズをさらに小さく */
+                font-size: 0.45em;
+                /* 黒鍵のフォントサイズをさらに小さく */
                 bottom: 4px;
             }
         }
     </style>
 </head>
+
 <body>
+    <!-- (以降のHTMLとJavaScriptは変更なしのため省略します) -->
     <!-- フローティングナビゲーションメニュー -->
     <div id="menu-toggle-icon">≡</div>
     <div id="floating-menu">
@@ -596,7 +769,7 @@
                 </div>
             </div>
         </div>
-        
+
         <!-- 波形・オクターブ設定パネル -->
         <div id="waveform-panel" class="control-panel">
             <div class="control-group">
@@ -719,7 +892,8 @@
             <div class="control-group">
                 <label for="lfo-amount-range">LFO Amount:</label>
                 <div class="control-elements">
-                    <input type="range" id="lfo-amount-range" min="0" max="100" value="0" step="1"> <!-- 最大100セント（1半音） -->
+                    <input type="range" id="lfo-amount-range" min="0" max="100" value="0" step="1">
+                    <!-- 最大100セント（1半音） -->
                     <span class="value-display" data-target="lfo-amount-range"></span>
                 </div>
             </div>
@@ -800,24 +974,25 @@
     </div>
 
     <script>
-            // --- ナビゲーションメニューのロジック ---
-            document.addEventListener('DOMContentLoaded', () => {
-                const menuToggleIcon = document.getElementById('menu-toggle-icon');
-                const floatingMenu = document.getElementById('floating-menu');
-                if (menuToggleIcon && floatingMenu) {
-                    menuToggleIcon.addEventListener('click', (event) => {
-                        event.stopPropagation();
-                        floatingMenu.classList.toggle('show');
-                    });
-                    document.addEventListener('click', (event) => {
-                        if (floatingMenu.classList.contains('show')) {
-                            if (!menuToggleIcon.contains(event.target) && !floatingMenu.contains(event.target)) {
-                                floatingMenu.classList.remove('show');
-                            }
+        // (JavaScript部分は変更ありません)
+        // --- ナビゲーションメニューのロジック ---
+        document.addEventListener('DOMContentLoaded', () => {
+            const menuToggleIcon = document.getElementById('menu-toggle-icon');
+            const floatingMenu = document.getElementById('floating-menu');
+            if (menuToggleIcon && floatingMenu) {
+                menuToggleIcon.addEventListener('click', (event) => {
+                    event.stopPropagation();
+                    floatingMenu.classList.toggle('show');
+                });
+                document.addEventListener('click', (event) => {
+                    if (floatingMenu.classList.contains('show')) {
+                        if (!menuToggleIcon.contains(event.target) && !floatingMenu.contains(event.target)) {
+                            floatingMenu.classList.remove('show');
                         }
-                    });
-                }
-            });
+                    }
+                });
+            }
+        });
         // ====================
         // グローバル定数定義
         // ====================
@@ -912,7 +1087,7 @@
             constructor(audioContext) {
                 this.audioContext = audioContext;
                 // 現在アクティブな音符を管理するMap: key -> { oscillator, gainNode, lfoDetuneConnected, lastFrequency }
-                this.activeNotes = new Map(); 
+                this.activeNotes = new Map();
 
                 // メインオーディオグラフのノード作成
                 this.masterGainNode = this.audioContext.createGain();
@@ -989,7 +1164,7 @@
                 // 9. リバーブミキサー (ドライ信号 + ウェット信号)
                 this.reverbDryGain.connect(this.reverbMixer);
                 this.reverbWetGain.connect(this.reverbMixer);
-                
+
                 // 10. リバーブミキサー -> コーラスのドライ信号とコーラス入力
                 this.reverbMixer.connect(this.chorusMixer); // ドライ信号はchorusMixerに直接接続
                 this.reverbMixer.connect(this.chorusDelay); // ウェット信号はchorusDelayへ
@@ -1013,7 +1188,7 @@
                 // 初期パラメータをデフォルト値に設定（プリセットにより上書きされる）
                 this.setMasterVolume(0.5);
                 this.setFilter('lowpass', 20000, 1);
-                this.setLFO('none', 1, 0); 
+                this.setLFO('none', 1, 0);
                 this.setDelay(0, 0, 0);
                 this.setReverbMix(0);
                 this.setChorus(0, 0.5);
@@ -1036,14 +1211,14 @@
                         // contextがresumeできない場合でも、音が出ないまま処理を続行させる
                         // ただし、closed状態になっていれば再作成が必要
                         if (this.audioContext.state === 'closed') {
-                             console.warn('AudioContext is closed, attempting to recreate.');
-                             // 強制的に再初期化を試みる
-                             this.app.initAudioContextAndModules(); // Appインスタンスへの参照が必要
-                             return; // 再作成が完了するまで音を鳴らさない
+                            console.warn('AudioContext is closed, attempting to recreate.');
+                            // 強制的に再初期化を試みる
+                            this.app.initAudioContextAndModules(); // Appインスタンスへの参照が必要
+                            return; // 再作成が完了するまで音を鳴らさない
                         }
                     }
                 }
-                
+
                 // 初回の音切れ問題への対策：
                 // AudioContextが再開された直後（currentTimeがほぼ0）の場合、
                 // オーディオハードウェアのバッファが完全に確立されるのを少しだけ待つ。
@@ -1051,7 +1226,7 @@
                 if (this.audioContext.state === 'running' && this.audioContext.currentTime < 0.05) { // currentTimeがほぼ0の場合（再開直後）
                     await new Promise(resolve => setTimeout(resolve, 20)); // 20ms待機し、次のイベントループで処理を続行
                 }
-                
+
                 // コンテキストが実行中になったことを確認後、内部的に音符を演奏
                 this._playNoteInternal(noteNameBase, octave);
             }
@@ -1063,11 +1238,11 @@
              */
             _playNoteInternal(noteNameBase, octave) {
                 const fullNoteName = noteNameBase + octave;
-                
+
                 const prevNoteData = this.activeNotes.get(fullNoteName);
                 if (prevNoteData) {
                     // 同じ音符が既に演奏中の場合、一度停止して新しい音符を再生（モノフォニック動作のシミュレーション、または新しいエンベロープ適用）
-                    this.stopNote(fullNoteName); 
+                    this.stopNote(fullNoteName);
                 }
 
                 const frequency = getFrequency(noteNameBase, octave);
@@ -1085,7 +1260,7 @@
                 const portamentoTime = parseFloat(document.getElementById('portamento-range').value); // Portamento値を取得
 
                 oscillator.type = waveformType;
-                
+
                 // ポルタメントの適用
                 // 前の音符の周波数から新しい音符の周波数へ滑らかに変化
                 const startTime = this.audioContext.currentTime;
@@ -1118,11 +1293,11 @@
                     // detuneは相対値なので、lfoAmountをdetuneに直接加算できる
                     this.lfoGainNode.connect(oscillator.detune);
                     lfoDetuneConnected = true;
-                } 
+                }
 
                 // ゲインノードをフィルターノードに接続
                 gainNode.connect(this.filterNode);
-                
+
                 oscillator.start(startTime); // オシレーターの開始
                 // アクティブな音符として記録
                 this.activeNotes.set(fullNoteName, { oscillator, gainNode, lfoDetuneConnected, lastFrequency: frequency });
@@ -1146,12 +1321,12 @@
 
                     // リリース時間経過後にオシレーターを停止
                     const stopTime = this.audioContext.currentTime + releaseTime + 0.05; // わずかなバッファ時間
-                    oscillator.stop(stopTime); 
-                    
+                    oscillator.stop(stopTime);
+
                     // オシレーターとゲインノードを切断し、リソースを解放
                     setTimeout(() => {
                         if (lfoDetuneConnected) {
-                             this.lfoGainNode.disconnect(oscillator.detune); // LFOが接続されていれば切断
+                            this.lfoGainNode.disconnect(oscillator.detune); // LFOが接続されていれば切断
                         }
                         oscillator.disconnect();
                         gainNode.disconnect();
@@ -1160,14 +1335,14 @@
                     this.activeNotes.delete(fullNoteName); // アクティブな音符リストから削除
                 }
             }
-            
+
             /**
              * 全ての音符の演奏を強制的に停止する。
              * （例: AudioContextがsuspendedになった時や、鍵盤が再描画される時）
              */
             stopAllActiveNotes() {
                 // Mapのコピーを作成し、イテレーション中にMapが変更されるのを防ぐ
-                const notesToStop = new Map(this.activeNotes); 
+                const notesToStop = new Map(this.activeNotes);
                 notesToStop.forEach((_, fullNoteName) => {
                     this.stopNote(fullNoteName); // 各アクティブな音符を停止
                 });
@@ -1208,7 +1383,7 @@
                 const filterFreqRange = document.getElementById('filter-freq-range');
                 const minLog = Math.log(parseFloat(filterFreqRange.min));
                 const maxLog = Math.log(parseFloat(filterFreqRange.max));
-                const normalizedValue = (frequency - parseFloat(filterFreqRange.min)) / (parseFloat(filterFreqRange.max) - parseFloat(filterFreqRange.min)); 
+                const normalizedValue = (frequency - parseFloat(filterFreqRange.min)) / (parseFloat(filterFreqRange.max) - parseFloat(filterFreqRange.min));
                 const scaledLogValue = minLog + normalizedValue * (maxLog - minLog);
                 this.filterNode.frequency.linearRampToValueAtTime(Math.exp(scaledLogValue), this.audioContext.currentTime + 0.01);
                 this.filterNode.Q.linearRampToValueAtTime(q, this.audioContext.currentTime + 0.01);
@@ -1222,10 +1397,10 @@
              */
             setLFO(target, frequency, amount) {
                 this.lfoNode.frequency.setValueAtTime(frequency, this.audioContext.currentTime);
-                
+
                 // グローバルノード（フィルター周波数）からのLFOゲインの接続を一度切断
                 // 各オシレーターのデチューンへの接続は、playNote/stopNoteで個別管理される
-                this.lfoGainNode.disconnect(); 
+                this.lfoGainNode.disconnect();
 
                 if (target === 'none') {
                     this.lfoGainNode.gain.setValueAtTime(0, this.audioContext.currentTime); // LFOゲインを0に
@@ -1296,7 +1471,7 @@
                     this.chorusMixGain.gain.setValueAtTime(0.5, this.audioContext.currentTime); // コーラスのミックスは固定値
                 }
             }
-            
+
             /**
              * アプリケーションのコアモジュールを再初期化する
              * （AudioContextがclosed状態になった場合など、完全に状態をリセットする必要がある時に呼ばれる）
@@ -1395,7 +1570,7 @@
                 this.presetManager = presetManager;
                 this.setupEventListeners();
                 // 初期オクターブ表示と鍵盤の再描画
-                this.updateOctaveDisplays(); 
+                this.updateOctaveDisplays();
             }
 
             // --- 鍵盤UIの生成と管理 ---
@@ -1447,7 +1622,7 @@
                     whiteKey.dataset.midiNote = midiNoteNumber; // MIDIノート番号もデータセットに追加
                     whiteKey.style.left = `${index * whiteKeyWidthPercent}%`;
                     whiteKey.style.width = `${whiteKeyWidthPercent}%`;
-                    
+
                     const label = document.createElement('span');
                     label.classList.add('key-label');
                     label.textContent = displayNoteName; // 例: C3, D4
@@ -1469,7 +1644,7 @@
                         // 黒鍵を白鍵の間に配置するためのleft計算
                         blackKey.style.left = `${(index + 1) * whiteKeyWidthPercent - (blackKeyWidthPercent / 2)}%`;
                         blackKey.style.width = `${blackKeyWidthPercent}%`;
-                        
+
                         const blackLabel = document.createElement('span');
                         blackLabel.classList.add('key-label');
                         blackLabel.textContent = displayBlackNoteName; // 例: C#3, F#4
@@ -1570,7 +1745,7 @@
                 }
                 return null;
             }
-            
+
             /**
              * ポインター（マウス、タッチ）が鍵盤上で押された時のハンドラ。
              * @param {PointerEvent} e - ポインターイベントオブジェクト
@@ -1588,9 +1763,9 @@
                 // 同じポインターIDで既に別の音符が演奏中の場合、その音符を停止する
                 if (this.activeTouchNotes.has(pointerId)) {
                     const oldNoteName = this.activeTouchNotes.get(pointerId);
-                    if (oldNoteName !== fullNoteName) { 
+                    if (oldNoteName !== fullNoteName) {
                         this.synthEngine.stopNote(oldNoteName);
-                        this.toggleKeyActive(oldNoteName.slice(0,-1), oldNoteName.slice(-1), false);
+                        this.toggleKeyActive(oldNoteName.slice(0, -1), oldNoteName.slice(-1), false);
                     }
                 }
                 this.synthEngine.playNote(noteBase, octave);
@@ -1618,15 +1793,15 @@
                     // 移動先の鍵盤が異なる場合、古い音符を停止し、新しい音符を再生
                     if (newFullNoteName !== oldNoteName) {
                         this.synthEngine.stopNote(oldNoteName);
-                        this.toggleKeyActive(oldNoteName.slice(0,-1), oldNoteName.slice(-1), false);
-                        
+                        this.toggleKeyActive(oldNoteName.slice(0, -1), oldNoteName.slice(-1), false);
+
                         this.synthEngine.playNote(newNoteBase, newOctave);
                         this.toggleKeyActive(newNoteBase, newOctave, true);
                         this.activeTouchNotes.set(pointerId, newFullNoteName);
                     }
                 } else if (oldNoteName) { // 鍵盤エリア外に移動した場合
                     this.synthEngine.stopNote(oldNoteName);
-                    this.toggleKeyActive(oldNoteName.slice(0,-1), oldNoteName.slice(-1), false);
+                    this.toggleKeyActive(oldNoteName.slice(0, -1), oldNoteName.slice(-1), false);
                     this.activeTouchNotes.delete(pointerId); // トラッキングから削除
                 }
             }
@@ -1640,7 +1815,7 @@
                 if (this.activeTouchNotes.has(pointerId)) {
                     const fullNoteName = this.activeTouchNotes.get(pointerId);
                     this.synthEngine.stopNote(fullNoteName);
-                    this.toggleKeyActive(fullNoteName.slice(0,-1), fullNoteName.slice(-1), false);
+                    this.toggleKeyActive(fullNoteName.slice(0, -1), fullNoteName.slice(-1), false);
                     this.activeTouchNotes.delete(pointerId);
                 }
             }
@@ -1655,7 +1830,7 @@
                 if (keyInfo) {
                     const playOctave = this.currentBaseOctave + keyInfo.octaveOffset;
                     const fullNoteName = keyInfo.note + playOctave;
-                    
+
                     if (!this.activeKeys.has(e.key.toLowerCase())) { // キーがまだアクティブでない場合のみ演奏
                         this.synthEngine.playNote(keyInfo.note, playOctave);
                         this.toggleKeyActive(keyInfo.note, playOctave, true);
@@ -1699,7 +1874,7 @@
                     let unit = '';
 
                     // スライダーのIDに基づいて表示形式と単位を決定
-                    switch(slider.id) {
+                    switch (slider.id) {
                         case 'attack-range':
                         case 'decay-range':
                         case 'release-range':
@@ -1736,7 +1911,7 @@
                         case 'filter-q-range':
                         case 'delay-feedback-range':
                             unit = ''; // 単位なし
-                            displayValue = displayValue.toFixed(1); 
+                            displayValue = displayValue.toFixed(1);
                             break;
                         default:
                             displayValue = displayValue.toFixed(2);
@@ -1756,12 +1931,12 @@
                 const value = parseFloat(slider.value); // スライダーの値を数値として取得
 
                 switch (slider.id) {
-                    case 'attack-range': 
+                    case 'attack-range':
                     case 'decay-range':
                     case 'sustain-range':
                     case 'release-range':
                         // ADSR値はplayNote/stopNote時に直接UIから読み込まれるため、ここでの個別更新は不要
-                        break; 
+                        break;
                     case 'master-volume-range':
                         this.synthEngine.setMasterVolume(value);
                         break;
@@ -1861,7 +2036,7 @@
                 this.domElements.currentOctaveRangeDisplay.textContent = this.displayedOctaves;
                 this.createKeyboard(); // 鍵盤要素を再生成
             }
-            
+
             /**
              * プリセット設定をUI要素に適用し、表示を更新する。
              * @param {object} settings - 適用するプリセット設定オブジェクト
@@ -2012,7 +2187,7 @@
              * @param {SynthEngine} synthEngine - 関連するSynthEngineインスタンス
              */
             start(synthEngine) {
-                this.synthEngine = synthEngine; 
+                this.synthEngine = synthEngine;
                 const draw = () => {
                     this.animationFrameId = requestAnimationFrame(draw); // 次のフレームで再描画を予約
 
@@ -2039,7 +2214,7 @@
                     }
                     this.canvasCtx.lineTo(this.canvas.width, this.canvas.height / 2); // 最後の点を中央に繋ぐ
                     this.canvasCtx.stroke(); // 描画を実行
-                    
+
                     // 音が鳴っているか、AudioContextが実行中であればテキストを非表示にする
                     this.updateText(this.synthEngine.activeNotes.size > 0 || this.audioContextState === 'running');
                 };
@@ -2053,7 +2228,7 @@
                 cancelAnimationFrame(this.animationFrameId);
                 this.animationFrameId = null;
             }
-            
+
             /**
              * AudioContextの現在の状態をAnalyzerDisplayに伝える。
              * @param {string} state - AudioContextの状態 ('suspended', 'running', 'closed')
@@ -2120,7 +2295,7 @@
                 this.midiAccess = midi;
                 console.log('MIDI access granted!');
                 this.updateButtonState(); // ボタンの状態を更新
-                
+
                 // MIDIデバイスの接続/切断イベントを監視するリスナーを設定
                 this.midiAccess.onstatechange = this.boundOnStateChange;
                 this.setupInputs(this.midiAccess.inputs); // 現在接続されているMIDI入力デバイスを設定
@@ -2146,7 +2321,7 @@
                     console.log(`MIDI Input: ${input.name} (ID: ${input.id}) - State: ${input.state}`);
                     // 各入力デバイスにmidiメッセージリスナーをアタッチ
                     // 既存のリスナーを削除してから追加し、重複登録を防ぐ
-                    input.removeEventListener('midimessage', this.boundGetMIDIMessage); 
+                    input.removeEventListener('midimessage', this.boundGetMIDIMessage);
                     input.addEventListener('midimessage', this.boundGetMIDIMessage);
                 });
             }
@@ -2345,7 +2520,7 @@
                 } else {
                     this.presetManager.synthEngine = this.synthEngine; // 既存インスタンスの参照を更新
                 }
-                
+
                 if (!this.analyzerDisplay) {
                     this.analyzerDisplay = new AnalyzerDisplay(this.synthEngine.analyzerNode, 'analyzer-canvas', 'analyzer-text');
                 } else {
@@ -2366,7 +2541,7 @@
                 this.analyzerDisplay.start(this.synthEngine); // アナライザー表示を再開
 
                 // プリセットとUIの初期化/同期
-                this.presetManager.init(this.uiController, this.synthEngine); 
+                this.presetManager.init(this.uiController, this.synthEngine);
                 this.uiController.init(this.presetManager);
                 console.log('App modules initialized/reinitialized.');
             }
@@ -2393,7 +2568,7 @@
                             // AudioContextが正常に再開されたら、アクティブな音符を全て停止する
                             // これにより、suspended中に鳴り続けていた可能性のある音や、
                             // 再開時のリソースの不整合による音の破綻を防ぐ。
-                            this.synthEngine.stopAllActiveNotes(); 
+                            this.synthEngine.stopAllActiveNotes();
                             this.analyzerDisplay.setAudioContextState('running');
                         }).catch(error => {
                             console.error('Failed to resume AudioContext:', error);
@@ -2459,4 +2634,5 @@
         });
     </script>
 </body>
+
 </html>

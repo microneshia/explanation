@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>最悪のウェブサイト</title>
-    <meta name="article-number" content="000015">
+    <meta name="article-number" content="000014">
     <meta name="description" content="ウェブクリエイターが陥りがちな「善意の失敗」を集めたショーケースです。">
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -102,6 +102,7 @@
             align-items: center;
             padding: 10px 40px;
             background-color: rgba(253, 250, 244, 0.8);
+            -webkit-backdrop-filter: blur(10px);
             backdrop-filter: blur(10px);
             box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
             z-index: 1000;
@@ -203,6 +204,10 @@
             display: flex;
             gap: 10px;
             z-index: 10;
+        }
+
+        .gallery-description {
+            margin-top: 20px;
         }
 
         .dot {
@@ -435,49 +440,6 @@
             font-size: 0.8rem;
         }
 
-        .modal-overlay {
-            position: fixed;
-            inset: 0;
-            background: rgba(0, 0, 0, 0.7);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            z-index: 10002;
-            opacity: 0;
-            visibility: hidden;
-            transition: opacity 0.5s, visibility 0.5s;
-        }
-
-        .modal-overlay.visible {
-            opacity: 1;
-            visibility: visible;
-        }
-
-        .modal-content {
-            background: #fff;
-            padding: 40px;
-            border-radius: 15px;
-            max-width: 500px;
-            width: 90%;
-            transform: scale(0.7);
-            transition: transform 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-        }
-
-        .modal-overlay.visible .modal-content {
-            transform: scale(1);
-        }
-
-        .close-modal-btn {
-            position: absolute;
-            top: 15px;
-            right: 15px;
-            background: none;
-            border: none;
-            font-size: 2rem;
-            color: #aaa;
-            cursor: none;
-        }
-
         #loader {
             position: fixed;
             inset: 0;
@@ -511,18 +473,36 @@
                 transform: translateY(0);
             }
         }
+
+        #menu-toggle-icon {
+            z-index: 20002;
+        }
+
+        #floating-menu {
+            z-index: 20001;
+        }
+
+        .hero-text {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .form-note {
+            font-size: 0.8rem;
+            margin-top: 5px;
+        }
     </style>
 </head>
 
 <body>
     <!-- フローティングナビゲーションメニュー -->
-    <div id="menu-toggle-icon" style="z-index: 20002;">≡</div>
-    <div id="floating-menu" style="z-index: 20001;">
+    <div id="menu-toggle-icon">≡</div>
+    <div id="floating-menu">
         <a href="../index.html">トップページへ</a>
         <a href="../contents.html">コンテンツ一覧へ</a>
     </div>
 
-    <!-- 元のコンテンツHTML（変更なし） -->
+    <!-- 元のコンテンツHTML -->
     <div class="custom-cursor"></div>
     <div id="loader">
         <p class="loader-text"></p>
@@ -537,11 +517,11 @@
     <main>
         <section class="container-fluid reveal-on-scroll">
             <h1 class="section-title">良かれと思って作った、最悪のウェブサイト</h1>
-            <p style="max-width: 800px; margin: 0 auto">
+            <p class="hero-text">
                 このサイトは、ウェブクリエイターが陥りがちな「善意の失敗」を集めたショーケースです。<br />セクションごとに幅が違うこのページ、スクロールしていて「ガタガタする」「もっさりする」と感じませんか？
             </p>
         </section>
-        
+
         <section class="container">
             <h2 class="section-title reveal-on-scroll">
                 慌ただしくループするギャラリー
@@ -561,15 +541,15 @@
                         <img src="https://picsum.photos/800/450?random=4" alt="ランダムな風景画像4" />
                     </div>
                 </div>
-                <button id="prev-btn" class="gallery-nav">&lt;</button>
-                <button id="next-btn" class="gallery-nav">&gt;</button>
-                <div class="gallery-dots"></div>
+                <button id="prev-btn" type="button" class="gallery-nav">&lt;</button>
+                        <button id="next-btn" type="button" class="gallery-nav">&gt;</button>
+                        <div class="gallery-dots"></div>
             </div>
-            <p class="reveal-on-scroll" style="margin-top: 20px">
+            <p class="reveal-on-scroll gallery-description">
                 矢印、ドット、スワイプ、ループ、全部使えます！でも、あなたの操作は1.5秒後には無かったことにされます。
             </p>
         </section>
-        
+
         <section class="container-fluid">
             <h2 class="section-title reveal-on-scroll">
                 私たちのこだわり（動きすぎ）
@@ -598,7 +578,7 @@
                 </div>
             </div>
         </section>
-        
+
         <section class="horizontal-scroll-container">
             <div class="sticky-wrapper">
                 <div class="horizontal-content">
@@ -633,7 +613,7 @@
                 </div>
             </div>
         </section>
-        
+
         <section class="container">
             <h2 class="section-title reveal-on-scroll">
                 続きを読む（不要なボタン）
@@ -649,13 +629,13 @@
                 <span class="read-more-button">続きを読む</span>
             </div>
         </section>
-        
+
         <section class="container">
             <h2 class="section-title reveal-on-scroll">お問い合わせ</h2>
             <form class="reveal-on-scroll" onsubmit="alert('送信機能はありません'); return false;">
                 <div class="form-group">
                     <input type="tel" id="phone" placeholder="電話番号（例: 09012345678）" autocomplete="off" required />
-                    <p style="font-size: 0.8rem; margin-top: 5px">
+                    <p class="form-note">
                         ブラウザの自動入力をオフにし、ハイフンを自動で挿入する親切設計です。
                     </p>
                 </div>
@@ -664,18 +644,11 @@
         </section>
     </main>
     <div id="bgm-controls">
-        <button id="play-pause-btn">▶</button>
+        <button id="play-pause-btn" type="button">▶</button>
         <span id="bgm-label">BGM</span>
         <audio id="background-music" loop>
             <source src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3" type="audio/mpeg" />
         </audio>
-    </div>
-    <div class="modal-overlay">
-        <div class="modal-content">
-            <button class="close-modal-btn">×</button>
-            <h3>特別なお知らせ！</h3>
-            <p>このサイトの体験はいかがでしたか？<br />このモーダルは、あなたの作業を中断させるためだけに表示されています。</p>
-        </div>
     </div>
 
     <!-- 統合されたJavaScript -->
@@ -699,7 +672,7 @@
             }
         });
 
-        // --- 元のコンテンツロジック (変更なし) ---
+        // --- 元のコンテンツロジック ---
         document.addEventListener("DOMContentLoaded", () => {
             const initPage = () => {
                 setupCustomCursor();
@@ -726,7 +699,13 @@
                 const prevBtn = gallery.querySelector("#prev-btn"); const dotsContainer = gallery.querySelector(".gallery-dots");
                 track.appendChild(originalSlides[0].cloneNode(true)); track.insertBefore(originalSlides[slideCount - 1].cloneNode(true), originalSlides[0]);
                 let currentIndex = 1, autoSlideInterval, isDragging = false, startPos = 0, currentTranslate = 0;
-                originalSlides.forEach((_, i) => { const dot = document.createElement("button"); dot.classList.add("dot"); dot.addEventListener("click", () => { currentIndex = i + 1; setPosition(true); }); dotsContainer.appendChild(dot); });
+                originalSlides.forEach((_, i) => {
+                    const dot = document.createElement("button");
+                    dot.type = "button";
+                    dot.classList.add("dot");
+                    dot.addEventListener("click", () => { currentIndex = i + 1; setPosition(true); });
+                    dotsContainer.appendChild(dot);
+                });
                 const dots = Array.from(dotsContainer.children);
                 const setPosition = (withTransition = false) => {
                     if (withTransition) { track.classList.add("smooth"); } else { track.classList.remove("smooth"); }
@@ -784,9 +763,6 @@
                 document.getElementById("phone").addEventListener("input", e => { let v = e.target.value.replace(/\D/g, ""); if (v.length > 3 && v.length <= 7) v = `${v.slice(0, 3)}-${v.slice(3)}`; else if (v.length > 7) v = `${v.slice(0, 3)}-${v.slice(3, 7)}-${v.slice(7, 11)}`; e.target.value = v; });
                 const bgm = document.getElementById("background-music");
                 document.getElementById("play-pause-btn").addEventListener("click", e => { if (bgm.paused) { bgm.play().catch(() => { }); e.target.textContent = "❚❚"; } else { bgm.pause(); e.target.textContent = "▶"; } });
-                const modal = document.querySelector(".modal-overlay");
-                setTimeout(() => modal.classList.add("visible"), 15000);
-                document.querySelector(".close-modal-btn").addEventListener("click", () => modal.classList.remove("visible"));
             };
             initPage();
         });

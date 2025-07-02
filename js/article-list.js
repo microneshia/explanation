@@ -8,7 +8,8 @@
 
 // 解説記事 (explanation/ フォルダ内) のファイル名とタグ情報を管理
 const explanationArticles = [
-    { file: 'AM1_12.html',      tags: ['解説', '応用数学', 'フーリエ級数', 'パーセバルの等式', '完備性'] },  // 20
+    { file: 'AM1_13.html',      tags: ['解説', '応用数学Ⅰ', 'フーリエ級数', 'デルタ関数', '超関数', '項別微分'] },  // 21
+    { file: 'AM1_12.html',      tags: ['解説', '応用数学Ⅰ', 'フーリエ級数', 'パーセバルの等式', '完備性'] },  // 20
     { file: 'IC_11.html',       tags: ['解説', '情報通信工学', '信号処理', 'サンプリング定理', 'エイリアシング', '量子化', 'SNR'] },  // 19
     { file: 'IC_10.html',       tags: ['解説', '情報通信工学', '変調', 'FM', 'AM', 'フーリエ級数', '信号処理'] },  // 18
     { file: 'AM1_11.html',      tags: ['解説', '応用数学Ⅰ', 'フーリエ解析', '強制振動', 'RLC回路', '微分方程式'] },  // 17
@@ -32,14 +33,13 @@ const explanationArticles = [
 
 // その他のコンテンツ (contents/ フォルダ内) のファイル名とタグ情報を管理
 const contents = [
-    { file: 'ball.html',                tags: ['コンテンツ', 'ゲーム', 'ガジェット', 'JavaScript', 'HTML5'] },  // 18
-    { file: 'input-leap-guide.html',    tags: ['コンテンツ', 'PCツール', 'Windows', 'macOS', 'Input Leap', 'ソフトウェアKVM'] },  // 17
-    { file: 'gitguide.html',            tags: ['コンテンツ', 'Git', 'GitHub', 'VS Code', 'チュートリアル'] },  // 16
-    { file: 'bad-ui-showcase.html',     tags: ['コンテンツ', 'ジョーク', 'UI/UX', 'Webデザイン', 'JavaScript'] },  // 15
-    { file: 'music.html',               tags: ['コンテンツ', 'ツール', '音楽', 'メディアプレーヤー', 'Web Audio API'] },  // 14
-    { file: 'piano.html',               tags: ['コンテンツ', 'ツール', '音楽', 'シンセサイザー', 'Web Audio API'] },  // 13
-    { file: 'shabanai-gen.html',        tags: ['コンテンツ', 'AI', 'ジェネレーター', '読み物', 'Gemini'] },  // 12
-    { file: 'click.html',               tags: ['コンテンツ', 'ゲーム', 'クリッカーゲーム', 'JavaScript'] },  // 11
+    { file: 'ball.html',                tags: ['コンテンツ', 'ゲーム', 'ガジェット', 'JavaScript', 'HTML5'] },  // 17
+    { file: 'input-leap-guide.html',    tags: ['コンテンツ', 'PCツール', 'Windows', 'macOS', 'Input Leap', 'ソフトウェアKVM'] },  // 16
+    { file: 'gitguide.html',            tags: ['コンテンツ', 'Git', 'GitHub', 'VS Code', 'チュートリアル'] },  // 15
+    { file: 'bad-ui-showcase.html',     tags: ['コンテンツ', 'ジョーク', 'UI/UX', 'Webデザイン', 'JavaScript'] },  // 14
+    { file: 'music.html',               tags: ['コンテンツ', 'ツール', '音楽', 'メディアプレーヤー', 'Web Audio API'] },  // 13
+    { file: 'piano.html',               tags: ['コンテンツ', 'ツール', '音楽', 'シンセサイザー', 'Web Audio API'] },  // 12
+    { file: 'shabanai-gen.html',        tags: ['コンテンツ', 'AI', 'ジェネレーター', '読み物', 'Gemini'] },  // 11
     { file: 'CH_ex2.html',              tags: ['コンテンツ', 'コンピュータ科学', 'ハードウェア', '試験対策', 'クイズ'] },  // 10
     { file: 'CH_ex1.html',              tags: ['コンテンツ', 'コンピュータ科学', 'ハードウェア', '試験対策', 'クイズ'] },  // 9
     { file: 'slot.html',                tags: ['コンテンツ', 'ゲーム', 'JavaScript', 'Web開発'] },  // 8

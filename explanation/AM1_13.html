@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- 記事のタイトル -->
+    <title>デルタ関数とフーリエ級数：不連続な関数の微分 - 総合解説プラットフォーム</title>
+
+    <!-- 記事の連番 -->
+    <meta name="article-number" content="000021">
+
+    <!-- 共通CSSファイルの読み込み -->
+    <link rel="stylesheet" href="../css/common.css">
+    <link rel="stylesheet" href="../css/article.css">
+
+    <!-- MathJax関連スクリプト -->
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script src="../js/mathjax-config.js"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+
+    <!-- このページ固有のスタイル -->
+    <style>
+        .problem-box {
+            background-color: #f0f8ff;
+            border-left: 5px solid #4682b4;
+            padding: 20px;
+            margin: 25px 0;
+            border-radius: 5px;
+        }
+
+        .problem-box p:last-child {
+            margin-bottom: 0;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- 共通ヘッダー -->
+    <header>
+        <a href="../index.html" class="header-link">
+            <h1>総合解説プラットフォーム <span class="subtitle">あらゆる疑問に、明快な解答を。</span></h1>
+        </a>
+    </header>
+
+    <!-- 共通ナビゲーションバー -->
+    <nav>
+        <ul>
+            <li><a href="../index.html">トップ</a></li>
+            <li><a href="../contents.html">コンテンツ</a></li>
+            <li><a href="../tags.html">タグ検索</a></li>
+        </ul>
+    </nav>
+
+    <!-- メインコンテンツ -->
+    <main class="article-container">
+        <h1>デルタ関数とフーリエ級数：不連続な関数の微分</h1>
+
+        <!-- タグはJavaScriptによってこの位置に自動挿入されます -->
+
+        <p>
+            フーリエ級数は、滑らかな周期関数だけでなく、ノコギリの歯のように不連続な点を持つ関数も美しく表現できます。では、そのような不連続な関数の「微分」を考えるとどうなるのでしょうか？この記事では、鋸歯状波のフーリエ級数を微分するという問題を通じて、物理学や信号処理で極めて重要な<span
+                class="important">ディラックのデルタ関数</span>とフーリエ級数の深い関係性を探求します。形式的な数式の操作と、関数のグラフからの直感的理解という2つのアプローチが、驚くほど美しい形で一致する様子をご覧ください。
+        </p>
+
+        <section id="s1">
+            <h2>1. 前提知識の確認</h2>
+            <p>
+                課題を解く前に、必要となる2つの重要な概念、「鋸歯状波のフーリエ級数」と「ディラックのデルタ関数」について確認します。
+            </p>
+            <h3>1.1. 鋸歯状波のフーリエ級数</h3>
+            <p>
+                今回の問題の出発点となるのは、区間 \((-\pi, \pi)\) で \(f(x) = x + \pi\) と定義され、周期 \(2\pi\) を持つ鋸歯状波です。
+                この関数のフーリエ級数展開は、以下のように与えられます。
+            </p>
+            <div class="math-block">
+                $$ f(x) \sim \pi + 2 \sum_{n=1}^{\infty} \frac{(-1)^{n+1}}{n} \sin(nx) = \pi + 2 \left( \sin x -
+                \frac{1}{2}\sin 2x + \frac{1}{3}\sin 3x - \cdots \right) $$
+            </div>
+
+            <h3>1.2. ディラックのデルタ関数と単位インパルス列</h3>
+            <p>
+                <span class="important">ディラックのデルタ関数 \(\delta(x)\)</span>
+                は、物理学における「瞬間的な衝撃」や「点電荷」のような、極めて局所的な現象を数学的にモデル化するための特殊な「関数」（厳密には超関数）です。以下の性質を持ちます。
+            </p>
+            <ul>
+                <li>\(x=0\) 以外のすべての点で値は 0。</li>
+                <li>\(x=0\) でのみ無限大の値をとる。</li>
+                <li>全区間で積分すると値は 1 になる (\(\int_{-\infty}^{\infty} \delta(x) dx = 1\))。</li>
+            </ul>
+            <p>
+                そして、このデルタ関数を周期 \(T\) で規則的に並べたものを<span class="important">単位インパルス列 \(\delta_T(x)\)</span> と呼びます。
+            </p>
+            <div class="math-block">
+                $$ \delta_T(x) = \sum_{k=-\infty}^{\infty} \delta(x - kT) $$
+            </div>
+            <p>
+                今回の課題では、この単位インパルス列のフーリエ級数を求めることが最終目標となります。
+            </p>
+        </section>
+
+
+        <section id="s2">
+            <h2>2. 課題13：単位インパルス列のフーリエ級数導出</h2>
+            <div class="problem-box">
+                <p><strong>課題:</strong> 鋸歯状波の関数 \(f(x) = x+\pi \quad (-\pi &lt; x &lt; \pi)\) の微分を考える。</p>
+                        <p><strong>(a)</strong> \(f(x)\) のフーリエ級数を、項別微分することにより \(f'(x)\) のフーリエ級数を求めよ。</p>
+                        <p><strong>(b)</strong> \(f(x)\) のグラフを見て、その微分を単位インパルス列を使って表わせ。</p>
+                        <p><strong>(c)</strong> (a), (b)より、単位インパルス列のフーリエ級数を求めよ。</p>
+            </div>
+
+            <h3>(a) フーリエ級数の項別微分</h3>
+            <p>
+                まず、前提知識で確認した \(f(x)\) のフーリエ級数を項ごとに微分します。
+            </p>
+            <div class="math-block">
+                \begin{align*}
+                f'(x) &\sim \frac{d}{dx} \left( \pi + 2 \sum_{n=1}^{\infty} \frac{(-1)^{n+1}}{n} \sin(nx) \right) \\
+                &= 0 + 2 \sum_{n=1}^{\infty} \frac{(-1)^{n+1}}{n} \frac{d}{dx}(\sin(nx)) \\
+                &= 2 \sum_{n=1}^{\infty} \frac{(-1)^{n+1}}{n} (n \cos(nx)) \\
+                &= 2 \sum_{n=1}^{\infty} (-1)^{n+1} \cos(nx) \\
+                &= 2 (\cos x - \cos 2x + \cos 3x - \cos 4x + \cdots)
+                \end{align*}
+            </div>
+
+            <h3>(b) グラフからの微分の直感的理解</h3>
+            <p>
+                次に、関数のグラフから直感的に微分を考えます。
+            </p>
+            <ul>
+                <li><strong>区間 \((-\pi, \pi)\) 内:</strong> \(f(x) = x+\pi\) なので、グラフの傾きは常に \(1\) です。よって、この区間では \(f'(x) =
+                    1\) となります。
+                </li>
+                <li><strong>不連続点 \(x = \pm \pi, \pm 3\pi, \dots\):</strong>
+                    グラフを見ると、例えば \(x=\pi\) の点では、関数の値が \(2\pi\) から次の周期の開始点である \(0\) へと、<span class="highlight">不連続に
+                        \(2\pi\)
+                        だけジャンプ（下降）</span>しています。このような不連続なジャンプの微分は、デルタ関数で表現されます。
+                </li>
+            </ul>
+            <p>
+                大きさ \(A\) のジャンプ（ステップ）の微分は、強さ \(A\) のデルタ関数に対応します。今回は大きさ \(-2\pi\) のジャンプが \(x = \dots, -\pi,
+                \pi, 3\pi, \dots\) という周期 \(2\pi\) で発生しています。
+            </p>
+            <p>
+                したがって、\(f'(x)\) は、傾きである「1」と、ジャンプを表すデルタ関数の列の和で表すことができます。
+            </p>
+            <div class="math-block">
+                $$ f'(x) = 1 - 2\pi \sum_{k=-\infty}^{\infty} \delta(x - (2k+1)\pi) $$
+            </div>
+            <p>
+                ここで、\(\sum_{k=-\infty}^{\infty} \delta(x - (2k+1)\pi)\) は、周期 \(2\pi\) で \(x=\pi\)
+                にインパルスを持つ単位インパルス列であり、\(\delta_{2\pi}(x-\pi)\)
+                と書くことができます。よって、
+            </p>
+            <div class="math-block">
+                $$ f'(x) = 1 - 2\pi \cdot \delta_{2\pi}(x-\pi) $$
+            </div>
+
+            <h3>(c) 結果の統合と単位インパルス列の級数</h3>
+            <p>
+                (a)で求めた数式による微分結果と、(b)で求めたグラフからの直感的・物理的な微分結果は、同じ \(f'(x)\) を表しているはずなので、等しいとおきます。
+            </p>
+            <div class="math-block">
+                $$ 2 \sum_{n=1}^{\infty} (-1)^{n+1} \cos(nx) = 1 - 2\pi \cdot \delta_{2\pi}(x-\pi) $$
+            </div>
+            <p>
+                この式を、\(\pi\) だけシフトした単位インパルス列 \(\delta_{2\pi}(x-\pi)\) について解きます。
+            </p>
+            <div class="math-block">
+                \begin{align*}
+                2\pi \cdot \delta_{2\pi}(x-\pi) &= 1 - 2 \sum_{n=1}^{\infty} (-1)^{n+1} \cos(nx) \\
+                &= 1 + 2 \sum_{n=1}^{\infty} (-1)^{n} \cos(nx) \\
+                \delta_{2\pi}(x-\pi) &= \frac{1}{2\pi} + \frac{1}{\pi} \sum_{n=1}^{\infty} (-1)^{n} \cos(nx)
+                \end{align*}
+            </div>
+            <p>
+                これが \(\pi\) だけシフトした単位インパルス列のフーリエ級数です。私たちが求めたいのは、原点にインパルスを持つ標準的な単位インパルス列 \(\delta_{2\pi}(x)\)
+                の級数なので、上式の \(x\) を \(x+\pi\) に置き換えます。
+            </p>
+            <p>
+                \(\cos(n(x+\pi))\) を加法定理で展開すると、
+            </p>
+            <div class="math-block">
+                $$ \begin{align*}
+                \cos(n(x+\pi)) &= \cos(nx + n\pi) \\
+                &= \cos(nx)\cos(n\pi) - \sin(nx)\sin(n\pi)
+                \end{align*} $$
+            </div>
+            <p>
+                となり、ここで \(\cos(n\pi)=(-1)^n\) および \(\sin(n\pi)=0\) であることから、
+            </p>
+            <div class="math-block">
+                $$ \cos(n(x+\pi)) = (-1)^n \cos(nx) $$
+            </div>
+            <p>となります。この関係を使って式を整理します。</p>
+            <div class="math-block">
+                \begin{align*}
+                \delta_{2\pi}(x) &= \frac{1}{2\pi} + \frac{1}{\pi} \sum_{n=1}^{\infty} (-1)^{n} \cos(n(x+\pi)) \\
+                &= \frac{1}{2\pi} + \frac{1}{\pi} \sum_{n=1}^{\infty} (-1)^{n} \left( (-1)^n \cos(nx) \right) \\
+                &= \frac{1}{2\pi} + \frac{1}{\pi} \sum_{n=1}^{\infty} (-1)^{2n} \cos(nx) \\
+                &= \frac{1}{2\pi} + \frac{1}{\pi} \sum_{n=1}^{\infty} \cos(nx)
+                \end{align*}
+            </div>
+            <p><strong>結論:</strong> 周期 \(2\pi\) の単位インパルス列 \(\delta_{2\pi}(x)\) のフーリエ級数は、以下のようになります。</p>
+            <div class="math-block">
+                $$ \delta_{2\pi}(x) = \frac{1}{2\pi} + \frac{1}{\pi} \sum_{n=1}^{\infty} \cos(nx) $$
+            </div>
+        </section>
+
+        <section id="conclusion">
+            <h2>まとめ</h2>
+            <p>
+                この演習は、フーリエ級数の応用として非常に興味深い例です。以下の重要な点が明らかになりました。
+            </p>
+            <ul>
+                <li>フーリエ級数の<span class="highlight">項別微分</span>は、数学的に導関数のフーリエ級数を与える。</li>
+                <li>関数のグラフにおける<span class="highlight">不連続なジャンプの微分</span>は、ディラックのデルタ関数に対応する。</li>
+                <li>これら二つの異なるアプローチが一致することを利用して、通常の方法では計算が難しい<span class="important">デルタ関数の級数展開</span>を導出できる。</li>
+            </ul>
+            <p>
+                このように、フーリエ級数は単なる関数の分解ツールではなく、超関数といったより高度な数学的概念を理解するための橋渡しとなる、強力なフレームワークなのです。
+            </p>
+        </section>
+
+    </main>
+
+    <!-- 共通フッター -->
+    <footer>
+        <p>© 2025 総合解説プラットフォーム. All rights reserved.</p>
+    </footer>
+
+    <!-- トップへ戻るボタン -->
+    <button id="scrollTopBtn" title="トップへ戻る">⇧</button>
+
+    <!-- 外部JavaScriptの読み込み (順序が重要) -->
+    <script src="../js/article-list.js"></script>
+    <script src="../js/common.js"></script>
+</body>
+
+</html>

@@ -15,9 +15,6 @@
     transition: background-color 0.2s;
     text-align: center;
 }
-#tag-toggle-btn:hover {
-    background-color: #e9ecef;
-}
 
 /* タグクラウドをラップするコンテナ */
 .tag-cloud-wrapper {
@@ -51,12 +48,6 @@
     cursor: pointer;
     border: 1px solid #ccc;
 }
-.tag-btn:hover {
-    background-color: #007bff;
-    color: white;
-    border-color: #007bff;
-    transform: translateY(-2px);
-}
 .tag-btn.active {
     background-color: #0056b3;
     color: white;
@@ -73,7 +64,6 @@
     border-radius: 10px;
     transition: all 0.2s ease;
 }
-.tag-btn:hover .tag-count,
 .tag-btn.active .tag-count {
     background-color: rgba(255, 255, 255, 0.2);
     color: white;
@@ -102,9 +92,6 @@
     visibility: visible;
     transform: translateY(0);
 }
-#clear-selection-btn:hover {
-    background-color: #5a6268;
-}
 #search-results-container h2 {
     text-align: center;
     margin-bottom: 20px;
@@ -116,4 +103,23 @@
     text-align: center;
     color: #777;
     padding: 40px;
+}
+
+@media (hover: hover) {
+    #tag-toggle-btn:hover {
+        background-color: #e9ecef;
+    }
+    .tag-btn:hover {
+        background-color: #007bff;
+        color: white;
+        border-color: #007bff;
+        transform: translateY(-2px);
+    }
+    .tag-btn:hover .tag-count {
+        background-color: rgba(255, 255, 255, 0.2);
+        color: white;
+    }
+    #clear-selection-btn:hover {
+        background-color: #5a6268;
+    }
 }

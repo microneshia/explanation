@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>シャバナイ外伝ジェネレーター - 総合解説プラットフォーム</title>
-    <meta name="article-number" content="000012">
+    <meta name="article-number" content="000011">
     <meta name="description" content="AIがランダムなテーマで「シャバナイ」の物語を生成するジェネレーターです。">
 
     <link rel="stylesheet" href="../css/common.css">
@@ -22,6 +22,10 @@
     <style>
         .article-container {
             max-width: 800px;
+        }
+
+        .card-tags {
+            justify-content: center;
         }
 
         .api-key-section {
@@ -244,7 +248,7 @@
 
     <main class="article-container">
         <h1>シャバナイ外伝ジェネレーター</h1>
-        <div class="card-tags" style="justify-content: center;"></div>
+        <div class="card-tags"></div>
         <p>ボタンを押すとAIがランダムなテーマを生成し、そのテーマに沿って「シャバナイ」と「食」の要素を絡めた外伝を生成します。</p>
         <div class="api-key-section">
             <label for="apiKeyInput">Gemini APIキー:</label>
@@ -390,7 +394,7 @@
                 continueStoryButton.disabled = false; completeStoryButton.disabled = false;
             }
 
-            // ▼▼▼ プロンプトを復元 ▼▼▼
+            // ▼▼▼ プロンプト ▼▼▼
             const getStoryPrompt = (theme) => `
 以下の条件で、登場人物「${characterName}」が登場する物語を創作してください。
 
@@ -644,7 +648,7 @@ D.  俺のセリフ(俺はシャバい、シャバくない、という言葉を
 
 　だから、  つまり、  どうやら、  どうも、  その、  人間が居ればそれでいいわけで、  その人間は、  ルールによれば、 別に、
 …………生きているものでなくても、構わないらしい`;
-            // ▲▲▲ プロンプトを復元 ▲▲▲
+            // ▲▲▲ プロンプト ▲▲▲
 
             generateButton.addEventListener('click', async () => {
                 const apiKey = apiKeyInput.value.trim();
