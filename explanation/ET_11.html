@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- 記事のタイトル -->
+    <title>無限長直線電流と円形コイルの磁場 - 総合解説プラットフォーム</title>
+
+    <!-- 記事の連番 -->
+    <meta name="article-number" content="000022">
+
+    <!-- 共通CSSファイルの読み込み -->
+    <link rel="stylesheet" href="../css/common.css">
+    <link rel="stylesheet" href="../css/article.css">
+
+    <!-- MathJax関連スクリプト -->
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script src="../js/mathjax-config.js"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+
+    <!-- このページ固有のスタイル -->
+    <style>
+        .problem-box {
+            background-color: #f0f8ff;
+            border-left: 5px solid #4682b4;
+            padding: 20px;
+            margin: 25px 0;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- 共通ヘッダー -->
+    <header>
+        <a href="../index.html" class="header-link">
+            <h1>総合解説プラットフォーム <span class="subtitle">あらゆる疑問に、明快な解答を。</span></h1>
+        </a>
+    </header>
+
+    <!-- 共通ナビゲーションバー -->
+    <nav>
+        <ul>
+            <li><a href="../index.html">トップ</a></li>
+            <li><a href="../contents.html">コンテンツ</a></li>
+            <li><a href="../tags.html">タグ検索</a></li>
+        </ul>
+    </nav>
+
+    <!-- メインコンテンツ -->
+    <main class="article-container">
+        <h1>無限長直線電流と円形コイルの磁場</h1>
+
+        <!-- タグはJavaScriptによってこの位置に自動挿入されます -->
+
+        <p>
+            この記事では、静磁場の基本法則である<span
+                class="important">ビオ・サバールの法則</span>を用いて、2つの典型的な問題「無限長直線電流が作る磁場」と「円形コイルの中心軸上の磁場」を解くプロセスを、ベクトル計算から積分まで詳細に解説します。
+        </p>
+
+        <section id="biot-savart-intro">
+            <h2>ビオ・サバールの法則とは</h2>
+            <p>
+                ビオ・サバールの法則は、定常電流が流れる導線の微小な部分（電流素片）が、空間のある点に作る磁場を計算するための法則です。電流全体が作る磁場は、この微小な磁場を導線全体にわたって積分（足し合わせる）することで求められます。
+            </p>
+            <div class="math-block">
+                $$ \boldsymbol{B}(\boldsymbol{r}) = \frac{\mu_0 I}{4\pi} \int_C \frac{d\boldsymbol{l} \times
+                (\boldsymbol{r}
+                - \boldsymbol{r'})}{|\boldsymbol{r} - \boldsymbol{r'}|^3} $$
+            </div>
+            <ul>
+                <li>\(\boldsymbol{B}(\boldsymbol{r})\): 位置 \(\boldsymbol{r}\) における磁束密度ベクトル</li>
+                <li>\(\mu_0\): 真空の透磁率（定数）</li>
+                <li>\(I\): 電流の大きさ</li>
+                <li>\(d\boldsymbol{l}\): 電流が流れる向きを持つ、導線上の微小な長さのベクトル（電流源）。源泉の位置にあることを明確にするため \(d\boldsymbol{l'}\)
+                    とも書かれます。</li>
+                <li>\(\boldsymbol{r'}\): 電流源 \(d\boldsymbol{l}\) の位置ベクトル</li>
+                <li>\(\boldsymbol{r}\): 磁場を観測する点の位置ベクトル</li>
+            </ul>
+        </section>
+
+        <section id="problem1">
+            <h2>問題1：無限長直線電流の磁場</h2>
+            <div class="problem-box">
+                <p><strong>問題:</strong>
+                    $z$軸に沿って無限に長い直線導線が置かれ、$+z$方向に一様な定常電流$I$が流れている。ビオ・サバールの法則を用いて、導線から垂直に距離$r$だけ離れた$x$軸上の点 $P(r, 0, 0)$
+                    ($r&gt;0$) における磁束密度ベクトル $\boldsymbol{B}$ を求めよ。
+                </p>
+            </div>
+
+            <h3>解答と解説</h3>
+            <h4>ステップ1: 各ベクトルの定義</h4>
+            <p>問題の座標系に従って、ビオ・サバールの法則の各ベクトルを具体的に定義します。</p>
+            <ul>
+                <li>観測点の位置ベクトル \(\boldsymbol{r}\): \(\boldsymbol{r} = (r, 0, 0)\)</li>
+                <li>電流源の位置ベクトル \(\boldsymbol{r'}\): \(z\)軸上の点なので、\(\boldsymbol{r'} = (0, 0, z')\)</li>
+                <li>電流素片ベクトル \(d\boldsymbol{l}\): 問題の指示に従い、\(+z\)方向を向く微小なベクトルを \(d\boldsymbol{l} = (0, 0, dz')\) とします。
+                </li>
+            </ul>
+
+            <h4>ステップ2: ベクトル積の計算</h4>
+            <p>まず、\(\boldsymbol{r} - \boldsymbol{r'}\) を計算します。</p>
+            <div class="math-block">
+                $$ \boldsymbol{r} - \boldsymbol{r'} = (r, 0, -z') $$
+            </div>
+            <p>次に、外積 \(d\boldsymbol{l} \times (\boldsymbol{r} - \boldsymbol{r'})\) を計算します。</p>
+            <div class="math-block">
+                $$ d\boldsymbol{l} \times (\boldsymbol{r} - \boldsymbol{r'}) = (0, 0, dz') \times (r, 0, -z') = (0, r
+                dz', 0) $$
+            </div>
+            <p>この結果から、磁場ベクトル \(\boldsymbol{B}\) は \(y\) 成分しか持たないことがわかります。これは、電流の向きを親指とすると磁場が指の回る向きに発生するという<span
+                    class="highlight">右ねじの法則</span>とも一致します。
+            </p>
+
+            <h4>ステップ3: 距離の大きさの計算</h4>
+            <p>分母にある \(|\boldsymbol{r} - \boldsymbol{r'}|^3\) を計算します。</p>
+            <div class="math-block">
+                $$ |\boldsymbol{r} - \boldsymbol{r'}| = \sqrt{r^2 + 0^2 + (-z')^2} = \sqrt{r^2 + z'^2} $$
+                $$ |\boldsymbol{r} - \boldsymbol{r'}|^3 = (r^2 + z'^2)^{3/2} $$
+            </div>
+
+            <h4>ステップ4: 積分による磁場の計算</h4>
+            <p>これらをビオ・サバールの法則の式に代入し、\(z'\) について \(-\infty\) から \(\infty\) まで積分します。</p>
+            <div class="math-block">
+                $$ \boldsymbol{B} = \frac{\mu_0 I}{4\pi} \int_{-\infty}^{\infty} \frac{(0, r dz', 0)}{(r^2 +
+                z'^2)^{3/2}} = \left(0, \frac{\mu_0 I r}{4\pi} \int_{-\infty}^{\infty} \frac{dz'}{(r^2 +
+                z'^2)^{3/2}}, 0\right) $$
+            </div>
+            <p>この積分は \(z' = r \tan\theta\) と置換することで解くことができます。\(dz' = r\sec^2\theta \,d\theta\) となります。</p>
+            <div class="math-block">
+                \begin{align*}
+                \int_{-\infty}^{\infty} \frac{dz'}{(r^2 + z'^2)^{3/2}} &= \int_{-\pi/2}^{\pi/2} \frac{r\sec^2\theta
+                \,d\theta}{(r^2 + r^2\tan^2\theta)^{3/2}} \\
+                &= \int_{-\pi/2}^{\pi/2} \frac{r\sec^2\theta}{r^3\sec^3\theta} d\theta = \frac{1}{r^2}
+                \int_{-\pi/2}^{\pi/2}
+                \cos\theta \,d\theta \\
+                &= \frac{1}{r^2} [\sin\theta]_{-\pi/2}^{\pi/2} = \frac{1}{r^2} (1 - (-1)) = \frac{2}{r^2}
+                \end{align*}
+            </div>
+            <p>この結果を \(B_y\) の式に代入すると、</p>
+            <div class="math-block">
+                $$ B_y = \frac{\mu_0 I r}{4\pi} \cdot \frac{2}{r^2} = \frac{\mu_0 I}{2\pi r} $$
+            </div>
+            <p><strong>結論:</strong> 点 $P(r, 0, 0)$ における磁束密度ベクトル \(\boldsymbol{B}\) は以下のようになります。</p>
+            <div class="math-block">
+                $$ \boldsymbol{B} = \left(0, \frac{\mu_0 I}{2\pi r}, 0\right) $$
+            </div>
+        </section>
+
+        <section id="problem2">
+            <h2>問題2：円形コイル軸上の磁場</h2>
+            <div class="problem-box">
+                <p><strong>問題:</strong> 原点を中心として$xy$平面上に置かれた半径$a$の円形コイルに、反時計回りに大きさ$I$の定常電流が流れている。このコイルの中心軸（$z$軸）上の点
+                    $P(0, 0, z)$ における磁束密度 $\boldsymbol{B}$ を求めよ。</p>
+                <p>下記のベクトルを用いて計算せよ。</p>
+                <ul>
+                    <li>観測点（点P）の位置ベクトル \(\boldsymbol{r} = (0, 0, z)\)</li>
+                    <li>電流源（コイル上の点）の位置ベクトル \(\boldsymbol{r'} = (a\cos\phi, a\sin\phi, 0)\)</li>
+                    <li>線素ベクトル \(d\boldsymbol{l'} = (-a\sin\phi, a\cos\phi, 0) d\phi\)</li>
+                </ul>
+            </div>
+
+            <h3>解答と解説</h3>
+            <h4>ステップ1: ベクトル積の計算</h4>
+            <p>まず、\(\boldsymbol{r} - \boldsymbol{r'}\) を計算します。</p>
+            <div class="math-block">
+                $$ \boldsymbol{r} - \boldsymbol{r'} = (-a\cos\phi, -a\sin\phi, z) $$
+            </div>
+            <p>次に、外積 \(d\boldsymbol{l'} \times (\boldsymbol{r} - \boldsymbol{r'})\) を計算します。</p>
+            <div class="math-block">
+                \begin{align*}
+                d\boldsymbol{l'} \times (\boldsymbol{r} - \boldsymbol{r'}) &=
+                \begin{vmatrix}
+                \boldsymbol{i} & \boldsymbol{j} & \boldsymbol{k} \\
+                -a\sin\phi \,d\phi & a\cos\phi \,d\phi & 0 \\
+                -a\cos\phi & -a\sin\phi & z
+                \end{vmatrix} \\
+                &= (\boldsymbol{i}(az\cos\phi) - \boldsymbol{j}(-az\sin\phi) + \boldsymbol{k}(a^2\sin^2\phi +
+                a^2\cos^2\phi)) \,d\phi \\
+                &= (az\cos\phi, az\sin\phi, a^2) \,d\phi
+                \end{align*}
+            </div>
+
+            <h4>ステップ2: 距離の大きさの計算</h4>
+            <p>分母にある \(|\boldsymbol{r} - \boldsymbol{r'}|^3\) を計算します。</p>
+            <div class="math-block">
+                $$ |\boldsymbol{r} - \boldsymbol{r'}|^3 = (\sqrt{(-a\cos\phi)^2 + (-a\sin\phi)^2 + z^2})^3 = (a^2 +
+                z^2)^{3/2} $$
+            </div>
+            <p>この距離は角度 \(\phi\) に依存しない定数であるため、積分の外に出すことができます。</p>
+
+            <h4>ステップ3: 積分による磁場の計算</h4>
+            <p>これらをビオ・サバールの法則の式に代入し、\(\phi\) について \(0\) から \(2\pi\) まで積分します。</p>
+            <div class="math-block">
+                $$ \boldsymbol{B} = \frac{\mu_0 I}{4\pi} \int_0^{2\pi} \frac{(az\cos\phi, az\sin\phi,
+                a^2)}{(a^2+z^2)^{3/2}} \,d\phi $$
+            </div>
+            <p>この積分を成分ごとに考えます。コイルの円対称性により、ある点での磁場の \(x\) 成分や \(y\) 成分は、その反対側の点からの磁場成分によって打ち消されます。これを数式で確認します。</p>
+            <ul>
+                <li>\(B_x = \frac{\mu_0 I a z}{4\pi(a^2+z^2)^{3/2}} \int_0^{2\pi} \cos\phi \,d\phi = 0\)</li>
+                <li>\(B_y = \frac{\mu_0 I a z}{4\pi(a^2+z^2)^{3/2}} \int_0^{2\pi} \sin\phi \,d\phi = 0\)</li>
+            </ul>
+            <p>積分範囲が \(0\) から \(2\pi\) であるため、\(\cos\phi\) と \(\sin\phi\) の積分はゼロになります。残るのは \(z\) 成分のみです。</p>
+            <div class="math-block">
+                \begin{align*}
+                B_z &= \frac{\mu_0 I a^2}{4\pi(a^2+z^2)^{3/2}} \int_0^{2\pi} d\phi \\
+                &= \frac{\mu_0 I a^2}{4\pi(a^2+z^2)^{3/2}} [ \phi ]_0^{2\pi} \\
+                &= \frac{\mu_0 I a^2}{4\pi(a^2+z^2)^{3/2}} (2\pi) = \frac{\mu_0 I a^2}{2(a^2+z^2)^{3/2}}
+                \end{align*}
+            </div>
+
+            <p><strong>結論:</strong> 点 $P(0, 0, z)$ における磁束密度ベクトル \(\boldsymbol{B}\) は以下のようになります。</p>
+            <div class="math-block">
+                $$ \boldsymbol{B} = \left(0, 0, \frac{\mu_0 I a^2}{2(a^2+z^2)^{3/2}}\right) $$
+            </div>
+        </section>
+    </main>
+
+    <!-- 共通フッター -->
+    <footer>
+        <p>© 2025 総合解説プラットフォーム. All rights reserved.</p>
+    </footer>
+
+    <!-- トップへ戻るボタン -->
+    <button id="scrollTopBtn" title="トップへ戻る">⇧</button>
+
+    <!-- 外部JavaScriptの読み込み (順序が重要) -->
+    <script src="../js/article-list.js"></script>
+    <script src="../js/common.js"></script>
+</body>
+
+</html>
