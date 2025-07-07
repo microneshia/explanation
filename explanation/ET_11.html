@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <!-- 記事のタイトル -->
-    <title>無限長直線電流と円形コイルの磁場 - 総合解説プラットフォーム</title>
+    <title>ビオ・サバールの法則：無限長直線電流と円形コイルの磁場 - 総合解説プラットフォーム</title>
 
     <!-- 記事の連番 -->
     <meta name="article-number" content="000022">
@@ -51,7 +51,7 @@
 
     <!-- メインコンテンツ -->
     <main class="article-container">
-        <h1>無限長直線電流と円形コイルの磁場</h1>
+        <h1>ビオ・サバールの法則：無限長直線電流と円形コイルの磁場</h1>
 
         <!-- タグはJavaScriptによってこの位置に自動挿入されます -->
 
@@ -128,12 +128,18 @@
                 z'^2)^{3/2}} = \left(0, \frac{\mu_0 I r}{4\pi} \int_{-\infty}^{\infty} \frac{dz'}{(r^2 +
                 z'^2)^{3/2}}, 0\right) $$
             </div>
-            <p>この積分は \(z' = r \tan\theta\) と置換することで解くことができます。\(dz' = r\sec^2\theta \,d\theta\) となります。</p>
+            <p>この積分は \(z' = r \tan\theta\) と置換することで解くことができます。このとき、\(dz' = \frac{r}{\cos^2\theta} \,d\theta\)
+                となります。また、分母は次のように変形できます。</p>
+            <div class="math-block">
+                $$ (r^2 + z'^2)^{3/2} = (r^2 + r^2\tan^2\theta)^{3/2} = (r^2(1+\tan^2\theta))^{3/2} = \left(r^2
+                \frac{1}{\cos^2\theta}\right)^{3/2} = \frac{r^3}{\cos^3\theta} $$
+            </div>
+            <p>これらを積分式に代入します。積分範囲は \(z'\) が \(-\infty \to \infty\) のとき、\(\theta\) は \(-\pi/2 \to \pi/2\) となります。</p>
             <div class="math-block">
                 \begin{align*}
-                \int_{-\infty}^{\infty} \frac{dz'}{(r^2 + z'^2)^{3/2}} &= \int_{-\pi/2}^{\pi/2} \frac{r\sec^2\theta
-                \,d\theta}{(r^2 + r^2\tan^2\theta)^{3/2}} \\
-                &= \int_{-\pi/2}^{\pi/2} \frac{r\sec^2\theta}{r^3\sec^3\theta} d\theta = \frac{1}{r^2}
+                \int_{-\infty}^{\infty} \frac{dz'}{(r^2 + z'^2)^{3/2}} &= \int_{-\pi/2}^{\pi/2}
+                \frac{\frac{r}{\cos^2\theta} \,d\theta}{\frac{r^3}{\cos^3\theta}} \\
+                &= \int_{-\pi/2}^{\pi/2} \frac{r}{\cos^2\theta} \cdot \frac{\cos^3\theta}{r^3} \,d\theta = \frac{1}{r^2}
                 \int_{-\pi/2}^{\pi/2}
                 \cos\theta \,d\theta \\
                 &= \frac{1}{r^2} [\sin\theta]_{-\pi/2}^{\pi/2} = \frac{1}{r^2} (1 - (-1)) = \frac{2}{r^2}
