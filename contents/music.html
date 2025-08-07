@@ -8,7 +8,6 @@
     <meta name="article-number" content="000013">
     <meta name="description" content="ローカルの音楽ファイルが入ったフォルダを選択して再生できる、多機能なウェブプレーヤーです。">
 
-    <!-- Google FontsとナビゲーションCSSの読み込み -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link
@@ -16,10 +15,10 @@
         rel="stylesheet">
     <link rel="stylesheet" href="../css/nav-menu.css">
 
-    <!-- このコンテンツ固有のスタイル -->
     <style>
         :root {
             --bg-color: #f7f9fc;
+            --container-bg: #f7f9fc;
             --primary-text: #333d47;
             --secondary-text: #6b7a8a;
             --accent-blue: #007bff;
@@ -27,8 +26,33 @@
             --accent-green: #28a745;
             --accent-green-dark: #1e7e34;
             --accent-red: #dc3545;
+            --shadow-light: rgba(0, 0, 0, 0.05);
             --shadow-dark: rgba(0, 0, 0, 0.1);
             --border-color: #e6eaf0;
+            --drag-over-bg: rgba(0, 123, 255, 0.1);
+            --scrollbar-thumb: #c0c7d2;
+            --button-active-bg: #e9ecef;
+            /* ★ライトモード用アクティブ色 */
+        }
+
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --bg-color: #121212;
+                --container-bg: #1e1e1e;
+                --primary-text: #e0e0e0;
+                --secondary-text: #888888;
+                --accent-blue: #2997ff;
+                --accent-blue-dark: #007aff;
+                --accent-green: #30d158;
+                --accent-green-dark: #28a745;
+                --shadow-light: rgba(255, 255, 255, 0.05);
+                --shadow-dark: rgba(0, 0, 0, 0.3);
+                --border-color: #333333;
+                --drag-over-bg: rgba(41, 151, 255, 0.2);
+                --scrollbar-thumb: #555555;
+                --button-active-bg: #303030;
+                /* ★ダークモード用アクティブ色 */
+            }
         }
 
         body {
@@ -43,41 +67,38 @@
             min-height: 100vh;
             box-sizing: border-box;
             line-height: 1.6;
-            overflow-y: auto;
+            overflow: hidden;
             text-rendering: optimizeLegibility;
             -webkit-font-smoothing: antialiased;
             -moz-osx-font-smoothing: grayscale;
             touch-action: manipulation;
-            -webkit-touch-callout: none;
-            /* 修正: Safari互換性のためベンダープレフィックスを追加 */
             -webkit-user-select: none;
             user-select: none;
         }
 
         .player-container {
-            background-color: var(--bg-color);
+            background-color: var(--container-bg);
             border-radius: 25px;
-            box-shadow: 0 15px 35px var(--shadow-dark), 0 5px 15px rgba(0, 0, 0, 0.05);
-            padding: 35px;
+            box-shadow: 0 15px 35px var(--shadow-dark), 0 5px 15px var(--shadow-light);
+            padding: 30px 35px;
             width: 100%;
             max-width: 650px;
             text-align: center;
             box-sizing: border-box;
-            margin: 25px;
+            /* margin: 25px; <- ★削除 */
             border: 1px solid var(--border-color);
+            display: flex;
+            flex-direction: column;
+            height: calc(100vh - 50px);
+            max-height: 900px;
         }
 
-        h1 {
-            font-family: 'Roboto Condensed', sans-serif;
-            color: var(--primary-text);
-            font-size: 2.2em;
-            margin-bottom: 30px;
-            font-weight: 700;
-            letter-spacing: -0.5px;
+        .player-header {
+            flex-shrink: 0;
         }
 
         .file-input-wrapper {
-            margin-bottom: 30px;
+            margin-bottom: 20px;
         }
 
         .file-input-label {
@@ -89,31 +110,33 @@
             padding: 15px 35px;
             border-radius: 12px;
             cursor: pointer;
-            font-size: 1.15em;
+            font-size: 1.1em;
             font-weight: 500;
             transition: all 0.3s ease;
-            box-shadow: 0 6px 15px rgba(0, 123, 255, 0.3), 0 2px 5px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 6px 15px rgba(0, 123, 255, 0.3);
         }
 
         .file-input-label:hover {
             transform: translateY(-3px);
-            box-shadow: 0 8px 20px rgba(0, 123, 255, 0.4), 0 3px 8px rgba(0, 0, 0, 0.15);
+            box-shadow: 0 8px 20px rgba(0, 123, 255, 0.4);
         }
 
-        .file-input-label:active {
-            transform: translateY(0);
-            box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.2), 0 1px 3px rgba(0, 0, 0, 0.08);
-        }
-
-        #folderInput {
+        #folderInput,
+        #fileInput {
             display: none;
         }
 
-        .message {
-            margin-bottom: 25px;
-            font-size: 0.98em;
-            color: var(--secondary-text);
+        .message-container {
+            overflow: hidden;
+            white-space: nowrap;
+            margin-bottom: 15px;
             min-height: 20px;
+        }
+
+        .message {
+            font-size: 0.95em;
+            color: var(--secondary-text);
+            display: inline-block;
             transition: color 0.3s ease;
         }
 
@@ -125,44 +148,84 @@
         .message.loading {
             color: var(--accent-blue);
             font-weight: bold;
-            animation: pulse 1.5s infinite alternate;
         }
 
-        @keyframes pulse {
-            from {
-                opacity: 1;
-            }
+        .message.scrolling {
+            animation: marquee var(--marquee-duration) linear infinite;
+        }
 
-            to {
-                opacity: 0.7;
-            }
+        .player-body {
+            display: flex;
+            flex-direction: column;
+            flex-grow: 1;
+            min-height: 0;
+        }
+
+        .main-controls {
+            flex-shrink: 0;
+        }
+
+        .track-info-wrapper {
+            width: 100%;
+            margin-bottom: 20px;
         }
 
         .current-track-display-container {
-            font-size: 1.8em;
-            font-weight: 600;
-            color: var(--primary-text);
-            margin-bottom: 25px;
-            width: 100%;
-            overflow: hidden;
-            white-space: nowrap;
-            padding: 0 15px;
-            box-sizing: border-box;
-            min-height: 1.8em;
+            min-height: 4em;
             display: flex;
+            flex-direction: column;
             align-items: center;
             justify-content: center;
+            margin-bottom: 15px;
+            overflow: hidden;
+        }
+
+        .track-text-wrapper {
+            display: flex;
+            justify-content: center;
+            width: 100%;
+            overflow: hidden;
+        }
+
+        .track-text-wrapper.scrolling-active {
+            justify-content: flex-start;
         }
 
         .track-name-content {
-            display: inline-block;
+            font-size: 1.5em;
+            font-weight: 600;
+            color: var(--primary-text);
             white-space: nowrap;
-            transform: translateX(0);
-            animation: none;
+            flex-shrink: 0;
             will-change: transform;
         }
 
         .track-name-content.scrolling {
+            animation: marquee var(--marquee-duration) linear infinite;
+        }
+
+        .album-name-wrapper {
+            display: flex;
+            justify-content: center;
+            width: 100%;
+            overflow: hidden;
+            margin-top: 5px;
+        }
+
+        .album-name-wrapper.scrolling-active {
+            justify-content: flex-start;
+        }
+
+        .album-name-content {
+            font-size: 0.9em;
+            font-weight: 400;
+            color: var(--secondary-text);
+            white-space: nowrap;
+            flex-shrink: 0;
+            will-change: transform;
+        }
+
+        .album-name-content.scrolling {
             animation: marquee var(--marquee-duration) linear infinite;
         }
 
@@ -189,111 +252,142 @@
             background-color: var(--border-color);
             height: 10px;
             border-radius: 5px;
-            margin: 15px 0 25px;
             cursor: pointer;
-            position: relative;
-            box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.05);
-            /* 修正: Safari互換性のためベンダープレフィックスを追加 */
-            -webkit-user-select: none;
-            user-select: none;
         }
 
         .progress-bar {
             height: 100%;
             width: 0%;
-            background-image: linear-gradient(to right, var(--accent-green), var(--accent-green-dark));
+            background-image: linear-gradient(to right, var(--accent-green-dark), var(--accent-green));
             border-radius: 5px;
             transition: width 0.1s linear;
-            box-shadow: 0 0 8px rgba(40, 167, 69, 0.4);
         }
 
         .controls {
             display: flex;
             justify-content: center;
             gap: 20px;
-            margin-bottom: 35px;
-            flex-wrap: nowrap;
-            overflow-x: auto;
-            padding-bottom: 5px;
+            margin-top: 25px;
+            align-items: center;
         }
 
         .control-btn {
-            background-color: var(--bg-color);
+            background-color: var(--container-bg);
             color: var(--secondary-text);
             border: none;
             border-radius: 50%;
-            width: 70px;
-            height: 70px;
-            font-size: 2em;
+            width: 65px;
+            height: 65px;
+            font-size: 1.8em;
             cursor: pointer;
             display: flex;
             justify-content: center;
             align-items: center;
-            transition: all 0.3s cubic-bezier(.25, .8, .25, 1);
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1), 0 2px 5px rgba(0, 0, 0, 0.05);
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px var(--shadow-dark), 0 2px 5px var(--shadow-light);
             flex-shrink: 0;
-            -webkit-user-select: none;
-            user-select: none;
         }
 
         .control-btn:hover {
             color: var(--primary-text);
-            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15), 0 3px 8px rgba(0, 0, 0, 0.08);
+            box-shadow: 0 8px 20px var(--shadow-dark), 0 3px 8px var(--shadow-light);
             transform: translateY(-3px);
         }
 
         .control-btn:active,
         .control-btn.active {
-            box-shadow: inset 0 3px 8px rgba(0, 0, 0, 0.15), inset 0 1px 3px rgba(0, 0, 0, 0.08);
+            background-color: var(--button-active-bg);
+            /* ★修正 */
             transform: translateY(0);
+            box-shadow: none;
+            /* ★修正 */
         }
 
         .control-btn#playPauseBtn {
-            font-size: 2.5em;
+            font-size: 2.4em;
             color: var(--accent-blue);
-            box-shadow: 0 6px 15px rgba(0, 123, 255, 0.3), 0 2px 5px rgba(0, 0, 0, 0.1);
-        }
-
-        .control-btn#playPauseBtn:hover {
-            color: var(--accent-blue-dark);
-            box-shadow: 0 8px 20px rgba(0, 123, 255, 0.4), 0 3px 8px rgba(0, 0, 0, 0.15);
+            width: 70px;
+            height: 70px;
         }
 
         #shuffleBtn.active,
         #repeatBtn.active {
             color: var(--accent-green);
-            box-shadow: inset 0 3px 8px rgba(40, 167, 69, 0.3), inset 0 1px 3px rgba(40, 167, 69, 0.1);
-            transform: translateY(0);
+            background-color: var(--button-active-bg);
+        }
+
+        .playlist-wrapper {
+            position: relative;
+            flex-grow: 1;
+            min-height: 0;
         }
 
         .playlist {
-            max-height: 40vh;
-            /* PCでの最大高さをvhで指定 */
-            overflow-y: auto;
+            height: 100%;
             list-style: none;
             padding: 0;
             margin: 0;
             border-radius: 15px;
-            background-color: var(--bg-color);
             text-align: left;
-            box-shadow: inset 0 3px 8px rgba(0, 0, 0, 0.05);
+            box-shadow: inset 0 3px 8px var(--shadow-light);
             border: 1px solid var(--border-color);
+            overflow-y: auto;
+            scrollbar-width: thin;
+            scrollbar-color: var(--scrollbar-thumb) var(--container-bg);
+            -webkit-overflow-scrolling: touch;
+        }
+
+        .playlist::-webkit-scrollbar {
+            width: 10px;
+        }
+
+        .playlist::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        .playlist::-webkit-scrollbar-thumb {
+            background-color: var(--scrollbar-thumb);
+            border-radius: 10px;
+            border: 3px solid var(--container-bg);
         }
 
         .playlist li {
-            padding: 12px 20px;
-            border-bottom: 1px solid var(--border-color);
-            font-size: 0.95em;
-            color: var(--secondary-text);
-            cursor: pointer;
-            transition: background-color 0.2s ease, transform 0.15s ease;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
             display: flex;
             align-items: center;
-            -webkit-user-select: none;
-            user-select: none;
+            padding: 12px 15px;
+            border-bottom: 1px solid var(--border-color);
+            font-size: 0.9em;
+            transition: background-color 0.2s ease, box-shadow 0.2s ease, opacity 0.2s ease;
+            white-space: nowrap;
+            overflow: hidden;
+        }
+
+        .drag-handle {
+            cursor: grab;
+            padding: 0 10px;
+            font-size: 1.2em;
+            color: var(--secondary-text);
+            touch-action: none;
+        }
+
+        .drag-handle:active {
+            cursor: grabbing;
+        }
+
+        .playlist-item-text-container {
+            flex-grow: 1;
+            overflow: hidden;
+            cursor: pointer;
+        }
+
+        .playlist-item-text {
+            display: inline-block;
+            vertical-align: middle;
+            will-change: transform;
+        }
+
+        .playlist-item-text.scrolling {
+            animation: marquee var(--marquee-duration) linear infinite;
         }
 
         .playlist li:last-child {
@@ -301,466 +395,673 @@
         }
 
         .playlist li:hover {
-            background-color: rgba(0, 123, 255, 0.03);
-            transform: translateX(5px);
+            background-color: var(--drag-over-bg);
         }
 
         .playlist li.active {
-            background-color: rgba(40, 167, 69, 0.08);
+            background-color: rgba(40, 167, 69, 0.15);
             color: var(--accent-green);
             font-weight: 500;
-            border-left: 5px solid var(--accent-green);
-            padding-left: 15px;
         }
 
-        .playlist li.active::before {
-            content: '🎵';
-            margin-right: 10px;
-            font-size: 1.1em;
+        .playlist li.active .drag-handle {
             color: var(--accent-green-dark);
         }
 
-        .playlist::-webkit-scrollbar,
-        .controls::-webkit-scrollbar {
-            height: 10px;
-            width: 10px;
-        }
-
-        .playlist::-webkit-scrollbar-track,
-        .controls::-webkit-scrollbar-track {
+        .playlist li.ghost {
+            opacity: 0.5;
             background: var(--bg-color);
-            border-radius: 10px;
-            box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.03);
+            box-shadow: 0 10px 20px var(--shadow-dark);
         }
 
-        .playlist::-webkit-scrollbar-thumb,
-        .controls::-webkit-scrollbar-thumb {
-            background-color: #c0c7d2;
-            border-radius: 10px;
-            border: 3px solid var(--bg-color);
+        .playlist li.drag-over {
+            border-top: 2px solid var(--accent-blue);
         }
 
-        @media (max-width: 600px) {
+        #scrollToActiveBtn {
+            position: absolute;
+            bottom: 15px;
+            right: 15px;
+            z-index: 10;
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            border: none;
+            background-color: rgba(0, 123, 255, 0.8);
+            color: white;
+            font-size: 1.5em;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            transform: scale(0.8);
+            pointer-events: none;
+            transition: opacity 0.3s, transform 0.3s;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+        }
+
+        #scrollToActiveBtn.show {
+            opacity: 1;
+            transform: scale(1);
+            pointer-events: auto;
+        }
+
+        @media (max-width: 600px) and (orientation: portrait) {
             body {
-                align-items: flex-start;
-                padding: 10px;
+                overflow-y: auto;
             }
 
             .player-container {
-                margin: 10px;
+                height: auto;
                 padding: 20px;
-            }
-
-            h1 {
-                font-size: 1.8em;
-                margin-bottom: 25px;
+                /* margin: 10px 0; <- ★削除 */
             }
 
             .file-input-label {
                 padding: 12px 25px;
                 font-size: 1em;
-                border-radius: 10px;
+            }
+
+            .track-info-wrapper {
+                margin-bottom: 15px;
             }
 
             .current-track-display-container {
-                font-size: 1.4em;
-                margin-bottom: 20px;
+                min-height: 3.8em;
             }
 
-            .time-info {
+            .track-name-content {
+                font-size: 1.2em;
+            }
+
+            .album-name-content {
                 font-size: 0.8em;
-            }
-
-            .progress-bar-container {
-                height: 8px;
-                margin: 12px 0 20px;
+                margin-top: 4px;
             }
 
             .controls {
                 gap: 12px;
-                margin-bottom: 30px;
+                margin-top: 20px;
             }
 
             .control-btn {
-                width: 55px;
-                height: 55px;
-                font-size: 1.6em;
+                width: 50px;
+                height: 50px;
+                font-size: 1.5em;
             }
 
             .control-btn#playPauseBtn {
+                width: 60px;
+                height: 60px;
                 font-size: 2em;
             }
 
-            .playlist {
-                max-height: 250px;
+            .playlist-wrapper {
+                flex: none;
+                height: 35vh;
             }
 
-            .playlist li {
-                padding: 10px 15px;
-                font-size: 0.88em;
+            #scrollToActiveBtn {
+                bottom: 10px;
+                right: 10px;
+                width: 40px;
+                height: 40px;
+                font-size: 1.2em;
+            }
+        }
+
+        @media (max-height: 500px) and (orientation: landscape) {
+            body {
+                padding: 0;
+            }
+
+            .player-container {
+                flex-direction: row;
+                height: 100vh;
+                max-height: 100vh;
+                width: 100%;
+                max-width: 100%;
+                margin: 0;
+                padding: 15px;
+                border-radius: 0;
+                gap: 20px;
+            }
+
+            .player-header {
+                display: flex;
+                flex-direction: column;
+                justify-content: space-between;
+                width: 45%;
+                max-width: 320px;
+                flex-shrink: 0;
+            }
+
+            .message-container {
+                text-align: left;
+            }
+
+            .player-body {
+                width: 55%;
+                flex-grow: 1;
+                display: flex;
+                flex-direction: column;
+                min-width: 0;
+            }
+
+            .main-controls,
+            .playlist-wrapper {
+                width: 100%;
+            }
+
+            .track-info-wrapper {
+                margin-bottom: 10px;
+            }
+
+            .track-name-content {
+                font-size: 1.3em;
+            }
+
+            .album-name-content {
+                font-size: 0.85em;
+            }
+
+            .controls {
+                gap: 15px;
+                margin-top: 15px;
+            }
+
+            .control-btn {
+                width: 50px;
+                height: 50px;
+                font-size: 1.5em;
+            }
+
+            .control-btn#playPauseBtn {
+                width: 60px;
+                height: 60px;
+                font-size: 2em;
+            }
+
+            .playlist-wrapper {
+                margin-top: 0;
             }
         }
     </style>
 </head>
 
 <body>
-    <!-- フローティングナビゲーションメニュー -->
     <div id="menu-toggle-icon">≡</div>
-    <div id="floating-menu">
-        <a href="../index.html">トップページへ</a>
-        <a href="../contents.html">コンテンツ一覧へ</a>
-    </div>
+    <div id="floating-menu"><a href="../index.html">トップページへ</a><a href="../contents.html">コンテンツ一覧へ</a></div>
 
-    <!-- 元のコンテンツHTML -->
     <div class="player-container">
-        <h1>ローカル音楽プレーヤー</h1>
-        <div class="file-input-wrapper">
-            <input type="file" id="folderInput" webkitdirectory directory multiple>
-            <label for="folderInput" class="file-input-label">📁 フォルダを選択</label>
+        <div class="player-header">
+            <div class="file-input-wrapper">
+                <input type="file" id="folderInput" webkitdirectory directory multiple><input type="file" id="fileInput"
+                    multiple accept="audio/*">
+                <label for="folderInput" class="file-input-label" id="fileInputLabel">📁 フォルダを選択</label>
+            </div>
+            <div class="message-container" id="messageContainer">
+                <span class="message" id="message">フォルダを選択してください。</span>
+            </div>
+            <div class="main-controls">
+                <div class="track-info-wrapper">
+                    <div id="currentTrackDisplayContainer" class="current-track-display-container" aria-live="polite"
+                        aria-atomic="true">
+                        <div id="trackTextWrapper" class="track-text-wrapper">
+                            <span id="trackNameContent" class="track-name-content">---</span>
+                        </div>
+                        <div id="albumNameWrapper" class="album-name-wrapper">
+                            <span id="albumNameContent" class="album-name-content"></span>
+                        </div>
+                    </div>
+                    <div class="progress-bar-container" id="progressBarContainer">
+                        <div class="progress-bar" id="progressBar"></div>
+                    </div>
+                    <div class="time-info"><span id="currentTimeDisplay">00:00</span><span
+                            id="durationDisplay">00:00</span></div>
+                </div>
+                <div class="controls" role="group" aria-label="音楽プレーヤーコントロール">
+                    <button class="control-btn" id="shuffleBtn" title="シャッフル" aria-label="シャッフル"
+                        aria-pressed="false">🔀</button>
+                    <button class="control-btn" id="prevBtn" title="前の曲" aria-label="前の曲">⏮</button>
+                    <button class="control-btn" id="playPauseBtn" title="再生/一時停止" aria-label="再生">▶</button>
+                    <button class="control-btn" id="nextBtn" title="次の曲" aria-label="次の曲">⏭</button>
+                    <button class="control-btn" id="repeatBtn" title="リピートモード" aria-label="リピート"
+                        aria-pressed="false">🔁</button>
+                </div>
+            </div>
         </div>
-        <p class="message" id="message">フォルダを選択してください。</p>
-        <div class="current-track-display-container" id="currentTrackDisplayContainer">
-            <span class="track-name-content" id="trackNameContent">---</span>
+        <div class="player-body">
+            <div class="playlist-wrapper">
+                <ul class="playlist" id="playlist"></ul>
+                <button id="scrollToActiveBtn" title="再生中の曲へ移動">🎯</button>
+            </div>
         </div>
-        <div class="time-info">
-            <span id="currentTimeDisplay">00:00</span>
-            <span id="durationDisplay">00:00</span>
-        </div>
-        <div class="progress-bar-container" id="progressBarContainer">
-            <div class="progress-bar" id="progressBar"></div>
-        </div>
-        <div class="controls">
-            <button class="control-btn" id="shuffleBtn" title="シャッフル">🔀</button>
-            <button class="control-btn" id="prevBtn" title="前の曲">⏮</button>
-            <button class="control-btn" id="playPauseBtn" title="再生/一時停止">▶</button>
-            <button class="control-btn" id="nextBtn" title="次の曲">⏭</button>
-            <button class="control-btn" id="repeatBtn" title="リピートモード">🔁</button>
-        </div>
-        <ul class="playlist" id="playlist"></ul>
     </div>
 
-    <!-- 統合されたJavaScript -->
     <script>
-        // --- ナビゲーションメニューのロジック ---
         document.addEventListener('DOMContentLoaded', () => {
             const menuToggleIcon = document.getElementById('menu-toggle-icon');
             const floatingMenu = document.getElementById('floating-menu');
             if (menuToggleIcon && floatingMenu) {
-                menuToggleIcon.addEventListener('click', (event) => {
-                    event.stopPropagation();
-                    floatingMenu.classList.toggle('show');
-                });
-                document.addEventListener('click', (event) => {
-                    if (floatingMenu.classList.contains('show')) {
-                        if (!menuToggleIcon.contains(event.target) && !floatingMenu.contains(event.target)) {
-                            floatingMenu.classList.remove('show');
-                        }
-                    }
-                });
+                menuToggleIcon.addEventListener('click', e => { e.stopPropagation(); floatingMenu.classList.toggle('show'); });
+                document.addEventListener('click', () => floatingMenu.classList.remove('show'));
             }
         });
 
-        // --- 元のコンテンツロジック (DOMContentLoadedで囲む) ---
-        document.addEventListener('DOMContentLoaded', () => {
-            const folderInput = document.getElementById('folderInput');
-            const messageDisplay = document.getElementById('message');
-            const trackNameContent = document.getElementById('trackNameContent');
-            const currentTrackDisplayContainer = document.getElementById('currentTrackDisplayContainer');
-            const currentTimeDisplay = document.getElementById('currentTimeDisplay');
-            const durationDisplay = document.getElementById('durationDisplay');
-            const progressBarContainer = document.getElementById('progressBarContainer');
-            const progressBar = document.getElementById('progressBar');
-            const playPauseBtn = document.getElementById('playPauseBtn');
-            const prevBtn = document.getElementById('prevBtn');
-            const nextBtn = document.getElementById('nextBtn');
-            const shuffleBtn = document.getElementById('shuffleBtn');
-            const repeatBtn = document.getElementById('repeatBtn');
-            const playlistElement = document.getElementById('playlist');
-
-            const audio = new Audio();
-            let files = [];
-            let currentPlayOrder = [];
-            let currentPlayOrderIndex = 0;
-            let isPlaying = false;
-            let isShuffling = false;
-            let repeatMode = 'none';
-            let messageTimerId = null;
-            let currentDisplayedTrackName = '---';
-
-            const supportedExtensions = ['.mp3', '.wav', '.ogg', '.flac', '.m4a', '.aac'];
-
-            updateRepeatButtonUI();
-
-            if ('mediaSession' in navigator) {
-                navigator.mediaSession.setActionHandler('play', () => { if (audio.paused) audio.play().catch(e => console.error(e)); });
-                navigator.mediaSession.setActionHandler('pause', () => { if (!audio.paused) audio.pause(); });
-                navigator.mediaSession.setActionHandler('nexttrack', () => playNextTrack());
-                navigator.mediaSession.setActionHandler('previoustrack', () => {
-                    if (audio.currentTime < 3 && currentPlayOrderIndex > 0) playPrevTrack(); else audio.currentTime = 0;
-                });
+        class MusicPlayer {
+            constructor() {
+                this.dom = {
+                    fileInputLabel: document.getElementById('fileInputLabel'), folderInput: document.getElementById('folderInput'),
+                    fileInput: document.getElementById('fileInput'), message: document.getElementById('message'),
+                    messageContainer: document.getElementById('messageContainer'),
+                    trackNameContent: document.getElementById('trackNameContent'), albumNameContent: document.getElementById('albumNameContent'),
+                    trackTextWrapper: document.getElementById('trackTextWrapper'), albumNameWrapper: document.getElementById('albumNameWrapper'),
+                    currentTrackDisplayContainer: document.getElementById('currentTrackDisplayContainer'),
+                    currentTime: document.getElementById('currentTimeDisplay'), duration: document.getElementById('durationDisplay'),
+                    progressBar: document.getElementById('progressBar'), progressBarContainer: document.getElementById('progressBarContainer'),
+                    playPauseBtn: document.getElementById('playPauseBtn'), prevBtn: document.getElementById('prevBtn'),
+                    nextBtn: document.getElementById('nextBtn'), shuffleBtn: document.getElementById('shuffleBtn'),
+                    repeatBtn: document.getElementById('repeatBtn'), playlist: document.getElementById('playlist'),
+                    scrollToActiveBtn: document.getElementById('scrollToActiveBtn'),
+                };
+                this.audio = new Audio(); this.files = []; this.currentPlayOrder = []; this.currentPlayOrderIndex = -1;
+                this.isPlaying = false; this.isShuffling = false; this.repeatMode = 'none';
+                this.objectUrls = new Set(); this.isDragging = false; this.draggedElement = null;
+                this.isUserInteractingWithPlaylist = false; this.scrollTimeout = null;
+                this.supportedExtensions = ['.mp3', '.wav', '.ogg', '.flac', '.m4a', '.aac'];
+                this.resizeObserver = new ResizeObserver(() => this.updateAllMarquees());
+                this.init();
             }
 
-            function formatTime(seconds) {
-                if (isNaN(seconds) || seconds < 0) return '00:00';
-                const minutes = Math.floor(seconds / 60);
-                const remainingSeconds = Math.floor(seconds % 60);
-                return `${String(minutes).padStart(2, '0')}:${String(remainingSeconds).padStart(2, '0')}`;
+            init() {
+                this.setupInputs();
+                this.bindEvents();
+                this.setupMediaSession();
+                this.updatePlaylistUI();
+                this.updateMessage('フォルダまたはファイルを選択してください。');
+                this.resizeObserver.observe(this.dom.trackTextWrapper);
+                this.resizeObserver.observe(this.dom.albumNameWrapper);
+                this.resizeObserver.observe(this.dom.messageContainer);
             }
 
-            function updateMessage(text, type = 'normal') {
-                if (messageTimerId) clearTimeout(messageTimerId);
-                messageDisplay.textContent = text;
-                messageDisplay.className = 'message';
-                if (type !== 'normal') messageDisplay.classList.add(type);
-                const isPersistentMessage = text.startsWith('再生中:') || text.startsWith('一時停止中:');
-                if (!isPersistentMessage && files.length > 0) {
-                    messageTimerId = setTimeout(() => {
-                        const currentFile = files[currentPlayOrder[currentPlayOrderIndex]];
-                        if (currentFile) updateMessage(isPlaying ? `再生中: ${currentFile.name}` : `一時停止中: ${currentFile.name}`);
-                        else updateMessage('フォルダを選択してください。');
-                    }, 3000);
+            setupInputs() {
+                if (!('webkitdirectory' in HTMLInputElement.prototype)) {
+                    this.dom.fileInputLabel.htmlFor = 'fileInput';
+                    this.dom.fileInputLabel.innerHTML = '🎵 ファイルを選択';
                 }
             }
 
-            function shuffleArray(array) {
-                const shuffled = [...array];
-                for (let i = shuffled.length - 1; i > 0; i--) {
-                    const j = Math.floor(Math.random() * (i + 1));
-                    [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
-                }
-                return shuffled;
+            bindEvents() {
+                this.dom.folderInput.addEventListener('change', this.handleFileSelection.bind(this));
+                this.dom.fileInput.addEventListener('change', this.handleFileSelection.bind(this));
+                this.dom.playPauseBtn.addEventListener('click', this.togglePlayPause.bind(this));
+                this.dom.nextBtn.addEventListener('click', this.playNextTrackByButton.bind(this));
+                this.dom.prevBtn.addEventListener('click', this.handlePrevTrack.bind(this));
+                this.dom.shuffleBtn.addEventListener('click', this.toggleShuffle.bind(this));
+                this.dom.repeatBtn.addEventListener('click', this.toggleRepeat.bind(this));
+                this.dom.progressBarContainer.addEventListener('click', this.seek.bind(this));
+                this.dom.scrollToActiveBtn.addEventListener('click', this.scrollToActive.bind(this));
+
+                this.audio.addEventListener('timeupdate', this.updateProgress.bind(this));
+                this.audio.addEventListener('loadedmetadata', this.updateDuration.bind(this));
+                this.audio.addEventListener('ended', this.playNextTrackOnEnd.bind(this));
+                this.audio.addEventListener('play', this.onPlay.bind(this));
+                this.audio.addEventListener('pause', this.onPause.bind(this));
+
+                this.bindPlaylistEvents();
+                document.addEventListener('keydown', this.handleKeyDown.bind(this));
+                window.addEventListener('beforeunload', this.destroy.bind(this));
             }
 
-            function updateCurrentTrackDisplay(trackName) {
-                currentDisplayedTrackName = trackName;
-                trackNameContent.textContent = trackName;
-                trackNameContent.classList.remove('scrolling');
-                trackNameContent.style.transform = 'translateX(0)';
-                currentTrackDisplayContainer.style.justifyContent = 'center';
-                const textWidth = trackNameContent.scrollWidth;
-                const containerWidth = currentTrackDisplayContainer.clientWidth;
+            bindPlaylistEvents() {
+                const pl = this.dom.playlist;
+                pl.addEventListener('mousedown', this.onDragStart.bind(this));
+                pl.addEventListener('touchstart', this.onDragStart.bind(this), { passive: false });
+                document.addEventListener('mousemove', this.onDragMove.bind(this));
+                document.addEventListener('touchmove', this.onDragMove.bind(this), { passive: false });
+                document.addEventListener('mouseup', this.onDragEnd.bind(this));
+                document.addEventListener('touchend', this.onDragEnd.bind(this));
+                pl.addEventListener('scroll', this.onPlaylistScroll.bind(this), { passive: true });
+            }
+
+            setupMediaSession() {
+                if (!('mediaSession' in navigator)) return;
+                navigator.mediaSession.setActionHandler('play', () => this.togglePlayPause());
+                navigator.mediaSession.setActionHandler('pause', () => this.togglePlayPause());
+                navigator.mediaSession.setActionHandler('nexttrack', () => this.playNextTrackByButton());
+                navigator.mediaSession.setActionHandler('previoustrack', () => this.handlePrevTrack());
+            }
+
+            getDirectoryPath(path) {
+                const lastSlash = path.lastIndexOf('/');
+                return lastSlash === -1 ? '' : path.substring(0, lastSlash);
+            }
+
+            parseTrackPath(path) {
+                if (!path) return { title: '---', album: '' };
+                const parts = path.split('/');
+                const fileName = parts.pop() || '';
+                const title = fileName.replace(/\.[^/.]+$/, "");
+                const album = parts.length > 0 ? parts[parts.length - 1] : 'Single';
+                return { title, album };
+            }
+
+            updateMessage(text, type = 'normal') {
+                this.dom.message.className = 'message';
+                if (type !== 'normal') this.dom.message.classList.add(type);
+                this.applyMarquee(this.dom.message, text, this.dom.messageContainer);
+            }
+
+            updateAllMarquees() {
+                this.updateCurrentTrackDisplay();
+                const currentMessage = this.dom.message.textContent.split('         ')[0];
+                this.applyMarquee(this.dom.message, currentMessage, this.dom.messageContainer);
+            }
+
+            updateCurrentTrackDisplay() {
+                const currentFile = this.files[this.currentPlayOrder[this.currentPlayOrderIndex]];
+                if (!currentFile) {
+                    this.dom.trackNameContent.textContent = '---'; this.dom.albumNameContent.textContent = '';
+                    this.dom.trackTextWrapper.classList.remove('scrolling-active');
+                    this.dom.albumNameWrapper.classList.remove('scrolling-active');
+                    return;
+                }
+                const { title, album } = this.parseTrackPath(currentFile.path);
+                this.applyMarquee(this.dom.trackNameContent, title, this.dom.trackTextWrapper);
+                this.applyMarquee(this.dom.albumNameContent, album, this.dom.albumNameWrapper);
+            }
+
+            applyMarquee(element, text, container) {
+                container.classList.remove('scrolling-active');
+                element.classList.remove('scrolling');
+                element.textContent = text;
+
+                const textWidth = element.scrollWidth;
+                const containerWidth = container.clientWidth;
+
                 if (textWidth > containerWidth) {
-                    const separator = '   🎵   ';
-                    trackNameContent.textContent = trackName + separator + trackName + separator;
-                    const scrollWidth = trackNameContent.scrollWidth / 2;
+                    container.classList.add('scrolling-active');
+                    const separator = '   \u00A0\u00A0\u00A0   ';
+                    element.textContent = `${text}${separator}${text}${separator}`;
+                    const scrollWidth = element.scrollWidth / 2;
                     const duration = scrollWidth / 40;
-                    currentTrackDisplayContainer.style.setProperty('--marquee-distance', `-${scrollWidth}px`);
-                    currentTrackDisplayContainer.style.setProperty('--marquee-duration', `${duration}s`);
-                    trackNameContent.classList.add('scrolling');
-                    currentTrackDisplayContainer.style.justifyContent = 'flex-start';
+                    element.style.setProperty('--marquee-duration', `${duration}s`);
+                    container.style.setProperty('--marquee-distance', `-${scrollWidth}px`);
+                    element.classList.add('scrolling');
                 }
             }
 
-            const resizeObserver = new ResizeObserver(() => {
-                if (currentDisplayedTrackName && currentDisplayedTrackName !== '---') {
-                    updateCurrentTrackDisplay(currentDisplayedTrackName);
+            updatePlaylistUI() {
+                const pl = this.dom.playlist;
+                const scrollPos = pl.scrollTop;
+                pl.innerHTML = '';
+                if (this.files.length === 0) {
+                    pl.innerHTML = '<li style="cursor:default; display:block;">音楽ファイルがありません</li>'; return;
                 }
-            });
-            resizeObserver.observe(currentTrackDisplayContainer);
-
-            function updatePlaylistUI() {
-                playlistElement.innerHTML = '';
-                if (files.length === 0) {
-                    playlistElement.innerHTML = '<li style="text-align:center;color:var(--secondary-text);cursor:default;border:none;">音楽ファイルがありません</li>';
-                    return;
-                }
-                currentPlayOrder.forEach((originalIndex, playOrderIdx) => {
-                    const file = files[originalIndex];
+                this.currentPlayOrder.forEach((originalIndex, playOrderIdx) => {
+                    const fileData = this.files[originalIndex];
+                    const { title } = this.parseTrackPath(fileData.path);
                     const listItem = document.createElement('li');
-                    listItem.textContent = file.name;
                     listItem.dataset.originalIndex = originalIndex;
-                    listItem.dataset.playOrderIndex = playOrderIdx;
-                    if (playOrderIdx === currentPlayOrderIndex) {
-                        listItem.classList.add('active');
-                    }
-                    listItem.addEventListener('click', () => {
-                        currentPlayOrderIndex = playOrderIdx;
-                        playTrack(originalIndex);
+                    listItem.title = fileData.path;
+                    listItem.innerHTML = `<span class="drag-handle" draggable="false">⠿</span><div class="playlist-item-text-container"><span class="playlist-item-text">${title}</span></div>`;
+                    if (playOrderIdx === this.currentPlayOrderIndex) listItem.classList.add('active');
+                    listItem.querySelector('.playlist-item-text-container').addEventListener('click', (e) => {
+                        this.currentPlayOrderIndex = playOrderIdx;
+                        this.isUserInteractingWithPlaylist = false;
+                        this.playTrack(originalIndex);
                     });
-                    playlistElement.appendChild(listItem);
+                    pl.appendChild(listItem);
                 });
-                const activeItem = playlistElement.querySelector('.playlist li.active');
-                if (activeItem) activeItem.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+                pl.scrollTop = scrollPos;
+                this.checkActiveVisibility();
             }
 
-            function playTrack(originalIndex) {
-                if (originalIndex < 0 || originalIndex >= files.length) {
-                    resetPlayerState();
-                    return;
-                }
-                const currentFile = files[originalIndex];
-                const newPlayOrderIndex = currentPlayOrder.indexOf(originalIndex);
-                if (newPlayOrderIndex !== -1) currentPlayOrderIndex = newPlayOrderIndex;
-                updateCurrentTrackDisplay(currentFile.name);
-                updateMessage('ロード中...', 'loading');
-                const objectURL = URL.createObjectURL(currentFile);
-                audio.src = objectURL;
-                audio.load();
-                audio.play()
-                    .then(() => {
-                        isPlaying = true;
-                        playPauseBtn.textContent = '❚❚';
-                        updateMessage('再生中: ' + currentFile.name);
-                        if ('mediaSession' in navigator) {
-                            navigator.mediaSession.metadata = new MediaMetadata({ title: currentFile.name, artist: '', album: '' });
-                        }
-                        updatePlaylistUI();
-                    })
-                    .catch(error => {
-                        console.error('再生エラー:', error);
-                        updateMessage(`再生エラー。次の曲を試します...`, 'error');
-                        isPlaying = false;
-                        playPauseBtn.textContent = '▶';
-                        setTimeout(playNextTrack, 3000);
+            async playTrack(originalIndex) {
+                if (originalIndex < 0 || originalIndex >= this.files.length) { this.resetPlayerState(); return; }
+                this.updateMessage('ロード中...', 'loading');
+                const oldUrl = this.audio.src, fileData = this.files[originalIndex];
+                const newPlayOrderIndex = this.currentPlayOrder.indexOf(originalIndex);
+                if (newPlayOrderIndex !== -1) this.currentPlayOrderIndex = newPlayOrderIndex;
+                const objectURL = URL.createObjectURL(fileData.file); this.objectUrls.add(objectURL);
+                try {
+                    this.audio.src = objectURL;
+                    await new Promise((resolve, reject) => {
+                        this.audio.oncanplaythrough = resolve;
+                        this.audio.onerror = () => reject(new Error(`File read error (Code: ${this.audio.error.code})`));
                     });
-                if (audio.oldObjectURL) URL.revokeObjectURL(audio.oldObjectURL);
-                audio.oldObjectURL = objectURL;
+                    await this.audio.play();
+                    const { title, album } = this.parseTrackPath(fileData.path);
+                    this.updateMessage(`再生中: ${title}`, 'normal');
+                    this.updateCurrentTrackDisplay();
+                    this.updatePlaylistUI();
+                    if (!this.isUserInteractingWithPlaylist && !this.isDragging) this.scrollToActive();
+                    if ('mediaSession' in navigator) navigator.mediaSession.metadata = new MediaMetadata({ title, album, artist: album });
+                    this.revokeObjectUrl(oldUrl);
+                } catch (error) {
+                    this.updateMessage(`再生失敗: ${this.parseTrackPath(fileData.path).title}`, 'error');
+                    this.revokeObjectUrl(objectURL); this.revokeObjectUrl(oldUrl);
+                    setTimeout(() => this.playNextTrackOnEnd(true), 1500);
+                }
             }
 
-            function playNextTrack() {
-                if (files.length === 0) return;
-                if (repeatMode === 'one') {
-                    audio.currentTime = 0;
-                    audio.play();
+            handleFileSelection(event) {
+                const newFiles = event.target.files;
+                if (!newFiles || newFiles.length === 0) return;
+
+                const selectedFiles = Array.from(newFiles)
+                    .filter(f => this.supportedExtensions.some(ext => f.name.toLowerCase().endsWith(ext)))
+                    .map(f => ({ file: f, path: f.webkitRelativePath || f.name }));
+
+                if (selectedFiles.length === 0) {
+                    this.updateMessage('選択された中に音楽ファイルが見つかりませんでした。', 'error'); return;
+                }
+
+                this.resetPlayerState(); this.revokeAllObjectUrls();
+                this.updateMessage('ファイルを処理中...', 'loading');
+
+                selectedFiles.sort((a, b) => {
+                    const dirA = this.getDirectoryPath(a.path);
+                    const dirB = this.getDirectoryPath(b.path);
+                    if (dirA < dirB) return -1; if (dirA > dirB) return 1;
+                    return a.path.localeCompare(b.path, 'ja', { numeric: true });
+                });
+
+                this.files = selectedFiles;
+                this.currentPlayOrder = Array.from({ length: this.files.length }, (_, i) => i);
+                if (this.isShuffling) this.currentPlayOrder = this.shuffleArray(this.currentPlayOrder);
+
+                this.updateMessage(`${this.files.length} 曲をロードしました。`);
+                this.isUserInteractingWithPlaylist = false;
+                this.playTrack(this.currentPlayOrderIndex = 0);
+            }
+
+            togglePlayPause() {
+                if (this.files.length === 0) { this.updateMessage('先に音楽ファイルを選択してください。', 'error'); return; }
+                if (this.audio.paused) {
+                    if (this.currentPlayOrderIndex === -1 || !this.audio.src || this.audio.ended) {
+                        this.playTrack(this.currentPlayOrder[this.currentPlayOrderIndex]);
+                    } else {
+                        this.audio.play().catch(() => this.updateMessage("再生を開始できませんでした。", "error"));
+                    }
+                } else { this.audio.pause(); }
+            }
+
+            playNextTrackByButton() {
+                if (this.files.length === 0) return;
+                this.isUserInteractingWithPlaylist = false;
+                this.currentPlayOrderIndex = (this.currentPlayOrderIndex + 1) % this.currentPlayOrder.length;
+                this.playTrack(this.currentPlayOrder[this.currentPlayOrderIndex]);
+            }
+
+            playNextTrackOnEnd(isErrorSkip = false) {
+                if (this.repeatMode === 'one' && !isErrorSkip) {
+                    this.playTrack(this.currentPlayOrder[this.currentPlayOrderIndex]); return;
+                }
+                if (this.currentPlayOrderIndex === this.currentPlayOrder.length - 1 && this.repeatMode === 'none') {
+                    this.resetPlayerState(false);
+                    this.updateMessage('プレイリストの最後まで再生しました。');
                     return;
                 }
-                currentPlayOrderIndex++;
-                if (currentPlayOrderIndex >= currentPlayOrder.length) {
-                    if (repeatMode === 'none') {
-                        resetPlayerState();
-                        updateMessage('プレイリストの最後まで再生しました。');
-                        return;
-                    }
-                    currentPlayOrderIndex = 0;
-                }
-                playTrack(currentPlayOrder[currentPlayOrderIndex]);
+                this.isUserInteractingWithPlaylist = false;
+                this.playNextTrackByButton();
             }
 
-            function playPrevTrack() {
-                if (files.length === 0) return;
-                currentPlayOrderIndex--;
-                if (currentPlayOrderIndex < 0) {
-                    currentPlayOrderIndex = currentPlayOrder.length - 1;
+            handlePrevTrack() {
+                if (this.files.length === 0) return;
+                this.isUserInteractingWithPlaylist = false;
+                if (this.audio.currentTime > 5 && this.currentPlayOrderIndex > -1) this.audio.currentTime = 0;
+                else {
+                    this.currentPlayOrderIndex = (this.currentPlayOrderIndex - 1 + this.currentPlayOrder.length) % this.currentPlayOrder.length;
+                    this.playTrack(this.currentPlayOrder[this.currentPlayOrderIndex]);
                 }
-                playTrack(currentPlayOrder[currentPlayOrderIndex]);
             }
 
-            function toggleShuffle() {
-                isShuffling = !isShuffling;
-                shuffleBtn.classList.toggle('active', isShuffling);
-                updateMessage(`シャッフルモード ${isShuffling ? 'ON' : 'OFF'}`);
-                const currentOriginalIndex = files.length > 0 ? currentPlayOrder[currentPlayOrderIndex] : null;
-                currentPlayOrder = isShuffling ? shuffleArray(Array.from({ length: files.length }, (_, i) => i)) : Array.from({ length: files.length }, (_, i) => i);
-                if (currentOriginalIndex !== null) {
-                    const idxInNewOrder = currentPlayOrder.indexOf(currentOriginalIndex);
-                    if (idxInNewOrder !== -1) {
-                        currentPlayOrder.splice(idxInNewOrder, 1);
-                        currentPlayOrder.unshift(currentOriginalIndex);
-                        currentPlayOrderIndex = 0;
-                    }
+            toggleShuffle() {
+                this.isShuffling = !this.isShuffling;
+                this.dom.shuffleBtn.classList.toggle('active', this.isShuffling);
+                this.dom.shuffleBtn.setAttribute('aria-pressed', this.isShuffling);
+                this.updateMessage(`シャッフル ${this.isShuffling ? 'ON' : 'OFF'}`);
+                if (this.files.length === 0) return;
+                const playingFileOriginalIndex = this.currentPlayOrder[this.currentPlayOrderIndex];
+                let indices = Array.from({ length: this.files.length }, (_, i) => i);
+                if (this.isShuffling) {
+                    indices = this.shuffleArray(indices);
+                    const newIdx = indices.indexOf(playingFileOriginalIndex);
+                    if (newIdx !== -1) { indices.splice(newIdx, 1); indices.unshift(playingFileOriginalIndex); }
                 } else {
-                    currentPlayOrderIndex = 0;
+                    indices.sort((a, b) => a - b);
                 }
-                updatePlaylistUI();
+                this.currentPlayOrder = indices;
+                this.currentPlayOrderIndex = this.currentPlayOrder.indexOf(playingFileOriginalIndex);
+                this.updatePlaylistUI();
             }
 
-            function toggleRepeat() {
+            toggleRepeat() {
                 const modes = ['none', 'all', 'one'];
-                repeatMode = modes[(modes.indexOf(repeatMode) + 1) % modes.length];
-                updateRepeatButtonUI();
-                updateMessage(`リピートモード: ${repeatMode === 'none' ? 'なし' : (repeatMode === 'all' ? '全曲' : '1曲')}`);
+                this.repeatMode = modes[(modes.indexOf(this.repeatMode) + 1) % modes.length];
+                this.updateRepeatButtonUI();
+                this.updateMessage(`リピート: ${{ none: 'なし', all: '全曲', one: '1曲' }[this.repeatMode]}`);
             }
 
-            function updateRepeatButtonUI() {
-                repeatBtn.classList.toggle('active', repeatMode !== 'none');
-                repeatBtn.textContent = repeatMode === 'one' ? '🔂' : '🔁';
+            updateRepeatButtonUI() {
+                const isActive = this.repeatMode !== 'none';
+                this.dom.repeatBtn.classList.toggle('active', isActive);
+                this.dom.repeatBtn.setAttribute('aria-pressed', isActive);
+                this.dom.repeatBtn.textContent = this.repeatMode === 'one' ? '🔂' : '🔁';
             }
 
-            function resetPlayerState() {
-                audio.pause();
-                isPlaying = false;
-                playPauseBtn.textContent = '▶';
-                progressBar.style.width = '0%';
-                currentTimeDisplay.textContent = '00:00';
-                durationDisplay.textContent = '00:00';
-                updateCurrentTrackDisplay('---');
-                if (audio.oldObjectURL) URL.revokeObjectURL(audio.oldObjectURL);
+            resetPlayerState(isFullReset = true) {
+                this.audio.pause(); this.isPlaying = false;
+                this.dom.playPauseBtn.textContent = '▶'; this.dom.playPauseBtn.setAttribute('aria-label', '再生');
+                if (isFullReset) {
+                    this.currentPlayOrderIndex = -1;
+                    this.audio.removeAttribute('src');
+                    this.dom.progressBar.style.width = '0%';
+                    this.dom.currentTime.textContent = '00:00';
+                    this.dom.duration.textContent = '00:00';
+                    this.updateCurrentTrackDisplay();
+                }
                 if ('mediaSession' in navigator) navigator.mediaSession.metadata = null;
-                if (messageTimerId) clearTimeout(messageTimerId);
             }
 
-            folderInput.addEventListener('change', (event) => {
-                resetPlayerState();
-                updateMessage('ファイルを処理中...', 'loading');
-                const selectedFiles = Array.from(event.target.files);
-                files = selectedFiles.filter(file => supportedExtensions.some(ext => file.name.toLowerCase().endsWith(ext)));
-                if (files.length === 0) {
-                    updateMessage('選択されたフォルダに音楽ファイルが見つかりませんでした。', 'error');
-                    updatePlaylistUI();
-                    return;
-                }
-                files.sort((a, b) => a.name.localeCompare(b.name, 'ja'));
-                currentPlayOrder = Array.from({ length: files.length }, (_, i) => i);
-                if (isShuffling) currentPlayOrder = shuffleArray(currentPlayOrder);
-                currentPlayOrderIndex = 0;
-                updateMessage(`${files.length} 曲をロードしました。`);
-                updatePlaylistUI();
-                playTrack(currentPlayOrder[0]);
-            });
-
-            playPauseBtn.addEventListener('click', () => {
-                if (files.length === 0) { updateMessage('先に音楽フォルダを選択してください。', 'error'); return; }
-                if (!audio.src) { playTrack(currentPlayOrder[0]); return; }
-                if (isPlaying) { audio.pause(); } else { audio.play().catch(e => console.error(e)); }
-            });
-            audio.onplay = () => { isPlaying = true; playPauseBtn.textContent = '❚❚'; updateMessage('再生中: ' + files[currentPlayOrder[currentPlayOrderIndex]].name); };
-            audio.onpause = () => { isPlaying = false; playPauseBtn.textContent = '▶'; updateMessage('一時停止中: ' + files[currentPlayOrder[currentPlayOrderIndex]].name); };
-            nextBtn.addEventListener('click', () => { if (files.length > 0) playNextTrack(); });
-            prevBtn.addEventListener('click', () => {
-                if (files.length > 0) {
-                    if (audio.currentTime > 3) audio.currentTime = 0; else playPrevTrack();
-                }
-            });
-            shuffleBtn.addEventListener('click', toggleShuffle);
-            repeatBtn.addEventListener('click', toggleRepeat);
-            audio.addEventListener('ended', playNextTrack);
-            audio.addEventListener('timeupdate', () => {
-                if (audio.duration) {
-                    progressBar.style.width = `${(audio.currentTime / audio.duration) * 100}%`;
-                    currentTimeDisplay.textContent = formatTime(audio.currentTime);
-                }
-            });
-            audio.addEventListener('loadedmetadata', () => {
-                durationDisplay.textContent = formatTime(audio.duration);
-            });
-            progressBarContainer.addEventListener('click', (e) => {
-                if (!audio.duration) return;
-                const clickX = e.clientX - progressBarContainer.getBoundingClientRect().left;
-                audio.currentTime = (clickX / progressBarContainer.getBoundingClientRect().width) * audio.duration;
-            });
-            audio.addEventListener('error', (e) => {
-                console.error('Audio Error:', e.target.error);
-                updateMessage(`エラー: 再生できませんでした。次の曲へ...`, 'error');
-                setTimeout(playNextTrack, 3000);
-            });
-            window.addEventListener('beforeunload', () => {
-                resetPlayerState();
-                if (resizeObserver) resizeObserver.disconnect();
-            });
-            document.addEventListener('keydown', (e) => {
+            onPlay() { this.isPlaying = true; this.dom.playPauseBtn.textContent = '❚❚'; this.dom.playPauseBtn.setAttribute('aria-label', '一時停止'); }
+            onPause() { this.isPlaying = false; this.dom.playPauseBtn.textContent = '▶'; this.dom.playPauseBtn.setAttribute('aria-label', '再生'); }
+            formatTime = (s) => `${String(Math.floor(s / 60)).padStart(2, '0')}:${String(Math.floor(s % 60)).padStart(2, '0')}`;
+            updateProgress() {
+                if (!isFinite(this.audio.duration)) return;
+                const { currentTime: c, duration: d } = this.audio;
+                this.dom.progressBar.style.width = `${(c / d) * 100}%`;
+                this.dom.currentTime.textContent = this.formatTime(c);
+                this.dom.duration.textContent = `-${this.formatTime(d - c)}`;
+            }
+            updateDuration() { if (isFinite(this.audio.duration)) this.dom.duration.textContent = `-${this.formatTime(this.audio.duration)}`; }
+            seek(e) {
+                if (!isFinite(this.audio.duration)) return;
+                const rect = this.dom.progressBarContainer.getBoundingClientRect();
+                this.audio.currentTime = ((e.clientX - rect.left) / rect.width) * this.audio.duration;
+            }
+            handleKeyDown(e) {
                 if (e.target.tagName === 'INPUT') return;
-                switch (e.code) {
-                    case 'Space': e.preventDefault(); playPauseBtn.click(); break;
-                    case 'ArrowRight': e.preventDefault(); nextBtn.click(); break;
-                    case 'ArrowLeft': e.preventDefault(); prevBtn.click(); break;
-                    case 'KeyS': toggleShuffle(); break;
-                    case 'KeyR': toggleRepeat(); break;
+                const actions = { 'Space': () => this.togglePlayPause(), 'ArrowRight': () => this.playNextTrackByButton(), 'ArrowLeft': () => this.handlePrevTrack(), 'KeyS': () => this.toggleShuffle(), 'KeyR': () => this.toggleRepeat() };
+                if (actions[e.code]) { e.preventDefault(); actions[e.code](); }
+            }
+
+            scrollToActive() {
+                this.isUserInteractingWithPlaylist = false;
+                const activeItem = this.dom.playlist.querySelector('.active');
+                if (activeItem) activeItem.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }
+            onPlaylistScroll() {
+                clearTimeout(this.scrollTimeout);
+                this.isUserInteractingWithPlaylist = true;
+                this.checkActiveVisibility();
+                this.scrollTimeout = setTimeout(() => { this.isUserInteractingWithPlaylist = false; }, 2000);
+            }
+            checkActiveVisibility() {
+                const activeItem = this.dom.playlist.querySelector('.active');
+                if (!activeItem) { this.dom.scrollToActiveBtn.classList.remove('show'); return; }
+                const plRect = this.dom.playlist.getBoundingClientRect();
+                const itemRect = activeItem.getBoundingClientRect();
+                const isVisible = (itemRect.top >= plRect.top) && (itemRect.bottom <= plRect.bottom);
+                this.dom.scrollToActiveBtn.classList.toggle('show', !isVisible);
+            }
+
+            onDragStart(e) {
+                if (this.isDragging || !e.target.classList.contains('drag-handle')) return;
+                if (e.type === 'touchstart') e.preventDefault();
+                this.isDragging = true; this.isUserInteractingWithPlaylist = true;
+                this.draggedElement = e.target.closest('li');
+                this.draggedElement.classList.add('ghost');
+            }
+            onDragMove(e) {
+                if (!this.isDragging) return;
+                e.preventDefault();
+                const y = e.touches ? e.touches[0].clientY : e.clientY;
+                const dropTarget = this.getDropTarget(y);
+                this.dom.playlist.querySelectorAll('.drag-over').forEach(el => el.classList.remove('drag-over'));
+                if (dropTarget) dropTarget.classList.add('drag-over');
+            }
+            onDragEnd() {
+                if (!this.isDragging) return;
+                this.isDragging = false;
+                const dropTarget = this.dom.playlist.querySelector('.drag-over');
+                if (this.draggedElement) {
+                    const parent = this.draggedElement.parentNode;
+                    const referenceNode = (dropTarget && dropTarget !== this.draggedElement) ? dropTarget : null;
+                    parent.insertBefore(this.draggedElement, referenceNode);
+                    this.reorderPlaylistFromDOM();
                 }
-            });
-            document.addEventListener('contextmenu', e => e.preventDefault());
-            updateMessage('「フォルダを選択」ボタンで音楽ファイルのあるフォルダを選択してください。');
-            updatePlaylistUI();
-        });
+                if (this.draggedElement) this.draggedElement.classList.remove('ghost');
+                this.dom.playlist.querySelectorAll('.drag-over').forEach(el => el.classList.remove('drag-over'));
+                this.draggedElement = null;
+                setTimeout(() => { this.isUserInteractingWithPlaylist = false; }, 500);
+            }
+            getDropTarget(y) {
+                return [...this.dom.playlist.children].find(child => {
+                    if (child === this.draggedElement || child.id === 'scrollToActiveBtn') return false;
+                    const rect = child.getBoundingClientRect();
+                    return y < rect.top + rect.height / 2;
+                });
+            }
+            reorderPlaylistFromDOM() {
+                const playingFileOriginalIndex = this.currentPlayOrder[this.currentPlayOrderIndex];
+                const newOrder = [...this.dom.playlist.children]
+                    .filter(el => el.matches('li'))
+                    .map(li => parseInt(li.dataset.originalIndex, 10));
+                this.currentPlayOrder = newOrder;
+                this.currentPlayOrderIndex = this.currentPlayOrder.indexOf(playingFileOriginalIndex);
+                this.updatePlaylistUI();
+            }
+
+            revokeObjectUrl(url) { if (url && this.objectUrls.has(url)) { URL.revokeObjectURL(url); this.objectUrls.delete(url); } }
+            revokeAllObjectUrls() { this.objectUrls.forEach(url => URL.revokeObjectURL(url)); this.objectUrls.clear(); }
+            destroy() { this.resetPlayerState(); this.revokeAllObjectUrls(); if (this.resizeObserver) this.resizeObserver.disconnect(); }
+            shuffleArray = (a) => a.map(v => ({ v, s: Math.random() })).sort((a, b) => a.s - b.s).map(({ v }) => v);
+        }
+        new MusicPlayer();
     </script>
 </body>
 
