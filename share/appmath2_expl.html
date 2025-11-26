@@ -1,0 +1,919 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>応用数学演習問題 解答解説</title>
+    <!-- MathJax Configuration -->
+    <script>
+        window.MathJax = {
+            tex: {
+                inlineMath: [['$', '$'], ['\\(', '\\)']],
+                displayMath: [['$$', '$$'], ['\\[', '\\]']],
+                processEscapes: true
+            },
+            options: {
+                ignoreHtmlClass: 'tex2jax_ignore',
+                processHtmlClass: 'tex2jax_process'
+            }
+        };
+    </script>
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+
+    <style>
+        :root {
+            --primary-color: #1a237e; /* 濃い青 */
+            --accent-color: #b71c1c;  /* エンジ色 */
+            --bg-color: #f5f5f5;
+            --card-bg: #ffffff;
+            --text-color: #333333;
+        }
+
+        body {
+            font-family: "Helvetica Neue", Arial, "Hiragino Kaku Gothic ProN", "Hiragino Sans", Meiryo, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            margin: 0;
+            padding: 10px;
+            line-height: 1.8;
+            font-size: 16px; /* スマホで見やすいサイズ */
+        }
+
+        header {
+            text-align: center;
+            padding: 20px 0;
+            margin-bottom: 20px;
+        }
+
+        h1 {
+            color: var(--primary-color);
+            font-size: 1.5rem;
+            margin: 0;
+        }
+
+        h2 {
+            color: var(--primary-color);
+            border-bottom: 2px solid var(--primary-color);
+            padding-bottom: 5px;
+            margin-top: 40px;
+            margin-bottom: 20px;
+            font-size: 1.3rem;
+        }
+
+        .problem-card {
+            background-color: var(--card-bg);
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            padding: 20px;
+            margin-bottom: 25px;
+            overflow: hidden; /* コンテンツのはみ出し防止 */
+        }
+
+        .problem-title {
+            font-weight: bold;
+            font-size: 1.1rem;
+            color: var(--primary-color);
+            margin-bottom: 15px;
+            border-left: 4px solid var(--primary-color);
+            padding-left: 10px;
+            background-color: #e8eaf6;
+            padding-top: 5px;
+            padding-bottom: 5px;
+        }
+
+        h4 {
+            margin-top: 20px;
+            margin-bottom: 10px;
+            color: #444;
+            font-size: 1rem;
+            border-bottom: 1px dashed #ccc;
+            padding-bottom: 3px;
+        }
+
+        ul {
+            padding-left: 20px;
+            margin: 10px 0;
+        }
+
+        li {
+            margin-bottom: 5px;
+        }
+
+        /* 数式の横スクロール対応 */
+        .math-block {
+            overflow-x: auto;
+            overflow-y: hidden;
+            -webkit-overflow-scrolling: touch;
+            padding: 10px 0;
+            margin: 10px 0;
+            font-size: 0.95em;
+        }
+
+        /* 最終的な答えの強調 */
+        .final-answer {
+            border: 2px solid var(--accent-color);
+            background-color: #fff5f5;
+            padding: 15px;
+            border-radius: 6px;
+            margin-top: 15px;
+        }
+
+        .final-answer-label {
+            color: var(--accent-color);
+            font-weight: bold;
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        footer {
+            text-align: center;
+            font-size: 0.8rem;
+            color: #777;
+            margin-top: 40px;
+            padding-bottom: 20px;
+        }
+
+        /* スマホ向け調整 */
+        @media screen and (max-width: 600px) {
+            body {
+                padding: 5px;
+            }
+            .problem-card {
+                padding: 15px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+
+
+<!-- ========================================== -->
+<!-- 第1部：ラプラス変換 -->
+<!-- ========================================== -->
+
+<h2>第1部：ラプラス変換の計算</h2>
+
+<div class="problem-card">
+    <div class="problem-title">【問題 19】</div>
+    <div class="math-block">
+        $$ f(t) = e^t u(t-2) $$
+    </div>
+    <p>のラプラス変換を求めよ。</p>
+
+    <h4>1. 方針と着眼点</h4>
+    <ul>
+        <li><strong>概念</strong>: ステップ関数 $u(t-a)$ を含む関数のラプラス変換です。</li>
+        <li><strong>道具</strong>: 第2移動定理（時間推移） $\mathcal{L}\{g(t-a)u(t-a)\} = e^{-as}G(s)$ を利用します。</li>
+        <li><strong>ロードマップ</strong>: 与えられた関数を $g(t-2)u(t-2)$ の形に変形してから公式を適用します。</li>
+    </ul>
+
+    <h4>2. 解答</h4>
+    <p>$f(t)$ を $t-2$ の関数として表すために、指数法則 $e^t = e^{t-2+2} = e^2 \cdot e^{t-2}$ を用います。</p>
+
+    <div class="math-block">
+        $$
+        \begin{aligned}
+        \mathcal{L}\{e^t u(t-2)\} &= \mathcal{L}\{ e^2 \cdot e^{t-2} u(t-2) \} \\
+        &= e^2 \mathcal{L}\{ e^{t-2} u(t-2) \} \quad (\text{定数 } e^2 \text{ をくくり出し})
+        \end{aligned}
+        $$
+    </div>
+
+    <p>ここで、$g(t) = e^t$ とすると、$g(t-2) = e^{t-2}$ です。<br>
+    $g(t)$ のラプラス変換は $G(s) = \frac{1}{s-1}$ です。<br>
+    第2移動定理 $\mathcal{L}\{g(t-2)u(t-2)\} = e^{-2s}G(s)$ を適用します。</p>
+
+    <div class="math-block">
+        $$
+        \begin{aligned}
+        e^2 \mathcal{L}\{ e^{t-2} u(t-2) \} &= e^2 \cdot e^{-2s} \cdot \frac{1}{s-1} \\
+        &= \frac{e^{-2s+2}}{s-1}
+        \end{aligned}
+        $$
+    </div>
+
+    <div class="final-answer">
+        <span class="final-answer-label">3. 最終的な答え</span>
+        <div class="math-block">
+            $$ \frac{e^{-2s+2}}{s-1} $$
+        </div>
+    </div>
+</div>
+
+<div class="problem-card">
+    <div class="problem-title">【問題 21】</div>
+    <div class="math-block">
+        $$ f(t) = t * e^{-3t} $$
+    </div>
+    <p>のラプラス変換を求めよ（$*$ は畳み込み積分を表す）。</p>
+
+    <h4>1. 方針と着眼点</h4>
+    <ul>
+        <li><strong>道具</strong>: 畳み込み定理 $\mathcal{L}\{f(t) * g(t)\} = F(s)G(s)$ を使用します。</li>
+        <li><strong>ロードマップ</strong>: $t$ と $e^{-3t}$ それぞれのラプラス変換を求め、それらを掛け合わせます。</li>
+    </ul>
+
+    <h4>2. 解答</h4>
+    <p>それぞれのラプラス変換は以下の通りです。</p>
+    <ul>
+        <li>$\mathcal{L}\{t\} = \frac{1}{s^2}$</li>
+        <li>$\mathcal{L}\{e^{-3t}\} = \frac{1}{s+3}$</li>
+    </ul>
+    <p>畳み込み定理より、求めるラプラス変換はこれらの積となります。</p>
+
+    <div class="math-block">
+        $$
+        \begin{aligned}
+        \mathcal{L}\{t * e^{-3t}\} &= \mathcal{L}\{t\} \cdot \mathcal{L}\{e^{-3t}\} \\
+        &= \frac{1}{s^2} \cdot \frac{1}{s+3} \\
+        &= \frac{1}{s^2(s+3)}
+        \end{aligned}
+        $$
+    </div>
+
+    <div class="final-answer">
+        <span class="final-answer-label">3. 最終的な答え</span>
+        <div class="math-block">
+            $$ \frac{1}{s^2(s+3)} $$
+        </div>
+    </div>
+</div>
+
+<div class="problem-card">
+    <div class="problem-title">【問題 23】</div>
+    <div class="math-block">
+        $$ f(t) = \cosh (t/10) $$
+    </div>
+    <p>のラプラス変換を求めよ。</p>
+
+    <h4>1. 方針と着眼点</h4>
+    <ul>
+        <li><strong>道具</strong>: 双曲線関数の公式 $\mathcal{L}\{\cosh at\} = \frac{s}{s^2-a^2}$ を使用します。</li>
+        <li><strong>設定</strong>: ここでは $a = \frac{1}{10}$ です。</li>
+    </ul>
+
+    <h4>2. 解答</h4>
+    <p>公式に $a=1/10$ を代入して計算します。</p>
+    <div class="math-block">
+        $$
+        \begin{aligned}
+        \mathcal{L}\{\cosh (t/10)\} &= \frac{s}{s^2 - (1/10)^2} \\
+        &= \frac{s}{s^2 - 0.01}
+        \end{aligned}
+        $$
+    </div>
+
+    <div class="final-answer">
+        <span class="final-answer-label">3. 最終的な答え</span>
+        <div class="math-block">
+            $$ \frac{s}{s^2-0.01} $$
+        </div>
+    </div>
+</div>
+
+<!-- ========================================== -->
+<!-- 第2部：ラプラス逆変換 -->
+<!-- ========================================== -->
+
+<h2>第2部：ラプラス逆変換</h2>
+
+<div class="problem-card">
+    <div class="problem-title">【問題 25】</div>
+    <div class="math-block">
+        $$ F(s) = \frac{s+3}{s^2+9} $$
+    </div>
+    <p>の逆ラプラス変換を求めよ。</p>
+
+    <h4>1. 方針と着眼点</h4>
+    <ul>
+        <li><strong>道具</strong>: 線形性を利用して項を分け、$\cos \omega t$ と $\sin \omega t$ の公式を適用します。
+            <ul>
+                <li>$\mathcal{L}^{-1}\{\frac{s}{s^2+\omega^2}\} = \cos \omega t$</li>
+                <li>$\mathcal{L}^{-1}\{\frac{\omega}{s^2+\omega^2}\} = \sin \omega t$</li>
+            </ul>
+        </li>
+        <li><strong>設定</strong>: 分母が $s^2+3^2$ なので $\omega=3$ です。</li>
+    </ul>
+
+    <h4>2. 解答</h4>
+    <div class="math-block">
+        $$
+        \begin{aligned}
+        \mathcal{L}^{-1}\left\{ \frac{s+3}{s^2+9} \right\} &= \mathcal{L}^{-1}\left\{ \frac{s}{s^2+3^2} + \frac{3}{s^2+3^2} \right\} \\
+        &= \mathcal{L}^{-1}\left\{ \frac{s}{s^2+3^2} \right\} \\
+        &\quad + \mathcal{L}^{-1}\left\{ \frac{3}{s^2+3^2} \right\} \\
+        &= \cos 3t + \sin 3t
+        \end{aligned}
+        $$
+    </div>
+
+    <div class="final-answer">
+        <span class="final-answer-label">3. 最終的な答え</span>
+        <div class="math-block">
+            $$ \cos 3t + \sin 3t $$
+        </div>
+    </div>
+</div>
+
+<div class="problem-card">
+    <div class="problem-title">【問題 27】</div>
+    <div class="math-block">
+        $$ F(s) = \frac{s+1}{s^2}e^{-s} $$
+    </div>
+    <p>の逆ラプラス変換を求めよ。</p>
+
+    <h4>1. 方針と着眼点</h4>
+    <ul>
+        <li><strong>概念</strong>: $e^{-as}$ の項があるため、第2移動定理 $\mathcal{L}^{-1}\{e^{-as}G(s)\} = g(t-a)u(t-a)$ を使用します。ここで $a=1$ です。</li>
+        <li><strong>ロードマップ</strong>: まず $e^{-s}$ を除いた部分 $\frac{s+1}{s^2}$ の逆変換 $g(t)$ を求め、それを $t \to t-1$ にシフトさせます。</li>
+    </ul>
+
+    <h4>2. 解答</h4>
+    <p>まず、$G(s) = \frac{s+1}{s^2}$ の逆変換を求めます。</p>
+    <div class="math-block">
+        $$
+        G(s) = \frac{s}{s^2} + \frac{1}{s^2} = \frac{1}{s} + \frac{1}{s^2}
+        $$
+    </div>
+    <p>したがって、</p>
+    <div class="math-block">
+        $$
+        g(t) = \mathcal{L}^{-1}\left\{ \frac{1}{s} \right\} + \mathcal{L}^{-1}\left\{ \frac{1}{s^2} \right\} = 1 + t
+        $$
+    </div>
+    <p>次に、第2移動定理を適用します（$a=1$）。</p>
+    <div class="math-block">
+        $$
+        \begin{aligned}
+        \mathcal{L}^{-1}\{ G(s)e^{-s} \} &= g(t-1)u(t-1) \\
+        &= \{ 1 + (t-1) \} u(t-1) \\
+        &= t u(t-1)
+        \end{aligned}
+        $$
+    </div>
+
+    <div class="final-answer">
+        <span class="final-answer-label">3. 最終的な答え</span>
+        <div class="math-block">
+            $$ t u(t-1) $$
+        </div>
+    </div>
+</div>
+
+<div class="problem-card">
+    <div class="problem-title">【問題 29】</div>
+    <div class="math-block">
+        $$ F(s) = \frac{s^2-6s+4}{s^3-3s^2+2s} $$
+    </div>
+    <p>の逆ラプラス変換を求めよ。</p>
+
+    <h4>1. 方針と着眼点</h4>
+    <ul>
+        <li><strong>概念</strong>: 有理関数の逆変換には部分分数分解を用います。</li>
+        <li><strong>計算</strong>: 分母を因数分解し、$s, (s-1), (s-2)$ の項に分解します。</li>
+    </ul>
+
+    <h4>2. 解答</h4>
+    <p>分母を因数分解します。</p>
+    <div class="math-block">
+        $$ s^3-3s^2+2s = s(s^2-3s+2) = s(s-1)(s-2) $$
+    </div>
+    <p>部分分数分解の形を置きます。</p>
+    <div class="math-block">
+        $$
+        \frac{s^2-6s+4}{s(s-1)(s-2)} = \frac{A}{s} + \frac{B}{s-1} + \frac{C}{s-2}
+        $$
+    </div>
+    <p>ヘヴィサイドの被覆法などを用いて係数を求めます。</p>
+    <ul>
+        <li>$A = \left. \frac{s^2-6s+4}{(s-1)(s-2)} \right|_{s=0} = \frac{4}{(-1)(-2)} = 2$</li>
+        <li>$B = \left. \frac{s^2-6s+4}{s(s-2)} \right|_{s=1} = \frac{1-6+4}{1(1-2)} = \frac{-1}{-1} = 1$</li>
+        <li>$C = \left. \frac{s^2-6s+4}{s(s-1)} \right|_{s=2} = \frac{4-12+4}{2(2-1)} = \frac{-4}{2} = -2$</li>
+    </ul>
+    <p>よって、</p>
+    <div class="math-block">
+        $$
+        F(s) = \frac{2}{s} + \frac{1}{s-1} - \frac{2}{s-2}
+        $$
+    </div>
+    <p>逆変換を行います。</p>
+    <div class="math-block">
+        $$
+        f(t) = 2(1) + 1(e^t) - 2(e^{2t})
+        $$
+    </div>
+
+    <div class="final-answer">
+        <span class="final-answer-label">3. 最終的な答え</span>
+        <div class="math-block">
+            $$ 2 + e^t - 2e^{2t} $$
+        </div>
+    </div>
+</div>
+
+<div class="problem-card">
+    <div class="problem-title">【問題 31】</div>
+    <div class="math-block">
+        $$ F(s) = \frac{s^3-s^2-s+4}{s^4-5s^2+4} $$
+    </div>
+    <p>の逆ラプラス変換を求めよ。</p>
+
+    <h4>1. 方針と着眼点</h4>
+    <ul>
+        <li><strong>概念</strong>: 分母が複二次式なので因数分解して部分分数分解を行います。</li>
+        <li><strong>因数分解</strong>: $s^4-5s^2+4 = (s^2-1)(s^2-4)$。$s^2-a^2$ の形（双曲線関数）の利用が見込まれます。</li>
+    </ul>
+
+    <h4>2. 解答</h4>
+    <p>分母は $(s^2-1)(s^2-4)$ です。以下のように分解を試みます。</p>
+    <div class="math-block">
+        $$ F(s) = \frac{s}{s^2-4} - \frac{1}{s^2-1} $$
+    </div>
+    <p>この式の右辺を通分して元の分子と一致するか確認します。</p>
+    <div class="math-block">
+        $$
+        \begin{aligned}
+        \frac{s}{s^2-4} - \frac{1}{s^2-1} &= \frac{s(s^2-1) - (s^2-4)}{(s^2-4)(s^2-1)} \\
+        &= \frac{s^3-s-s^2+4}{\text{分母}} \\
+        &= \frac{s^3-s^2-s+4}{\text{分母}}
+        \end{aligned}
+        $$
+    </div>
+    <p>元の分子と完全に一致しました。したがって、それぞれの逆変換を求めます。</p>
+    <ul>
+        <li>$\mathcal{L}^{-1}\{\frac{s}{s^2-2^2}\} = \cosh 2t$</li>
+        <li>$\mathcal{L}^{-1}\{\frac{1}{s^2-1}\} = \sinh t$</li>
+    </ul>
+
+    <div class="final-answer">
+        <span class="final-answer-label">3. 最終的な答え</span>
+        <div class="math-block">
+            $$ \cosh 2t - \sinh t $$
+        </div>
+    </div>
+</div>
+
+<div class="problem-card">
+    <div class="problem-title">【問題 33】</div>
+    <div class="math-block">
+        $$ F(s) = \frac{3s+4}{s^2+4s+5} $$
+    </div>
+    <p>の逆ラプラス変換を求めよ。</p>
+
+    <h4>1. 方針と着眼点</h4>
+    <ul>
+        <li><strong>概念</strong>: 分母の判別式が負の場合、平方完成を行い、第1移動定理（周波数推移）を利用します。</li>
+        <li><strong>公式</strong>: $\mathcal{L}^{-1}\{F(s+a)\} = e^{-at}f(t)$。</li>
+    </ul>
+
+    <h4>2. 解答</h4>
+    <p>分母を平方完成します。</p>
+    <div class="math-block">
+        $$ s^2+4s+5 = (s+2)^2 + 1 $$
+    </div>
+    <p>分子の $s$ も $s+2$ の形を作ります。</p>
+    <div class="math-block">
+        $$ 3s+4 = 3(s+2) - 6 + 4 = 3(s+2) - 2 $$
+    </div>
+    <p>よって式は以下のように変形できます。</p>
+    <div class="math-block">
+        $$
+        F(s) = \frac{3(s+2) - 2}{(s+2)^2 + 1} = 3 \frac{s+2}{(s+2)^2+1} - 2 \frac{1}{(s+2)^2+1}
+        $$
+    </div>
+    <p>ここで $s+2 \to s$ と置き換えた関数を考えると、<br>
+    $\frac{s}{s^2+1} \to \cos t$, $\frac{1}{s^2+1} \to \sin t$ です。<br>
+    第1移動定理（$s \to s+2$ なので $e^{-2t}$ を掛ける）を適用します。</p>
+    <div class="math-block">
+        $$
+        f(t) = 3 e^{-2t} \cos t - 2 e^{-2t} \sin t
+        $$
+    </div>
+
+    <div class="final-answer">
+        <span class="final-answer-label">3. 最終的な答え</span>
+        <div class="math-block">
+            $$ e^{-2t} (3\cos t - 2\sin t) $$
+        </div>
+    </div>
+</div>
+
+<!-- ========================================== -->
+<!-- 第3部：微分方程式 -->
+<!-- ========================================== -->
+
+<h2>第3部：微分方程式の初期値問題</h2>
+
+<div class="problem-card">
+    <div class="problem-title">【問題 35】</div>
+    <div class="math-block">
+        $$ y'' + 4y = u(t-3), \quad y(0)=1, \quad y'(0)=0 $$
+    </div>
+
+    <h4>1. 方針と着眼点</h4>
+    <ul>
+        <li><strong>道具</strong>: 微分関数のラプラス変換 $\mathcal{L}\{y''\} = s^2Y - sy(0) - y'(0)$ を用います。</li>
+        <li><strong>右辺</strong>: $u(t-3)$ の変換は $\frac{e^{-3s}}{s}$ です。</li>
+    </ul>
+
+    <h4>2. 解答</h4>
+    <p>両辺をラプラス変換します。$Y(s) = \mathcal{L}\{y(t)\}$ とします。</p>
+    <div class="math-block">
+        $$
+        \begin{aligned}
+        (s^2 Y - s \cdot 1 - 0) + 4Y &= \frac{e^{-3s}}{s} \\
+        (s^2+4)Y &= s + \frac{e^{-3s}}{s} \\
+        Y &= \frac{s}{s^2+4} + \frac{e^{-3s}}{s(s^2+4)}
+        \end{aligned}
+        $$
+    </div>
+    <p>第1項の逆変換は $\cos 2t$ です。<br>
+    第2項について、まず $G(s) = \frac{1}{s(s^2+4)}$ の逆変換を求めます。<br>
+    部分分数分解を行うと $\frac{1}{s(s^2+4)} = \frac{1}{4} \left( \frac{1}{s} - \frac{s}{s^2+4} \right)$ なので、</p>
+    <div class="math-block">
+        $$
+        g(t) = \frac{1}{4}(1 - \cos 2t) = \frac{1}{2}\sin^2 t \quad (\text{半角公式})
+        $$
+    </div>
+    <p>これに $e^{-3s}$ が掛かっているため、第2移動定理より $g(t-3)u(t-3)$ となります。</p>
+    <div class="math-block">
+        $$
+        y(t) = \cos 2t + u(t-3) \cdot \frac{1}{2}\sin^2(t-3)
+        $$
+    </div>
+
+    <div class="final-answer">
+        <span class="final-answer-label">3. 最終的な答え</span>
+        <div class="math-block">
+            $$ \cos 2t + \frac{1}{2} u(t-3) \sin^2(t-3) $$
+        </div>
+    </div>
+</div>
+
+<div class="problem-card">
+    <div class="problem-title">【問題 37】</div>
+    <div class="math-block">
+        $$ y'' + 9y = r(t), \quad y(0)=y'(0)=0 $$
+    </div>
+    <p>ただし、$r(t) = 6\sin t \quad (0 \le t \le \pi), \quad 0 \quad (t \gt \pi)$</p>
+
+    <h4>1. 方針と着眼点</h4>
+    <ul>
+        <li><strong>入力の表現</strong>: $r(t)$ を単位ステップ関数を使って1つの式で表します。</li>
+        <li><strong>式の変形</strong>: 移動定理を使うために $\sin t$ を $t-\pi$ の関数で表現し直します。</li>
+    </ul>
+
+    <h4>2. 解答</h4>
+    <p>まず $r(t)$ を記述します。</p>
+    <div class="math-block">
+        $$ r(t) = 6\sin t \{u(t) - u(t-\pi)\} $$
+    </div>
+    <p>ここで $\sin t = \sin(t-\pi+\pi) = -\sin(t-\pi)$ を利用すると、第2項は</p>
+    <div class="math-block">
+        $$ -6\sin t \, u(t-\pi) = 6\sin(t-\pi)u(t-\pi) $$
+    </div>
+    <p>となります。よってラプラス変換は、</p>
+    <div class="math-block">
+        $$ R(s) = \frac{6}{s^2+1} + e^{-\pi s}\frac{6}{s^2+1} = \frac{6}{s^2+1}(1 + e^{-\pi s}) $$
+    </div>
+    <p>微分方程式を変換します（初期値0）。</p>
+    <div class="math-block">
+        $$
+        \begin{aligned}
+        (s^2+9)Y &= \frac{6}{s^2+1}(1 + e^{-\pi s}) \\
+        Y(s) &= \frac{6}{(s^2+1)(s^2+9)}(1 + e^{-\pi s})
+        \end{aligned}
+        $$
+    </div>
+    <p>部分分数分解を行います。</p>
+    <div class="math-block">
+        $$ \frac{6}{(s^2+1)(s^2+9)} = \frac{3}{4} \left( \frac{1}{s^2+1} - \frac{1}{s^2+9} \right) $$
+    </div>
+    <p>この部分の逆変換を $f(t)$ とすると、</p>
+    <div class="math-block">
+        $$ f(t) = \frac{3}{4} \sin t - \frac{1}{4}\sin 3t = \sin^3 t \quad (\text{3倍角の公式}) $$
+    </div>
+    <p>したがって、$y(t)$ は</p>
+    <div class="math-block">
+        $$ y(t) = f(t) + f(t-\pi)u(t-\pi) $$
+    </div>
+    <p>ここで $f(t-\pi) = \sin^3(t-\pi) = (-\sin t)^3 = -f(t)$ です。<br>
+    よって、</p>
+    <div class="math-block">
+        $$ y(t) = \sin^3 t - \sin^3 t \, u(t-\pi) = [1 - u(t-\pi)] \sin^3 t $$
+    </div>
+
+    <div class="final-answer">
+        <span class="final-answer-label">3. 最終的な答え</span>
+        <div class="math-block">
+            $$ [1 - u(t-\pi)] \sin^3 t $$
+        </div>
+    </div>
+</div>
+
+<div class="problem-card">
+    <div class="problem-title">【問題 39】</div>
+    <div class="math-block">
+        $$ y_1' = -y_2, \quad y_2' = y_1 $$
+    </div>
+    <div class="math-block">
+        $$ y_1(0)=1, \quad y_2(0)=0 $$
+    </div>
+
+    <h4>1. 方針と着眼点</h4>
+    <ul>
+        <li><strong>手法</strong>: 連立微分方程式をラプラス変換して、代数方程式の連立として解きます。</li>
+    </ul>
+
+    <h4>2. 解答</h4>
+    <p>ラプラス変換します。</p>
+    <div class="math-block">
+        $$
+        \begin{cases}
+        sY_1 - 1 = -Y_2 \implies sY_1 + Y_2 = 1 \\
+        sY_2 = Y_1
+        \end{cases}
+        $$
+    </div>
+    <p>第2式より $Y_1 = sY_2$。これを第1式に代入します。</p>
+    <div class="math-block">
+        $$
+        s(sY_2) + Y_2 = 1 \implies (s^2+1)Y_2 = 1 \implies Y_2 = \frac{1}{s^2+1}
+        $$
+    </div>
+    <p>よって、$y_2(t) = \sin t$。<br>
+    次に $Y_1$ を求めます。</p>
+    <div class="math-block">
+        $$ Y_1 = sY_2 = \frac{s}{s^2+1} $$
+    </div>
+    <p>よって、$y_1(t) = \cos t$。</p>
+
+    <div class="final-answer">
+        <span class="final-answer-label">3. 最終的な答え</span>
+        <div class="math-block">
+            $$ y_1 = \cos t, \quad y_2 = \sin t $$
+        </div>
+    </div>
+</div>
+
+<div class="problem-card">
+    <div class="problem-title">【問題 41】</div>
+    <div class="math-block">
+        $$ y_1' = 2y_1 - 4y_2, \quad y_2' = y_1 - 3y_2 $$
+    </div>
+    <div class="math-block">
+        $$ y_1(0)=3, \quad y_2(0)=0 $$
+    </div>
+
+    <h4>1. 方針と着眼点</h4>
+    <ul>
+        <li>ラプラス変換を行い、$Y_1, Y_2$ についての連立方程式を解きます。</li>
+    </ul>
+
+    <h4>2. 解答</h4>
+    <p>変換します。</p>
+    <div class="math-block">
+        $$
+        \begin{cases}
+        (s-2)Y_1 + 4Y_2 = 3 \\
+        -Y_1 + (s+3)Y_2 = 0 \implies Y_1 = (s+3)Y_2
+        \end{cases}
+        $$
+    </div>
+    <p>第2式の結果を第1式に代入します。</p>
+    <div class="math-block">
+        $$
+        \begin{aligned}
+        (s-2)(s+3)Y_2 + 4Y_2 &= 3 \\
+        (s^2 + s - 6 + 4)Y_2 &= 3 \\
+        (s^2 + s - 2)Y_2 &= 3 \\
+        Y_2 &= \frac{3}{(s+2)(s-1)}
+        \end{aligned}
+        $$
+    </div>
+    <p>部分分数分解します。</p>
+    <div class="math-block">
+        $$ Y_2 = \frac{1}{s-1} - \frac{1}{s+2} $$
+    </div>
+    <p>よって、$y_2(t) = e^t - e^{-2t}$。<br>
+    次に $y_1$ を求めます。関係式 $y_1 = y_2' + 3y_2$ を使います。</p>
+    <div class="math-block">
+        $$
+        \begin{aligned}
+        y_1 &= (e^t - e^{-2t})' + 3(e^t - e^{-2t}) \\
+        &= (e^t + 2e^{-2t}) + (3e^t - 3e^{-2t}) \\
+        &= 4e^t - e^{-2t}
+        \end{aligned}
+        $$
+    </div>
+
+    <div class="final-answer">
+        <span class="final-answer-label">3. 最終的な答え</span>
+        <div class="math-block">
+            $$ y_1 = 4e^t - e^{-2t}, \quad y_2 = e^t - e^{-2t} $$
+        </div>
+    </div>
+</div>
+
+<!-- ========================================== -->
+<!-- 第4部：物理モデル・応用 -->
+<!-- ========================================== -->
+
+<h2>第4部：物理モデル・応用</h2>
+
+<div class="problem-card">
+    <div class="problem-title">【問題 43】</div>
+    <p>図1.27の力学系のモデル方程式を示せ。</p>
+
+    <h4>1. 方針と着眼点</h4>
+    <ul>
+        <li><strong>物理法則</strong>: ニュートンの運動方程式 $F=ma$ を各質点について立てます。</li>
+        <li><strong>力の向き</strong>: 変位 $y$ が正の方向（右）に動いたとき、バネは元の位置に戻ろうとする復元力を及ぼします。</li>
+    </ul>
+
+    <h4>2. 解答</h4>
+    <p><strong>質点 $m_1$</strong>:</p>
+    <ul>
+        <li>左のバネ ($k_1$) は $y_1$ だけ伸びるため、左向きの力 $-k_1 y_1$ が働きます。</li>
+        <li>右のバネ ($k_2$) の伸びは $y_2 - y_1$ です。正なら右に引っ張られるため、力は $k_2(y_2 - y_1)$ です。</li>
+        <li>方程式: $m_1 y_1'' = -k_1 y_1 + k_2(y_2 - y_1)$</li>
+    </ul>
+    <p><strong>質点 $m_2$</strong>:</p>
+    <ul>
+        <li>左のバネ ($k_2$) は $m_2$ を左に引くため、作用反作用により $-k_2(y_2 - y_1)$ の力が働きます。</li>
+        <li>右のバネ ($k_3$) は $y_2$ だけ縮む（または伸びる）ので、左向きの力 $-k_3 y_2$ が働きます。</li>
+        <li>方程式: $m_2 y_2'' = -k_2(y_2 - y_1) - k_3 y_2$</li>
+    </ul>
+
+    <div class="final-answer">
+        <span class="final-answer-label">3. 最終的な答え</span>
+        <div class="math-block">
+            $$
+            \begin{cases}
+            m_1 y_1'' = -k_1 y_1 + k_2(y_2 - y_1) \\
+            m_2 y_2'' = -k_2(y_2 - y_1) - k_3 y_2
+            \end{cases}
+            $$
+        </div>
+    </div>
+</div>
+
+<div class="problem-card">
+    <div class="problem-title">【問題 45】</div>
+    <p>RC回路の電流 $i(t)$ を求めよ。</p>
+    <div class="math-block">
+        $R=10$, $C=0.1$
+    </div>
+    <div class="math-block">
+        $v(t) = 10t \quad [0 \lt t \lt 4]$, $40 \quad [t \gt 4]$
+    </div>
+    <p>初期電荷は0とする。</p>
+
+    <h4>1. 方針と着眼点</h4>
+    <ul>
+        <li><strong>回路方程式</strong>: $Ri + \frac{1}{C}\int_0^t i(\tau) d\tau = v(t)$。</li>
+        <li><strong>入力電圧</strong>: $v(t)$ をステップ関数で表し、ラプラス変換します。</li>
+    </ul>
+
+    <h4>2. 解答</h4>
+    <p>入力電圧をステップ関数で表現します。</p>
+    <div class="math-block">
+        $$ v(t) = 10t [u(t) - u(t-4)] + 40 u(t-4) = 10t - 10(t-4)u(t-4) $$
+    </div>
+    <p>ラプラス変換は、</p>
+    <div class="math-block">
+        $$ V(s) = \frac{10}{s^2} - e^{-4s}\frac{10}{s^2} = \frac{10}{s^2}(1 - e^{-4s}) $$
+    </div>
+    <p>回路方程式（$R=10, 1/C=10$）を変換します。</p>
+    <div class="math-block">
+        $$
+        \begin{aligned}
+        10 I(s) + \frac{10}{s} I(s) &= V(s) \\
+        10 \frac{s+1}{s} I(s) &= \frac{10}{s^2}(1 - e^{-4s}) \\
+        I(s) &= \frac{1}{s(s+1)}(1 - e^{-4s})
+        \end{aligned}
+        $$
+    </div>
+    <p>ここで $\frac{1}{s(s+1)} = \frac{1}{s} - \frac{1}{s+1}$ の逆変換は $1 - e^{-t}$ です。<br>
+    よって、</p>
+    <div class="math-block">
+        $$ i(t) = (1 - e^{-t}) - u(t-4)(1 - e^{-(t-4)}) $$
+    </div>
+    <p>場合分けして記述します。</p>
+    <ul>
+        <li>$0 \lt t \lt 4$: $i(t) = 1 - e^{-t}$</li>
+        <li>$t \gt 4$: $i(t) = 1 - e^{-t} - (1 - e^{-t}e^4) = e^{-t}(e^4 - 1)$</li>
+    </ul>
+
+    <div class="final-answer">
+        <span class="final-answer-label">3. 最終的な答え</span>
+        <div class="math-block">
+            $$
+            i(t) = \begin{cases} 1 - e^{-t} & (0 \lt t \lt 4) \\ (e^4 - 1)e^{-t} & (t \gt 4) \end{cases}
+            $$
+        </div>
+    </div>
+</div>
+
+<div class="problem-card">
+    <div class="problem-title">【問題 47】</div>
+    <p>RLC回路の電流 $i(t)$ を求めよ。</p>
+    <div class="math-block">
+        $R=160$, $L=20$, $C=0.002$
+    </div>
+    <div class="math-block">
+        $v(t) = 37\sin 10t$, 初期値0
+    </div>
+
+    <h4>1. 方針と着眼点</h4>
+    <ul>
+        <li><strong>回路方程式</strong>: $L i' + R i + \frac{1}{C}\int i dt = v(t)$</li>
+        <li>数値を代入してラプラス変換し、$I(s)$ を部分分数分解して解きます。</li>
+    </ul>
+
+    <h4>2. 解答</h4>
+    <p>方程式: $20 i' + 160 i + 500 \int i dt = 37 \sin 10t$<br>
+    変換: $(20s + 160 + \frac{500}{s}) I(s) = \frac{37 \cdot 10}{s^2+100}$<br>
+    両辺に $s$ を掛け、20で割ります。</p>
+    <div class="math-block">
+        $$
+        \begin{aligned}
+        (s^2 + 8s + 25) I(s) &= \frac{18.5 s}{s^2+100} \\
+        I(s) &= \frac{18.5 s}{(s^2+100)(s^2+8s+25)}
+        \end{aligned}
+        $$
+    </div>
+    <p>部分分数分解を行い、解答の形に合わせて整理します。<br>
+    減衰振動項は $s^2+8s+25 = (s+4)^2 + 3^2$ なので $e^{-4t}\cos 3t, e^{-4t}\sin 3t$。<br>
+    定常項は $s^2+100$ なので $\cos 10t, \sin 10t$ です。</p>
+
+    <div class="final-answer">
+        <span class="final-answer-label">3. 最終的な答え</span>
+        <div class="math-block">
+            $$
+            \begin{aligned}
+            i(t) &= e^{-4t}\left( \frac{3}{26}\cos 3t - \frac{10}{39}\sin 3t \right) \\
+            &\quad - \frac{3}{26}\cos 10t + \frac{8}{65}\sin 10t
+            \end{aligned}
+            $$
+        </div>
+    </div>
+</div>
+
+<div class="problem-card">
+    <div class="problem-title">【問題 49】</div>
+    <p>問題48の回路モデルを解け。</p>
+    <div class="math-block">
+        $L=1$, $R=0.8$, $C=0.25$
+    </div>
+    <div class="math-block">
+        $v=\frac{4}{5}t + \frac{21}{25}$, $i_1(0)=1$, $i_2(0)=-3.8$
+    </div>
+
+    <h4>1. 方針と着眼点</h4>
+    <ul>
+        <li><strong>方程式</strong>:
+            <br>1. $L i_1' + R(i_1 - i_2) = v$
+            <br>2. $R(i_2 - i_1) + \frac{1}{C}\int i_2 dt + v_{c0} = 0$
+        </li>
+        <li>これらを連立して解きます。第2式の初期条件整合性に注意します。</li>
+    </ul>
+
+    <h4>2. 解答</h4>
+    <p>数値を代入します（$1/C = 4$）。</p>
+    <div class="math-block">
+        $$
+        \begin{aligned}
+        i_1' + 0.8(i_1 - i_2) &= 0.8t + 0.84 \\
+        0.8(i_2 - i_1) + 4 \int i_2 dt + v_{c0} &= 0
+        \end{aligned}
+        $$
+    </div>
+    <p>$t=0$ で第2式が成り立つためには、$0.8(-3.8 - 1) + v_{c0} = 0 \implies v_{c0} = 3.84$ です。<br>
+    ラプラス変換して $I_2$ について整理すると、以下のようになります。</p>
+    <div class="math-block">
+        $$ I_2(s) = \frac{-3.8s^2 - 3s + 0.8}{s(s+1)(s+4)} $$
+    </div>
+    <p>分子は $-(s+1)(3.8s-0.8)$ と因数分解できるため、$s+1$ が約分できます。</p>
+    <div class="math-block">
+        $$ I_2(s) = \frac{-3.8s+0.8}{s(s+4)} = \frac{0.2}{s} - \frac{4}{s+4} $$
+    </div>
+    <p>よって、$i_2 = 0.2 - 4e^{-4t} = -4e^{-4t} + 1/5$。<br>
+    同様に計算して $i_1 = t + e^{-4t}$。</p>
+
+    <div class="final-answer">
+        <span class="final-answer-label">3. 最終的な答え</span>
+        <div class="math-block">
+            $$ i_1 = t + e^{-4t}, \quad i_2 = -4e^{-4t} + \frac{1}{5} $$
+        </div>
+    </div>
+</div>
+
+<footer>
+    <p>Created by AI for Applied Mathematics Review</p>
+</footer>
+
+</body>
+</html>
