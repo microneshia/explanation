@@ -38,6 +38,8 @@
             display: flex;
             align-items: center;
             justify-content: center;
+            flex-shrink: 0;
+            /* ヘッダーも縮まないように固定 */
         }
 
         h1 {
@@ -63,7 +65,7 @@
             box-sizing: border-box;
             overflow: hidden;
             flex-shrink: 0;
-            /* サイズ固定 */
+            /* サイズ固定（縮小禁止） */
             transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
         }
 
@@ -93,6 +95,10 @@
             z-index: 10;
             transition: background-color 0.2s;
             color: #8b949e;
+
+            /* ★★★ 重要な修正点 ★★★ */
+            flex-shrink: 0;
+            /* これでプレビューの内容に押しつぶされなくなります */
         }
 
         .toggle-bar:hover {
@@ -107,6 +113,8 @@
             overflow-y: auto;
             background-color: #0d1117;
             box-sizing: border-box;
+            min-width: 0;
+            /* Flexboxの子要素がはみ出すのを防ぐおまじない */
         }
 
         /* --- 空の状態（プレースホルダー） --- */
@@ -120,7 +128,6 @@
             font-size: 2.5rem;
             margin-bottom: 15px;
             display: block;
-            /* アイコンをブロック要素化 */
         }
 
         /* =========================================
@@ -140,9 +147,10 @@
                 border-right: none;
             }
 
-            /* バー設定: 太さを24pxに変更 */
+            /* バー設定 */
             .toggle-bar {
                 width: 24px;
+                /* 太さ固定 */
                 height: 100%;
                 border-top: none;
                 border-bottom: none;
@@ -168,10 +176,11 @@
                 border-bottom: none;
             }
 
-            /* バー設定: 太さを32pxに変更 */
+            /* バー設定 */
             .toggle-bar {
                 width: 100%;
                 height: 32px;
+                /* 太さ固定 */
                 border-left: none;
                 border-right: none;
             }
@@ -227,7 +236,7 @@
         <div class="preview-pane markdown-body" id="preview-output">
             <div class="empty-state">
                 <i class="fas fa-paste empty-state-icon"></i>
-                <p>ここに表示されます</p>
+                <p>Paste Here</p>
             </div>
         </div>
     </div>
@@ -246,7 +255,6 @@
         const toggleBar = document.getElementById('toggle-bar');
         const barIcon = document.getElementById('bar-icon');
 
-        // Marked カスタムレンダラー
         const renderer = new marked.Renderer();
         renderer.code = (code, language) => {
             if (language === 'mermaid') return `<div class="mermaid">${code}</div>`;
@@ -256,44 +264,38 @@
         };
         marked.setOptions({ renderer: renderer, breaks: true, gfm: true });
 
-        // レンダリング処理
         async function renderMarkdown() {
             const rawText = inputArea.value;
             if (!rawText.trim()) return;
 
             outputArea.innerHTML = marked.parse(rawText);
 
-            // MathJax
             if (window.MathJax && window.MathJax.typesetPromise) {
                 await window.MathJax.typesetPromise([outputArea]);
             }
 
-            // Mermaid
             const mermaidDivs = outputArea.querySelectorAll('.mermaid');
             if (mermaidDivs.length > 0) {
                 try { await mermaid.run({ nodes: mermaidDivs }); } catch (e) { }
             }
         }
 
-        // 入力イベント（デバウンス付き）
         let timeoutId;
         inputArea.addEventListener('input', () => {
             clearTimeout(timeoutId);
             timeoutId = setTimeout(renderMarkdown, 300);
         });
 
-        // 開閉トグル処理
         toggleBar.addEventListener('click', () => {
             container.classList.toggle('closed');
             updateIcon();
         });
 
-        // アイコン向き調整
         function updateIcon() {
             const isClosed = container.classList.contains('closed');
             const isMobile = window.innerWidth <= 768;
 
-            barIcon.className = "fas"; // Reset
+            barIcon.className = "fas";
 
             if (isMobile) {
                 if (isClosed) barIcon.classList.add('fa-chevron-down');
