@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gemini Viewer</title>
+
+    <!-- GitHub Markdown & Highlight.js CSS -->
+    <link rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/github-markdown-css/5.5.0/github-markdown.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
+    <!-- FontAwesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+        /* =========================================
+           基本設定
+           ========================================= */
+        body,
+        html {
+            height: 100%;
+            margin: 0;
+            background-color: #0d1117;
+            color: #c9d1d9;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+            overflow: hidden;
+        }
+
+        /* =========================================
+           ヘッダーエリア
+           ========================================= */
+        header {
+            height: 40px;
+            background-color: #161b22;
+            border-bottom: 1px solid #30363d;
+            padding: 0 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        h1 {
+            font-size: 0.9rem;
+            margin: 0;
+            color: #8b949e;
+            font-weight: normal;
+        }
+
+        /* =========================================
+           メインレイアウト
+           ========================================= */
+        .container {
+            display: flex;
+            height: calc(100% - 40px);
+            width: 100%;
+            overflow: hidden;
+        }
+
+        /* --- 入力エリア --- */
+        .editor-pane {
+            background-color: #0d1117;
+            box-sizing: border-box;
+            overflow: hidden;
+            flex-shrink: 0;
+            /* サイズ固定 */
+            transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+        }
+
+        textarea {
+            width: 100%;
+            height: 100%;
+            background-color: #0d1117;
+            color: #c9d1d9;
+            border: none;
+            padding: 20px;
+            resize: none;
+            font-family: Consolas, "Courier New", monospace;
+            font-size: 14px;
+            line-height: 1.5;
+            outline: none;
+            box-sizing: border-box;
+        }
+
+        /* --- トグルバー（境界線） --- */
+        .toggle-bar {
+            background-color: #21262d;
+            border: 1px solid #30363d;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            z-index: 10;
+            transition: background-color 0.2s;
+            color: #8b949e;
+        }
+
+        .toggle-bar:hover {
+            background-color: #30363d;
+            color: #c9d1d9;
+        }
+
+        /* --- プレビューエリア --- */
+        .preview-pane {
+            flex-grow: 1;
+            padding: 40px;
+            overflow-y: auto;
+            background-color: #0d1117;
+            box-sizing: border-box;
+        }
+
+        /* --- 空の状態（プレースホルダー） --- */
+        .empty-state {
+            text-align: center;
+            margin-top: 100px;
+            color: #8b949e;
+        }
+
+        .empty-state-icon {
+            font-size: 2.5rem;
+            margin-bottom: 15px;
+            display: block;
+            /* アイコンをブロック要素化 */
+        }
+
+        /* =========================================
+           レスポンシブ設定 (PC / スマホ)
+           ========================================= */
+
+        /* PC (幅769px以上) */
+        @media (min-width: 769px) {
+            .container {
+                flex-direction: row;
+            }
+
+            /* 入力エリア: 幅50% */
+            .editor-pane {
+                width: 50%;
+                height: 100%;
+                border-right: none;
+            }
+
+            /* バー設定: 太さを24pxに変更 */
+            .toggle-bar {
+                width: 24px;
+                height: 100%;
+                border-top: none;
+                border-bottom: none;
+            }
+
+            /* 閉じた状態 */
+            .container.closed .editor-pane {
+                width: 0 !important;
+                padding: 0;
+            }
+        }
+
+        /* スマホ (幅768px以下) */
+        @media (max-width: 768px) {
+            .container {
+                flex-direction: column;
+            }
+
+            /* 入力エリア: 高さ40% */
+            .editor-pane {
+                width: 100%;
+                height: 40%;
+                border-bottom: none;
+            }
+
+            /* バー設定: 太さを32pxに変更 */
+            .toggle-bar {
+                width: 100%;
+                height: 32px;
+                border-left: none;
+                border-right: none;
+            }
+
+            .preview-pane {
+                padding: 15px;
+            }
+
+            /* 閉じた状態 */
+            .container.closed .editor-pane {
+                height: 0 !important;
+            }
+        }
+
+        /* Mermaid用スタイル */
+        .mermaid {
+            background-color: white;
+            padding: 10px;
+            border-radius: 4px;
+            text-align: center;
+            margin-bottom: 16px;
+        }
+    </style>
+
+    <!-- MathJax設定 -->
+    <script>
+        window.MathJax = {
+            tex: { inlineMath: [['$', '$'], ['\\(', '\\)']], displayMath: [['$$', '$$'], ['\\[', '\\]']] },
+            options: { ignoreHtmlClass: 'tex2jax_ignore', processHtmlClass: 'tex2jax_process' }
+        };
+    </script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+</head>
+
+<body>
+
+    <header>
+        <h1>Gemini Viewer</h1>
+    </header>
+
+    <div class="container" id="main-container">
+        <!-- 入力エリア -->
+        <div class="editor-pane" id="editor-pane">
+            <textarea id="markdown-input" placeholder="ここに貼り付け..."></textarea>
+        </div>
+
+        <!-- 境界線バー -->
+        <div class="toggle-bar" id="toggle-bar" title="クリックして開閉">
+            <i class="fas fa-chevron-left" id="bar-icon"></i>
+        </div>
+
+        <!-- プレビューエリア -->
+        <div class="preview-pane markdown-body" id="preview-output">
+            <div class="empty-state">
+                <i class="fas fa-paste empty-state-icon"></i>
+                <p>ここに表示されます</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- 処理ロジック -->
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+
+    <script type="module">
+        import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
+        mermaid.initialize({ startOnLoad: false, theme: 'default' });
+
+        const inputArea = document.getElementById('markdown-input');
+        const outputArea = document.getElementById('preview-output');
+        const container = document.getElementById('main-container');
+        const toggleBar = document.getElementById('toggle-bar');
+        const barIcon = document.getElementById('bar-icon');
+
+        // Marked カスタムレンダラー
+        const renderer = new marked.Renderer();
+        renderer.code = (code, language) => {
+            if (language === 'mermaid') return `<div class="mermaid">${code}</div>`;
+            const validLanguage = hljs.getLanguage(language) ? language : 'plaintext';
+            const highlighted = hljs.highlight(code, { language: validLanguage }).value;
+            return `<pre><code class="hljs language-${validLanguage}">${highlighted}</code></pre>`;
+        };
+        marked.setOptions({ renderer: renderer, breaks: true, gfm: true });
+
+        // レンダリング処理
+        async function renderMarkdown() {
+            const rawText = inputArea.value;
+            if (!rawText.trim()) return;
+
+            outputArea.innerHTML = marked.parse(rawText);
+
+            // MathJax
+            if (window.MathJax && window.MathJax.typesetPromise) {
+                await window.MathJax.typesetPromise([outputArea]);
+            }
+
+            // Mermaid
+            const mermaidDivs = outputArea.querySelectorAll('.mermaid');
+            if (mermaidDivs.length > 0) {
+                try { await mermaid.run({ nodes: mermaidDivs }); } catch (e) { }
+            }
+        }
+
+        // 入力イベント（デバウンス付き）
+        let timeoutId;
+        inputArea.addEventListener('input', () => {
+            clearTimeout(timeoutId);
+            timeoutId = setTimeout(renderMarkdown, 300);
+        });
+
+        // 開閉トグル処理
+        toggleBar.addEventListener('click', () => {
+            container.classList.toggle('closed');
+            updateIcon();
+        });
+
+        // アイコン向き調整
+        function updateIcon() {
+            const isClosed = container.classList.contains('closed');
+            const isMobile = window.innerWidth <= 768;
+
+            barIcon.className = "fas"; // Reset
+
+            if (isMobile) {
+                if (isClosed) barIcon.classList.add('fa-chevron-down');
+                else barIcon.classList.add('fa-chevron-up');
+            } else {
+                if (isClosed) barIcon.classList.add('fa-chevron-right');
+                else barIcon.classList.add('fa-chevron-left');
+            }
+        }
+
+        window.addEventListener('resize', updateIcon);
+        updateIcon();
+    </script>
+</body>
+
+</html>
