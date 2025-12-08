@@ -123,13 +123,13 @@
             overflow: auto !important; 
         }
 
-        /* ヘッダーを固定 (Fixed) に変更 */
+        /* ヘッダーを固定 (Fixed) */
         body.gv-full-page > #gv-header {
-            position: fixed; /* 常に画面上部に固定 */
+            position: fixed;
             top: 0; left: 0; width: 100%;
             box-sizing: border-box;
             border-bottom: 1px solid var(--gv-border-color);
-            background: var(--gv-bg-header); /* 背景色を確保して透けないように */
+            background: var(--gv-bg-header);
         }
         
         /* コンテナのレイアウト変更 */
@@ -159,6 +159,20 @@
         }
     </style>
 
+    <!-- ★MathJaxの設定 (ドルマーク有効化) -->
+    <script>
+    window.MathJax = {
+        tex: {
+            inlineMath: [['$', '$'], ['\\(', '\\)']],
+            displayMath: [['$$', '$$'], ['\\[', '\\]']],
+            processEscapes: true
+        },
+        options: {
+            ignoreHtmlClass: 'tex2jax_ignore',
+            processHtmlClass: 'tex2jax_process'
+        }
+    };
+    </script>
     <script src="https://cdn.jsdelivr.net/npm/marked@9.1.6/marked.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
     <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
@@ -262,7 +276,6 @@
         window.addEventListener('resize', updateIcon);
         updateIcon();
 
-        // モード切り替え
         fullPageBtn.addEventListener('click', () => {
             document.documentElement.classList.toggle('gv-full-page');
             document.body.classList.toggle('gv-full-page');
