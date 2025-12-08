@@ -117,13 +117,11 @@
         /* =========================================
            ★スクショ用 全体表示モード (Full Page)
            ========================================= */
-        /* スクロール有効化 */
         html.gv-full-page, body.gv-full-page {
             height: auto !important;
             overflow: auto !important; 
         }
 
-        /* ヘッダーを固定 (Fixed) */
         body.gv-full-page > #gv-header {
             position: fixed;
             top: 0; left: 0; width: 100%;
@@ -132,21 +130,18 @@
             background: var(--gv-bg-header);
         }
         
-        /* コンテナのレイアウト変更 */
         body.gv-full-page > #gv-container {
             height: auto !important;
             display: block !important;
-            padding-top: 50px; /* ヘッダーの高さ分、中身を下げる */
+            padding-top: 50px;
         }
 
-        /* 不要な要素を非表示 */
         body.gv-full-page #gv-editor-pane, 
         body.gv-full-page #gv-toggle-bar,
         body.gv-full-page #gv-empty-state {
             display: none !important;
         }
 
-        /* プレビューエリア全画面化 */
         body.gv-full-page #gv-preview-pane {
             height: auto !important;
             overflow: visible !important;
@@ -159,7 +154,6 @@
         }
     </style>
 
-    <!-- ★MathJaxの設定 (ドルマーク有効化) -->
     <script>
     window.MathJax = {
         tex: {
@@ -257,7 +251,35 @@
             clearTimeout(timer);
             timer = setTimeout(async () => {
                 if (!input.value.trim()) return;
-                try { content.innerHTML = marked.parse(input.value); } catch(e) { content.innerHTML = 'Error'; }
+
+                // ★数式改行修正ロジック START★
+                // Marked.jsを通す前に、数式ブロック($$...$$)や($...$)内のバックスラッシュを倍増させて保護する
+                // コードブロック(```...```)内は触らないように分割処理を行う
+                const rawText = input.value;
+                const codeBlockRegex = /(`{1,3})[\s\S]*?\1/g;
+                const chunks = [];
+                let lastIndex = 0;
+                let match;
+
+                const escapeMath = (text) => {
+                    // $$...$$ 内の \ を \\ に置換
+                    text = text.replace(/\$\$([\s\S]*?)\$\$/g, (m) => m.replace(/\\/g, '\\\\'));
+                    // $...$ 内の \ を \\ に置換 (非貪欲マッチ)
+                    text = text.replace(/(?<!\\)\$(.+?)(?<!\\)\$/g, (m) => m.replace(/\\/g, '\\\\'));
+                    return text;
+                };
+
+                while ((match = codeBlockRegex.exec(rawText)) !== null) {
+                    chunks.push(escapeMath(rawText.slice(lastIndex, match.index))); // 通常テキスト部分を保護
+                    chunks.push(match[0]); // コードブロックはそのまま
+                    lastIndex = codeBlockRegex.lastIndex;
+                }
+                chunks.push(escapeMath(rawText.slice(lastIndex))); // 残りを保護
+                const processedText = chunks.join("");
+                // ★数式改行修正ロジック END★
+
+                try { content.innerHTML = marked.parse(processedText); } catch(e) { content.innerHTML = 'Error'; }
+                
                 if (window.MathJax) await MathJax.typesetPromise([content]);
                 const m = content.querySelectorAll('.mermaid');
                 if (m.length) try { await mermaid.run({ nodes: m }); } catch {}
