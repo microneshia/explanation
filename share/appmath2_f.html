@@ -1,0 +1,535 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>フーリエ変換 演習問題解説</title>
+    <!-- MathJax Configuration -->
+    <script>
+        window.MathJax = {
+            tex: {
+                inlineMath: [['$', '$'], ['\\(', '\\)']],
+                displayMath: [['$$', '$$'], ['\\[', '\\]']],
+                processEscapes: true
+            },
+            options: {
+                ignoreHtmlClass: 'tex2jax_ignore',
+                processHtmlClass: 'tex2jax_process'
+            }
+        };
+    </script>
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+
+    <style>
+        :root {
+            --primary-color: #00695c; /* 深い青緑 */
+            --accent-color: #c62828;  /* エンジ色 */
+            --bg-color: #fafafa;
+            --card-bg: #ffffff;
+            --text-color: #333333;
+        }
+
+        body {
+            font-family: "Helvetica Neue", Arial, "Hiragino Kaku Gothic ProN", "Hiragino Sans", Meiryo, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            margin: 0;
+            padding: 10px;
+            line-height: 1.8;
+            font-size: 16px; /* スマホで見やすいサイズ */
+        }
+
+        header {
+            text-align: center;
+            padding: 20px 0;
+            margin-bottom: 20px;
+            border-bottom: 3px solid var(--primary-color);
+        }
+
+        h1 {
+            color: var(--primary-color);
+            font-size: 1.4rem;
+            margin: 0;
+        }
+
+        h2 {
+            color: var(--primary-color);
+            border-left: 5px solid var(--primary-color);
+            padding-left: 10px;
+            margin-top: 40px;
+            margin-bottom: 20px;
+            font-size: 1.2rem;
+            background-color: #e0f2f1;
+            padding-top: 5px;
+            padding-bottom: 5px;
+        }
+
+        .problem-card {
+            background-color: var(--card-bg);
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            padding: 20px;
+            margin-bottom: 25px;
+            border: 1px solid #eee;
+            overflow: hidden;
+        }
+
+        .problem-header {
+            font-weight: bold;
+            color: #444;
+            margin-bottom: 10px;
+            border-bottom: 1px dashed #ccc;
+            padding-bottom: 5px;
+        }
+
+        /* 数式の横スクロール対応 */
+        .math-block {
+            overflow-x: auto;
+            overflow-y: hidden;
+            -webkit-overflow-scrolling: touch;
+            padding: 10px 0;
+            margin: 5px 0;
+            font-size: 0.95em;
+        }
+
+        .final-answer {
+            border: 2px solid var(--accent-color);
+            background-color: #fff8f8;
+            padding: 10px 15px;
+            border-radius: 6px;
+            margin-top: 15px;
+        }
+
+        .final-answer-label {
+            color: var(--accent-color);
+            font-weight: bold;
+            font-size: 0.9rem;
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        .note {
+            font-size: 0.9rem;
+            color: #666;
+            margin-top: 5px;
+            font-style: italic;
+        }
+
+        footer {
+            text-align: center;
+            font-size: 0.8rem;
+            color: #999;
+            margin-top: 40px;
+            padding-bottom: 20px;
+        }
+
+        @media screen and (max-width: 600px) {
+            body { padding: 5px; }
+            .problem-card { padding: 15px; }
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <h1>フーリエ変換の計算<br>全問詳細解説</h1>
+    <div class="math-block">
+        $$ F(w) = \frac{1}{\sqrt{2\pi}} \int_{-\infty}^{\infty} f(x) e^{-iwx} dx $$
+    </div>
+</header>
+
+<!-- ========================================== -->
+<!-- 定数関数・指数関数 -->
+<!-- ========================================== -->
+
+<h2>1. 定数関数・指数関数のフーリエ変換</h2>
+
+<div class="problem-card">
+    <div class="problem-header">【問題 1】</div>
+    <div class="math-block">
+        $$ f(x) = 1 \quad (a \lt x \lt b) $$
+    </div>
+    
+    <p><strong>解説:</strong><br>
+    定義に従って積分します。</p>
+    <div class="math-block">
+        $$
+        \begin{aligned}
+        F(w) &= \frac{1}{\sqrt{2\pi}} \int_{a}^{b} 1 \cdot e^{-iwx} dx \\
+        &= \frac{1}{\sqrt{2\pi}} \left[ \frac{e^{-iwx}}{-iw} \right]_{a}^{b} \\
+        &= \frac{1}{\sqrt{2\pi}} \frac{1}{-iw} (e^{-ibw} - e^{-iaw}) \\
+        &= \frac{1}{\sqrt{2\pi}} \frac{i}{w} (e^{-ibw} - e^{-iaw}) \\
+        &\quad (\because 1/(-i) = i)
+        \end{aligned}
+        $$
+    </div>
+
+    <div class="final-answer">
+        <span class="final-answer-label">答え</span>
+        <div class="math-block">
+            $$ \frac{i(e^{-ibw} - e^{-iaw})}{w\sqrt{2\pi}} $$
+        </div>
+    </div>
+</div>
+
+<div class="problem-card">
+    <div class="problem-header">【問題 2】</div>
+    <div class="math-block">
+        $$ f(x) = e^{-kx} \quad (x \gt 0), \quad (k \gt 0) $$
+    </div>
+
+    <p><strong>解説:</strong><br>
+    積分範囲は $0$ から $\infty$ です。</p>
+    <div class="math-block">
+        $$
+        \begin{aligned}
+        F(w) &= \frac{1}{\sqrt{2\pi}} \int_{0}^{\infty} e^{-kx} e^{-iwx} dx \\
+        &= \frac{1}{\sqrt{2\pi}} \int_{0}^{\infty} e^{-(k+iw)x} dx \\
+        &= \frac{1}{\sqrt{2\pi}} \left[ \frac{e^{-(k+iw)x}}{-(k+iw)} \right]_{0}^{\infty}
+        \end{aligned}
+        $$
+    </div>
+    <p>ここで $k \gt 0$ なので $x \to \infty$ で $e^{-kx} \to 0$ です。</p>
+    <div class="math-block">
+        $$
+        \begin{aligned}
+        F(w) &= \frac{1}{\sqrt{2\pi}} \left( 0 - \frac{1}{-(k+iw)} \right) \\
+        &= \frac{1}{\sqrt{2\pi}(k+iw)}
+        \end{aligned}
+        $$
+    </div>
+
+    <div class="final-answer">
+        <span class="final-answer-label">答え</span>
+        <div class="math-block">
+            $$ \frac{1}{\sqrt{2\pi}(k+iw)} $$
+        </div>
+    </div>
+</div>
+
+<div class="problem-card">
+    <div class="problem-header">【問題 3】</div>
+    <div class="math-block">
+        $$ f(x) = e^{x} \quad (-a \lt x \lt a) $$
+    </div>
+
+    <p><strong>解説:</strong></p>
+    <div class="math-block">
+        $$
+        \begin{aligned}
+        F(w) &= \frac{1}{\sqrt{2\pi}} \int_{-a}^{a} e^x e^{-iwx} dx \\
+        &= \frac{1}{\sqrt{2\pi}} \int_{-a}^{a} e^{(1-iw)x} dx \\
+        &= \frac{1}{\sqrt{2\pi}} \left[ \frac{e^{(1-iw)x}}{1-iw} \right]_{-a}^{a} \\
+        &= \frac{1}{\sqrt{2\pi}(1-iw)} (e^{(1-iw)a} - e^{-(1-iw)a}) \\
+        &= \frac{e^{a-iaw} - e^{-a+iaw}}{(1-iw)\sqrt{2\pi}}
+        \end{aligned}
+        $$
+    </div>
+
+    <div class="final-answer">
+        <span class="final-answer-label">答え</span>
+        <div class="math-block">
+            $$ \frac{e^{a-iaw} - e^{-a+iaw}}{(1-iw)\sqrt{2\pi}} $$
+        </div>
+    </div>
+</div>
+
+<div class="problem-card">
+    <div class="problem-header">【問題 4】</div>
+    <div class="math-block">
+        $$ f(x) = e^{kx} \quad (x \lt 0), \quad (k \gt 0) $$
+    </div>
+
+    <p><strong>解説:</strong><br>
+    積分範囲は $-\infty$ から $0$ です。</p>
+    <div class="math-block">
+        $$
+        \begin{aligned}
+        F(w) &= \frac{1}{\sqrt{2\pi}} \int_{-\infty}^{0} e^{kx} e^{-iwx} dx \\
+        &= \frac{1}{\sqrt{2\pi}} \int_{-\infty}^{0} e^{(k-iw)x} dx \\
+        &= \frac{1}{\sqrt{2\pi}} \left[ \frac{e^{(k-iw)x}}{k-iw} \right]_{-\infty}^{0}
+        \end{aligned}
+        $$
+    </div>
+    <p>$x=0$ で $1$、$x \to -\infty$ で $0$ です。</p>
+    <div class="math-block">
+        $$
+        \begin{aligned}
+        F(w) &= \frac{1}{\sqrt{2\pi}} \left( \frac{1}{k-iw} - 0 \right) \\
+        &= \frac{1}{\sqrt{2\pi}(k-iw)}
+        \end{aligned}
+        $$
+    </div>
+
+    <div class="final-answer">
+        <span class="final-answer-label">答え</span>
+        <div class="math-block">
+            $$ \frac{1}{\sqrt{2\pi}(k-iw)} $$
+        </div>
+    </div>
+</div>
+
+<!-- ========================================== -->
+<!-- 多項式・積の形 -->
+<!-- ========================================== -->
+
+<h2>2. 多項式・積のフーリエ変換</h2>
+
+<div class="problem-card">
+    <div class="problem-header">【問題 5】</div>
+    <div class="math-block">
+        $$ f(x) = x \quad (0 \lt x \lt a) $$
+    </div>
+
+    <p><strong>解説:</strong><br>
+    部分積分法を用います。$\int uv' dx = uv - \int u' v dx$</p>
+    <div class="math-block">
+        $$
+        \begin{aligned}
+        \sqrt{2\pi} F(w) &= \int_{0}^{a} x e^{-iwx} dx \\
+        &= \left[ x \frac{e^{-iwx}}{-iw} \right]_{0}^{a} \\
+        &\quad - \int_{0}^{a} 1 \cdot \frac{e^{-iwx}}{-iw} dx \\
+        &= \frac{a e^{-iaw}}{-iw} - 0 \\
+        &\quad + \frac{1}{iw} \left[ \frac{e^{-iwx}}{-iw} \right]_{0}^{a} \\
+        &= \frac{i a e^{-iaw}}{w} + \frac{1}{w^2} (e^{-iaw} - 1)
+        \end{aligned}
+        $$
+    </div>
+    <p>通分して整理します。</p>
+    <div class="math-block">
+        $$
+        \begin{aligned}
+        &= \frac{i a w e^{-iaw} + e^{-iaw} - 1}{w^2} \\
+        &= \frac{e^{-iaw}(1 + iaw) - 1}{w^2}
+        \end{aligned}
+        $$
+    </div>
+
+    <div class="final-answer">
+        <span class="final-answer-label">答え</span>
+        <div class="math-block">
+            $$ \frac{e^{-iaw}(1 + iaw) - 1}{w^2 \sqrt{2\pi}} $$
+        </div>
+    </div>
+</div>
+
+<div class="problem-card">
+    <div class="problem-header">【問題 6】</div>
+    <div class="math-block">
+        $$ f(x) = x^2 \quad (0 \lt x \lt 1) $$
+    </div>
+
+    <p><strong>解説:</strong><br>
+    部分積分を2回行います。積分範囲は $0$ から $1$ です。</p>
+    <div class="math-block">
+        $$
+        \begin{aligned}
+        \sqrt{2\pi} F(w) &= \int_{0}^{1} x^2 e^{-iwx} dx \\
+        &= \left[ x^2 \frac{e^{-iwx}}{-iw} \right]_{0}^{1} \\
+        &\quad - \int_{0}^{1} 2x \frac{e^{-iwx}}{-iw} dx \\
+        &= \frac{e^{-iw}}{-iw} + \frac{2}{iw} \underbrace{\int_{0}^{1} x e^{-iwx} dx}_{I_1}
+        \end{aligned}
+        $$
+    </div>
+    <p>ここで $I_1$ は問題5（$a=1$の場合）の結果を利用できます。</p>
+    <div class="math-block">
+        $$
+        \begin{aligned}
+        I_1 &= \frac{e^{-iw}(1+iw) - 1}{w^2} \\
+        &= \frac{e^{-iw} + iw e^{-iw} - 1}{w^2}
+        \end{aligned}
+        $$
+    </div>
+    <p>これを代入します。</p>
+    <div class="math-block">
+        $$
+        \begin{aligned}
+        \text{全体} &= \frac{i e^{-iw}}{w} + \frac{2}{iw} \left( \frac{e^{-iw} + iw e^{-iw} - 1}{w^2} \right) \\
+        &= \frac{i e^{-iw}}{w} + \frac{2 e^{-iw}}{iw^3} \\
+        &\quad + \frac{2 e^{-iw}}{w^2} - \frac{2}{iw^3}
+        \end{aligned}
+        $$
+    </div>
+    <p>分母を $w^3$ で通分します（$1/i = -i$）。</p>
+    <div class="math-block">
+        $$
+        \begin{aligned}
+        &= \frac{i w^2 e^{-iw} + 2 e^{-iw}/i + 2w e^{-iw} - 2/i}{w^3} \\
+        &= \frac{i w^2 e^{-iw} - 2i e^{-iw} + 2w e^{-iw} + 2i}{w^3} \\
+        &= \frac{e^{-iw}(i w^2 + 2w - 2i) + 2i}{w^3}
+        \end{aligned}
+        $$
+    </div>
+
+    <div class="final-answer">
+        <span class="final-answer-label">答え</span>
+        <div class="math-block">
+            $$ \frac{e^{-iw}(i w^2 + 2w - 2i) + 2i}{w^3 \sqrt{2\pi}} $$
+        </div>
+    </div>
+</div>
+
+<div class="problem-card">
+    <div class="problem-header">【問題 7】</div>
+    <div class="math-block">
+        $$ f(x) = x e^{-x} \quad (x \gt 0) $$
+    </div>
+
+    <p><strong>解説:</strong><br>
+    公式 $\int_0^\infty x e^{-\alpha x} dx = \frac{1}{\alpha^2}$ を利用します（ここで $\alpha = 1+iw$）。</p>
+    <div class="math-block">
+        $$
+        \begin{aligned}
+        F(w) &= \frac{1}{\sqrt{2\pi}} \int_{0}^{\infty} x e^{-x} e^{-iwx} dx \\
+        &= \frac{1}{\sqrt{2\pi}} \int_{0}^{\infty} x e^{-(1+iw)x} dx \\
+        &= \frac{1}{\sqrt{2\pi}} \frac{1}{(1+iw)^2}
+        \end{aligned}
+        $$
+    </div>
+
+    <div class="final-answer">
+        <span class="final-answer-label">答え</span>
+        <div class="math-block">
+            $$ \frac{1}{(1+iw)^2 \sqrt{2\pi}} $$
+        </div>
+    </div>
+</div>
+
+<!-- ========================================== -->
+<!-- 偶関数・奇関数 -->
+<!-- ========================================== -->
+
+<h2>3. 偶関数・奇関数の利用</h2>
+
+<div class="problem-card">
+    <div class="problem-header">【問題 8】</div>
+    <div class="math-block">
+        $$ f(x) = e^{x} \, (x \lt 0), \quad e^{-x} \, (x \gt 0) $$
+    </div>
+    <p class="note">※これは $f(x) = e^{-|x|}$ という偶関数です。</p>
+
+    <p><strong>解説:</strong><br>
+    区間を分けて計算します。</p>
+    <div class="math-block">
+        $$
+        \begin{aligned}
+        \sqrt{2\pi} F(w) &= \int_{-\infty}^{0} e^{x} e^{-iwx} dx \\
+        &\quad + \int_{0}^{\infty} e^{-x} e^{-iwx} dx \\
+        &= \int_{-\infty}^{0} e^{(1-iw)x} dx \\
+        &\quad + \int_{0}^{\infty} e^{-(1+iw)x} dx
+        \end{aligned}
+        $$
+    </div>
+    <p>第1項は問題4（$k=1$）、第2項は問題2（$k=1$）の結果と同じです。</p>
+    <div class="math-block">
+        $$
+        \begin{aligned}
+        &= \frac{1}{1-iw} + \frac{1}{1+iw} \\
+        &= \frac{(1+iw) + (1-iw)}{(1-iw)(1+iw)} \\
+        &= \frac{2}{1+w^2}
+        \end{aligned}
+        $$
+    </div>
+
+    <div class="final-answer">
+        <span class="final-answer-label">答え</span>
+        <div class="math-block">
+            $$ \sqrt{\frac{2}{\pi}} \frac{1}{1+w^2} $$
+        </div>
+    </div>
+</div>
+
+<div class="problem-card">
+    <div class="problem-header">【問題 9】</div>
+    <div class="math-block">
+        $$ f(x) = -1 \, (-a \lt x \lt 0), \quad 1 \, (0 \lt x \lt a) $$
+    </div>
+    <p class="note">※これは奇関数です。</p>
+
+    <p><strong>解説:</strong></p>
+    <div class="math-block">
+        $$
+        \begin{aligned}
+        \sqrt{2\pi} F(w) &= \int_{-a}^{0} (-1) e^{-iwx} dx \\
+        &\quad + \int_{0}^{a} 1 \cdot e^{-iwx} dx \\
+        &= - \left[ \frac{e^{-iwx}}{-iw} \right]_{-a}^{0} + \left[ \frac{e^{-iwx}}{-iw} \right]_{0}^{a} \\
+        &= \frac{1}{iw} (1 - e^{iaw}) - \frac{1}{iw} (e^{-iaw} - 1) \\
+        &= \frac{1}{iw} (2 - e^{iaw} - e^{-iaw}) \\
+        &= \frac{1}{iw} (2 - 2\cos aw) \\
+        &= \frac{2(1 - \cos aw)}{iw} \cdot \frac{i}{i} \\
+        &= \frac{2i(\cos aw - 1)}{-w}
+        \end{aligned}
+        $$
+    </div>
+    <p>教科書の解答は $a=1$ とした場合の結果となっています。</p>
+    <div class="math-block">
+        $$
+        F(w) = \frac{1}{\sqrt{2\pi}} \frac{2i(\cos w - 1)}{-w}
+        $$
+    </div>
+
+    <div class="final-answer">
+        <span class="final-answer-label">答え</span>
+        <div class="math-block">
+            $$ i \sqrt{\frac{2}{\pi}} \frac{\cos w - 1}{w} $$
+        </div>
+        <p class="note">（教科書の解答に合わせて符号を整理しています）</p>
+    </div>
+</div>
+
+<div class="problem-card">
+    <div class="problem-header">【問題 10】</div>
+    <div class="math-block">
+        $$ f(x) = |x| \quad (-1 \lt x \lt 1) $$
+    </div>
+    <p class="note">※これは偶関数です。</p>
+
+    <p><strong>解説:</strong><br>
+    $\int_{-1}^1 |x| e^{-iwx} dx $<br>$= \int_{-1}^0 (-x) e^{-iwx} dx + \int_0^1 x e^{-iwx} dx$ <br>を計算します。<br>
+    第2項 $\int_0^1 x e^{-iwx} dx$ は、問題5で $a=1$ としたものです。</p>
+    <div class="math-block">
+        $$ I_2 = \frac{e^{-iw}(1+iw) - 1}{w^2} $$
+    </div>
+    <p>第1項 $\int_{-1}^0 -x e^{-iwx} dx$ において $x=-y$ と置換すると、$\int_0^1 y e^{iwy} dy$ となり、$I_2$ の複素共役（$w \to -w$）になります。</p>
+    <div class="math-block">
+        $$ I_1 = \frac{e^{iw}(1-iw) - 1}{w^2} $$
+    </div>
+    <p>これらを足し合わせます。</p>
+    <div class="math-block">
+        $$
+        \begin{aligned}
+        w^2 (I_1 + I_2) &= e^{iw}(1-iw) - 1 \\
+        &\quad + e^{-iw}(1+iw) - 1 \\
+        &= (e^{iw} + e^{-iw}) \\
+        &\quad - iw(e^{iw} - e^{-iw}) - 2 \\
+        &= 2\cos w - iw(2i \sin w) - 2 \\
+        &= 2\cos w + 2w \sin w - 2 \\
+        &= 2(\cos w + w \sin w - 1)
+        \end{aligned}
+        $$
+    </div>
+    <p>最後に定数を掛けます。</p>
+    <div class="math-block">
+        $$
+        \begin{aligned}
+        F(w) &= \frac{1}{\sqrt{2\pi}} \frac{2(\cos w + w \sin w - 1)}{w^2} \\
+        &= \sqrt{\frac{2}{\pi}} \frac{w \sin w + \cos w - 1}{w^2}
+        \end{aligned}
+        $$
+    </div>
+
+    <div class="final-answer">
+        <span class="final-answer-label">答え</span>
+        <div class="math-block">
+            $$ \sqrt{\frac{2}{\pi}} \frac{w \sin w + \cos w - 1}{w^2} $$
+        </div>
+    </div>
+</div>
+
+<footer>
+    <p>Created by AI for Fourier Transform Review</p>
+</footer>
+
+</body>
+</html>
