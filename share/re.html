@@ -540,100 +540,97 @@
 
         // 8方向並列ビットシフトによる合法手生成（6個挟み完全対応）
         function getMobility(P, O) {
-            const mask = O & MASK_SIDE;
-            const blank = (~(P | O)) & MASK64;
             let moves = 0n;
+            const directions = [
+                [-1, -1], [-1, 0], [-1, 1],
+                [0, -1],           [0, 1],
+                [1, -1],  [1, 0],  [1, 1]
+            ];
 
-            // 1. 右 (<< 1) : 相手石を計6回伝播させ、7マス目の空きマスへ到達
-            let f = (P << 1n) & mask;
-            f |= (f << 1n) & mask; f |= (f << 1n) & mask; f |= (f << 1n) & mask; f |= (f << 1n) & mask; f |= (f << 1n) & mask;
-            moves |= (f << 1n) & blank;
+            for (let r = 0; r < 8; r++) {
+                for (let c = 0; c < 8; c++) {
+                    const idx = r * 8 + c;
+                    const moveBit = 1n << BigInt(idx);
+                    if ((P & moveBit) !== 0n || (O & moveBit) !== 0n) continue;
 
-            // 2. 左 (>> 1)
-            f = (P >> 1n) & mask;
-            f |= (f >> 1n) & mask; f |= (f >> 1n) & mask; f |= (f >> 1n) & mask; f |= (f >> 1n) & mask; f |= (f >> 1n) & mask;
-            moves |= (f >> 1n) & blank;
+                    let legal = false;
+                    for (const [dr, dc] of directions) {
+                        let rr = r + dr;
+                        let cc = c + dc;
+                        let foundOpponent = false;
 
-            // 3. 下 (<< 8)
-            f = (P << 8n) & O;
-            f |= (f << 8n) & O; f |= (f << 8n) & O; f |= (f << 8n) & O; f |= (f << 8n) & O; f |= (f << 8n) & O;
-            moves |= (f << 8n) & blank;
+                        while (rr >= 0 && rr < 8 && cc >= 0 && cc < 8) {
+                            const bit = 1n << BigInt(rr * 8 + cc);
+                            if ((O & bit) !== 0n) {
+                                foundOpponent = true;
+                                rr += dr;
+                                cc += dc;
+                                continue;
+                            }
+                            if (foundOpponent && (P & bit) !== 0n) legal = true;
+                            break;
+                        }
 
-            // 4. 上 (>> 8)
-            f = (P >> 8n) & O;
-            f |= (f >> 8n) & O; f |= (f >> 8n) & O; f |= (f >> 8n) & O; f |= (f >> 8n) & O; f |= (f >> 8n) & O;
-            moves |= (f >> 8n) & blank;
+                        if (legal) break;
+                    }
 
-            // 5. 右下 (<< 9)
-            f = (P << 9n) & mask;
-            f |= (f << 9n) & mask; f |= (f << 9n) & mask; f |= (f << 9n) & mask; f |= (f << 9n) & mask; f |= (f << 9n) & mask;
-            moves |= (f << 9n) & blank;
-
-            // 6. 左上 (>> 9)
-            f = (P >> 9n) & mask;
-            f |= (f >> 9n) & mask; f |= (f >> 9n) & mask; f |= (f >> 9n) & mask; f |= (f >> 9n) & mask; f |= (f >> 9n) & mask;
-            moves |= (f >> 9n) & blank;
-
-            // 7. 左下 (<< 7)
-            f = (P << 7n) & mask;
-            f |= (f << 7n) & mask; f |= (f << 7n) & mask; f |= (f << 7n) & mask; f |= (f << 7n) & mask; f |= (f << 7n) & mask;
-            moves |= (f << 7n) & blank;
-
-            // 8. 右上 (>> 7)
-            f = (P >> 7n) & mask;
-            f |= (f >> 7n) & mask; f |= (f >> 7n) & mask; f |= (f >> 7n) & mask; f |= (f >> 7n) & mask; f |= (f >> 7n) & mask;
-            moves |= (f >> 7n) & blank;
+                    if (legal) moves |= moveBit;
+                }
+            }
 
             return moves & MASK64;
         }
 
-        // 6石挟み（端から端まで）を完全網羅した反転石マスク生成
+        // 8方向を盤面座標で正確に走査して、着手によって反転する石を取得する。
+        // 1～6枚の連続石、端・角、斜めを含めてオセロの規則をそのまま判定する。
         function getFlips(moveBit, P, O) {
-            const mask = O & MASK_SIDE;
+            if (moveBit === 0n) return 0n;
+
+            let moveIdx = -1;
+            for (let i = 0; i < 64; i++) {
+                if ((moveBit & (1n << BigInt(i))) !== 0n) {
+                    moveIdx = i;
+                    break;
+                }
+            }
+            if (moveIdx < 0) return 0n;
+
+            const startRow = Math.floor(moveIdx / 8);
+            const startCol = moveIdx % 8;
+            const directions = [
+                [-1, -1], [-1, 0], [-1, 1],
+                [0, -1],           [0, 1],
+                [1, -1],  [1, 0],  [1, 1]
+            ];
+
             let flipped = 0n;
 
-            // 1. 右 (<< 1)
-            let cur = (moveBit << 1n) & mask;
-            cur |= (cur << 1n) & mask; cur |= (cur << 1n) & mask; cur |= (cur << 1n) & mask; cur |= (cur << 1n) & mask; cur |= (cur << 1n) & mask;
-            if ((cur << 1n) & P) flipped |= cur;
+            for (const [dr, dc] of directions) {
+                let rr = startRow + dr;
+                let cc = startCol + dc;
+                let line = 0n;
+                let foundOpponent = false;
 
-            // 2. 左 (>> 1)
-            cur = (moveBit >> 1n) & mask;
-            cur |= (cur >> 1n) & mask; cur |= (cur >> 1n) & mask; cur |= (cur >> 1n) & mask; cur |= (cur >> 1n) & mask; cur |= (cur >> 1n) & mask;
-            if ((cur >> 1n) & P) flipped |= cur;
+                while (rr >= 0 && rr < 8 && cc >= 0 && cc < 8) {
+                    const bit = 1n << BigInt(rr * 8 + cc);
+                    if ((O & bit) !== 0n) {
+                        foundOpponent = true;
+                        line |= bit;
+                        rr += dr;
+                        cc += dc;
+                        continue;
+                    }
 
-            // 3. 下 (<< 8)
-            cur = (moveBit << 8n) & O;
-            cur |= (cur << 8n) & O; cur |= (cur << 8n) & O; cur |= (cur << 8n) & O; cur |= (cur << 8n) & O; cur |= (cur << 8n) & O;
-            if ((cur << 8n) & P) flipped |= cur;
-
-            // 4. 上 (>> 8)
-            cur = (moveBit >> 8n) & O;
-            cur |= (cur >> 8n) & O; cur |= (cur >> 8n) & O; cur |= (cur >> 8n) & O; cur |= (cur >> 8n) & O; cur |= (cur >> 8n) & O;
-            if ((cur >> 8n) & P) flipped |= cur;
-
-            // 5. 右下 (<< 9)
-            cur = (moveBit << 9n) & mask;
-            cur |= (cur << 9n) & mask; cur |= (cur << 9n) & mask; cur |= (cur << 9n) & mask; cur |= (cur << 9n) & mask; cur |= (cur << 9n) & mask;
-            if ((cur << 9n) & P) flipped |= cur;
-
-            // 6. 左上 (>> 9)
-            cur = (moveBit >> 9n) & mask;
-            cur |= (cur >> 9n) & mask; cur |= (cur >> 9n) & mask; cur |= (cur >> 9n) & mask; cur |= (cur >> 9n) & mask; cur |= (cur >> 9n) & mask;
-            if ((cur >> 9n) & P) flipped |= cur;
-
-            // 7. 左下 (<< 7)
-            cur = (moveBit << 7n) & mask;
-            cur |= (cur << 7n) & mask; cur |= (cur << 7n) & mask; cur |= (cur << 7n) & mask; cur |= (cur << 7n) & mask; cur |= (cur << 7n) & mask;
-            if ((cur << 7n) & P) flipped |= cur;
-
-            // 8. 右上 (>> 7)
-            cur = (moveBit >> 7n) & mask;
-            cur |= (cur >> 7n) & mask; cur |= (cur >> 7n) & mask; cur |= (cur >> 7n) & mask; cur |= (cur >> 7n) & mask; cur |= (cur >> 7n) & mask;
-            if ((cur >> 7n) & P) flipped |= cur;
+                    if (foundOpponent && (P & bit) !== 0n) {
+                        flipped |= line;
+                    }
+                    break;
+                }
+            }
 
             return flipped & MASK64;
         }
+
         const WEIGHT_TABLE = [
             120, -25, 20, 5, 5, 20, -25, 120,
             -25, -45, -5, -5, -5, -5, -45, -25,
