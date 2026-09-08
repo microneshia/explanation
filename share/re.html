@@ -594,47 +594,46 @@
 
             // 1. 右 (<< 1)
             let cur = (moveBit << 1n) & mask;
-            cur |= (cur << 1n) & mask; cur |= (cur << 1n) & mask; cur |= (cur << 1n) & mask; cur |= (cur << 1n) & mask;
+            cur |= (cur << 1n) & mask; cur |= (cur << 1n) & mask; cur |= (cur << 1n) & mask; cur |= (cur << 1n) & mask; cur |= (cur << 1n) & mask;
             if ((cur << 1n) & P) flipped |= cur;
 
             // 2. 左 (>> 1)
             cur = (moveBit >> 1n) & mask;
-            cur |= (cur >> 1n) & mask; cur |= (cur >> 1n) & mask; cur |= (cur >> 1n) & mask; cur |= (cur >> 1n) & mask;
+            cur |= (cur >> 1n) & mask; cur |= (cur >> 1n) & mask; cur |= (cur >> 1n) & mask; cur |= (cur >> 1n) & mask; cur |= (cur >> 1n) & mask;
             if ((cur >> 1n) & P) flipped |= cur;
 
             // 3. 下 (<< 8)
             cur = (moveBit << 8n) & O;
-            cur |= (cur << 8n) & O; cur |= (cur << 8n) & O; cur |= (cur << 8n) & O; cur |= (cur << 8n) & O;
+            cur |= (cur << 8n) & O; cur |= (cur << 8n) & O; cur |= (cur << 8n) & O; cur |= (cur << 8n) & O; cur |= (cur << 8n) & O;
             if ((cur << 8n) & P) flipped |= cur;
 
             // 4. 上 (>> 8)
             cur = (moveBit >> 8n) & O;
-            cur |= (cur >> 8n) & O; cur |= (cur >> 8n) & O; cur |= (cur >> 8n) & O; cur |= (cur >> 8n) & O;
+            cur |= (cur >> 8n) & O; cur |= (cur >> 8n) & O; cur |= (cur >> 8n) & O; cur |= (cur >> 8n) & O; cur |= (cur >> 8n) & O;
             if ((cur >> 8n) & P) flipped |= cur;
 
             // 5. 右下 (<< 9)
             cur = (moveBit << 9n) & mask;
-            cur |= (cur << 9n) & mask; cur |= (cur << 9n) & mask; cur |= (cur << 9n) & mask; cur |= (cur << 9n) & mask;
+            cur |= (cur << 9n) & mask; cur |= (cur << 9n) & mask; cur |= (cur << 9n) & mask; cur |= (cur << 9n) & mask; cur |= (cur << 9n) & mask;
             if ((cur << 9n) & P) flipped |= cur;
 
             // 6. 左上 (>> 9)
             cur = (moveBit >> 9n) & mask;
-            cur |= (cur >> 9n) & mask; cur |= (cur >> 9n) & mask; cur |= (cur >> 9n) & mask; cur |= (cur >> 9n) & mask;
+            cur |= (cur >> 9n) & mask; cur |= (cur >> 9n) & mask; cur |= (cur >> 9n) & mask; cur |= (cur >> 9n) & mask; cur |= (cur >> 9n) & mask;
             if ((cur >> 9n) & P) flipped |= cur;
 
             // 7. 左下 (<< 7)
             cur = (moveBit << 7n) & mask;
-            cur |= (cur << 7n) & mask; cur |= (cur << 7n) & mask; cur |= (cur << 7n) & mask; cur |= (cur << 7n) & mask;
+            cur |= (cur << 7n) & mask; cur |= (cur << 7n) & mask; cur |= (cur << 7n) & mask; cur |= (cur << 7n) & mask; cur |= (cur << 7n) & mask;
             if ((cur << 7n) & P) flipped |= cur;
 
             // 8. 右上 (>> 7)
             cur = (moveBit >> 7n) & mask;
-            cur |= (cur >> 7n) & mask; cur |= (cur >> 7n) & mask; cur |= (cur >> 7n) & mask; cur |= (cur >> 7n) & mask;
+            cur |= (cur >> 7n) & mask; cur |= (cur >> 7n) & mask; cur |= (cur >> 7n) & mask; cur |= (cur >> 7n) & mask; cur |= (cur >> 7n) & mask;
             if ((cur >> 7n) & P) flipped |= cur;
 
             return flipped & MASK64;
         }
-
         const WEIGHT_TABLE = [
             120, -25, 20, 5, 5, 20, -25, 120,
             -25, -45, -5, -5, -5, -5, -45, -25,
