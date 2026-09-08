@@ -528,105 +528,108 @@
         let assistBlack = true;
         let assistWhite = true;
 
+        // SWAR法による定数時間ビットカウント（従来のループ方式より高速）
         function popCount(b) {
-            b = BigInt.asUintN(64, b);
-            let count = 0;
-            while (b > 0n) {
-                b &= b - 1n;
-                count++;
-            }
-            return count;
+            let x = BigInt.asUintN(64, b);
+            x = x - ((x >> 1n) & 0x5555555555555555n);
+            x = (x & 0x3333333333333333n) + ((x >> 2n) & 0x3333333333333333n);
+            x = (x + (x >> 4n)) & 0x0f0f0f0f0f0f0f0fn;
+            return Number(((x * 0x0101010101010101n) & MASK64) >> 56n);
         }
 
         // 8方向並列ビットシフトによる合法手生成（6個挟み完全対応）
         function getMobility(P, O) {
+            const mask = O & MASK_SIDE;
+            const blank = (~(P | O)) & MASK64;
             let moves = 0n;
-            const directions = [
-                [-1, -1], [-1, 0], [-1, 1],
-                [0, -1],           [0, 1],
-                [1, -1],  [1, 0],  [1, 1]
-            ];
 
-            for (let r = 0; r < 8; r++) {
-                for (let c = 0; c < 8; c++) {
-                    const idx = r * 8 + c;
-                    const moveBit = 1n << BigInt(idx);
-                    if ((P & moveBit) !== 0n || (O & moveBit) !== 0n) continue;
+            // 1. 右 (<< 1) : 相手石を計6回伝播させ、7マス目の空きマスへ到達
+            let f = (P << 1n) & mask;
+            f |= (f << 1n) & mask; f |= (f << 1n) & mask; f |= (f << 1n) & mask; f |= (f << 1n) & mask; f |= (f << 1n) & mask;
+            moves |= (f << 1n) & blank;
 
-                    let legal = false;
-                    for (const [dr, dc] of directions) {
-                        let rr = r + dr;
-                        let cc = c + dc;
-                        let foundOpponent = false;
+            // 2. 左 (>> 1)
+            f = (P >> 1n) & mask;
+            f |= (f >> 1n) & mask; f |= (f >> 1n) & mask; f |= (f >> 1n) & mask; f |= (f >> 1n) & mask; f |= (f >> 1n) & mask;
+            moves |= (f >> 1n) & blank;
 
-                        while (rr >= 0 && rr < 8 && cc >= 0 && cc < 8) {
-                            const bit = 1n << BigInt(rr * 8 + cc);
-                            if ((O & bit) !== 0n) {
-                                foundOpponent = true;
-                                rr += dr;
-                                cc += dc;
-                                continue;
-                            }
-                            if (foundOpponent && (P & bit) !== 0n) legal = true;
-                            break;
-                        }
+            // 3. 下 (<< 8)
+            f = (P << 8n) & O;
+            f |= (f << 8n) & O; f |= (f << 8n) & O; f |= (f << 8n) & O; f |= (f << 8n) & O; f |= (f << 8n) & O;
+            moves |= (f << 8n) & blank;
 
-                        if (legal) break;
-                    }
+            // 4. 上 (>> 8)
+            f = (P >> 8n) & O;
+            f |= (f >> 8n) & O; f |= (f >> 8n) & O; f |= (f >> 8n) & O; f |= (f >> 8n) & O; f |= (f >> 8n) & O;
+            moves |= (f >> 8n) & blank;
 
-                    if (legal) moves |= moveBit;
-                }
-            }
+            // 5. 右下 (<< 9)
+            f = (P << 9n) & mask;
+            f |= (f << 9n) & mask; f |= (f << 9n) & mask; f |= (f << 9n) & mask; f |= (f << 9n) & mask; f |= (f << 9n) & mask;
+            moves |= (f << 9n) & blank;
+
+            // 6. 左上 (>> 9)
+            f = (P >> 9n) & mask;
+            f |= (f >> 9n) & mask; f |= (f >> 9n) & mask; f |= (f >> 9n) & mask; f |= (f >> 9n) & mask; f |= (f >> 9n) & mask;
+            moves |= (f >> 9n) & blank;
+
+            // 7. 左下 (<< 7)
+            f = (P << 7n) & mask;
+            f |= (f << 7n) & mask; f |= (f << 7n) & mask; f |= (f << 7n) & mask; f |= (f << 7n) & mask; f |= (f << 7n) & mask;
+            moves |= (f << 7n) & blank;
+
+            // 8. 右上 (>> 7)
+            f = (P >> 7n) & mask;
+            f |= (f >> 7n) & mask; f |= (f >> 7n) & mask; f |= (f >> 7n) & mask; f |= (f >> 7n) & mask; f |= (f >> 7n) & mask;
+            moves |= (f >> 7n) & blank;
 
             return moves & MASK64;
         }
 
-        // 8方向を盤面座標で正確に走査して、着手によって反転する石を取得する。
-        // 1～6枚の連続石、端・角、斜めを含めてオセロの規則をそのまま判定する。
+        // 6石挟み（端から端まで）を完全網羅した反転石マスク生成
         function getFlips(moveBit, P, O) {
-            if (moveBit === 0n) return 0n;
-
-            let moveIdx = -1;
-            for (let i = 0; i < 64; i++) {
-                if ((moveBit & (1n << BigInt(i))) !== 0n) {
-                    moveIdx = i;
-                    break;
-                }
-            }
-            if (moveIdx < 0) return 0n;
-
-            const startRow = Math.floor(moveIdx / 8);
-            const startCol = moveIdx % 8;
-            const directions = [
-                [-1, -1], [-1, 0], [-1, 1],
-                [0, -1],           [0, 1],
-                [1, -1],  [1, 0],  [1, 1]
-            ];
-
+            const mask = O & MASK_SIDE;
             let flipped = 0n;
 
-            for (const [dr, dc] of directions) {
-                let rr = startRow + dr;
-                let cc = startCol + dc;
-                let line = 0n;
-                let foundOpponent = false;
+            // 1. 右 (<< 1)
+            let cur = (moveBit << 1n) & mask;
+            cur |= (cur << 1n) & mask; cur |= (cur << 1n) & mask; cur |= (cur << 1n) & mask; cur |= (cur << 1n) & mask; cur |= (cur << 1n) & mask;
+            if ((cur << 1n) & P) flipped |= cur;
 
-                while (rr >= 0 && rr < 8 && cc >= 0 && cc < 8) {
-                    const bit = 1n << BigInt(rr * 8 + cc);
-                    if ((O & bit) !== 0n) {
-                        foundOpponent = true;
-                        line |= bit;
-                        rr += dr;
-                        cc += dc;
-                        continue;
-                    }
+            // 2. 左 (>> 1)
+            cur = (moveBit >> 1n) & mask;
+            cur |= (cur >> 1n) & mask; cur |= (cur >> 1n) & mask; cur |= (cur >> 1n) & mask; cur |= (cur >> 1n) & mask; cur |= (cur >> 1n) & mask;
+            if ((cur >> 1n) & P) flipped |= cur;
 
-                    if (foundOpponent && (P & bit) !== 0n) {
-                        flipped |= line;
-                    }
-                    break;
-                }
-            }
+            // 3. 下 (<< 8)
+            cur = (moveBit << 8n) & O;
+            cur |= (cur << 8n) & O; cur |= (cur << 8n) & O; cur |= (cur << 8n) & O; cur |= (cur << 8n) & O; cur |= (cur << 8n) & O;
+            if ((cur << 8n) & P) flipped |= cur;
+
+            // 4. 上 (>> 8)
+            cur = (moveBit >> 8n) & O;
+            cur |= (cur >> 8n) & O; cur |= (cur >> 8n) & O; cur |= (cur >> 8n) & O; cur |= (cur >> 8n) & O; cur |= (cur >> 8n) & O;
+            if ((cur >> 8n) & P) flipped |= cur;
+
+            // 5. 右下 (<< 9)
+            cur = (moveBit << 9n) & mask;
+            cur |= (cur << 9n) & mask; cur |= (cur << 9n) & mask; cur |= (cur << 9n) & mask; cur |= (cur << 9n) & mask; cur |= (cur << 9n) & mask;
+            if ((cur << 9n) & P) flipped |= cur;
+
+            // 6. 左上 (>> 9)
+            cur = (moveBit >> 9n) & mask;
+            cur |= (cur >> 9n) & mask; cur |= (cur >> 9n) & mask; cur |= (cur >> 9n) & mask; cur |= (cur >> 9n) & mask; cur |= (cur >> 9n) & mask;
+            if ((cur >> 9n) & P) flipped |= cur;
+
+            // 7. 左下 (<< 7)
+            cur = (moveBit << 7n) & mask;
+            cur |= (cur << 7n) & mask; cur |= (cur << 7n) & mask; cur |= (cur << 7n) & mask; cur |= (cur << 7n) & mask; cur |= (cur << 7n) & mask;
+            if ((cur << 7n) & P) flipped |= cur;
+
+            // 8. 右上 (>> 7)
+            cur = (moveBit >> 7n) & mask;
+            cur |= (cur >> 7n) & mask; cur |= (cur >> 7n) & mask; cur |= (cur >> 7n) & mask; cur |= (cur >> 7n) & mask; cur |= (cur >> 7n) & mask;
+            if ((cur >> 7n) & P) flipped |= cur;
 
             return flipped & MASK64;
         }
@@ -641,6 +644,18 @@
             -25, -45, -5, -5, -5, -5, -45, -25,
             120, -25, 20, 5, 5, 20, -25, 120
         ];
+
+        // WEIGHT_TABLEを同一の重み値ごとにグループ化（評価関数のposScore計算を64回ループから
+        // 少数回のpopCount演算に置き換えて高速化するための前処理）
+        const WEIGHT_GROUPS = (() => {
+            const map = new Map();
+            for (let i = 0; i < 64; i++) {
+                const w = WEIGHT_TABLE[i];
+                if (!map.has(w)) map.set(w, 0n);
+                map.set(w, map.get(w) | (1n << BigInt(i)));
+            }
+            return Array.from(map.entries());
+        })();
 
         const CORNER_DATA = [
             { corner: 0, x: 9, c: [1, 8] },
@@ -691,10 +706,8 @@
             const emptyCount = popCount(blank);
 
             let posScore = 0;
-            for (let i = 0; i < 64; i++) {
-                const m = 1n << BigInt(i);
-                if (P & m) posScore += WEIGHT_TABLE[i];
-                else if (O & m) posScore -= WEIGHT_TABLE[i];
+            for (const [w, gmask] of WEIGHT_GROUPS) {
+                posScore += w * (popCount(P & gmask) - popCount(O & gmask));
             }
 
             for (let i = 0; i < 4; i++) {
@@ -740,13 +753,73 @@
             return posScore + mobScore * 15 + stableScore + frontierScore + (discDiff * discWeight);
         }
 
+        // ==========================================================================
+        // 探索エンジン：置換表（Transposition Table）+ 反復深化 + PVS(NegaScout) +
+        // 動的move ordering（相手の応手数が少なくなる手を優先）による本格実装。
+        // 固定深度6だった旧版から、持ち時間の許す限り反復的に深く読む方式に変更。
+        // ==========================================================================
+        let TT = new Map();
+        const TT_EXACT = 0, TT_LOWER = 1, TT_UPPER = 2;
+        let ttNodesSinceCheck = 0;
+        let searchDeadline = Infinity;
+        class TimeUpError extends Error { }
+
+        function ttKey(P, O) {
+            return P.toString(36) + '_' + O.toString(36);
+        }
+
+        // 時間切れチェック（毎ノードだと重いので2048ノードに1回だけ確認）
+        function timeCheck() {
+            ttNodesSinceCheck++;
+            if ((ttNodesSinceCheck & 2047) === 0 && performance.now() > searchDeadline) {
+                throw new TimeUpError();
+            }
+        }
+
+        // 候補手を生成し、その場で1手進めた局面もキャッシュしつつ、
+        // 「相手の着手可能数が少なくなる手」を優先する動的オーダリングでソートする
+        function generateOrderedMoves(P, O, ttMove) {
+            const moves = getMobility(P, O);
+            if (moves === 0n) return [];
+            const list = [];
+            for (let i = 0; i < 64; i++) {
+                if ((moves >> BigInt(i)) & 1n) {
+                    const moveBit = 1n << BigInt(i);
+                    const flips = getFlips(moveBit, P, O);
+                    const nP = P | moveBit | flips;
+                    const nO = O & ~flips;
+                    let score = WEIGHT_TABLE[i];
+                    if (i === 0 || i === 7 || i === 56 || i === 63) score += 3000;
+                    if (i === ttMove) score += 1000000;
+                    score -= popCount(getMobility(nO, nP)) * 12;
+                    list.push({ idx: i, nP, nO, score });
+                }
+            }
+            list.sort((a, b) => b.score - a.score);
+            return list;
+        }
+
         function alphabeta(P, O, depth, alpha, beta, passed, isEndgame) {
+            timeCheck();
+
+            const origAlpha = alpha;
+            const key = ttKey(P, O);
+            const entry = TT.get(key);
+            let ttMove = null;
+            if (entry && entry.depth >= depth) {
+                if (entry.flag === TT_EXACT) return entry.score;
+                if (entry.flag === TT_LOWER && entry.score > alpha) alpha = entry.score;
+                else if (entry.flag === TT_UPPER && entry.score < beta) beta = entry.score;
+                if (alpha >= beta) return entry.score;
+            }
+            if (entry) ttMove = entry.move;
+
             if (depth === 0) {
                 return isEndgame ? (popCount(P) - popCount(O)) : evaluate(P, O);
             }
 
-            const moves = getMobility(P, O);
-            if (moves === 0n) {
+            const moves = generateOrderedMoves(P, O, ttMove);
+            if (moves.length === 0) {
                 if (passed) {
                     const diff = popCount(P) - popCount(O);
                     if (diff > 0) return 40000 + diff;
@@ -756,80 +829,113 @@
                 return -alphabeta(O, P, depth - 1, -beta, -alpha, true, isEndgame);
             }
 
-            const moveList = [];
-            for (let i = 0; i < 64; i++) {
-                if ((moves >> BigInt(i)) & 1n) moveList.push(i);
-            }
-
-            moveList.sort((a, b) => {
-                const aCorner = (a === 0 || a === 7 || a === 56 || a === 63) ? 2000 : 0;
-                const bCorner = (b === 0 || b === 7 || b === 56 || b === 63) ? 2000 : 0;
-                return (WEIGHT_TABLE[b] + bCorner) - (WEIGHT_TABLE[a] + aCorner);
-            });
-
             let bestVal = -Infinity;
-            for (let i = 0; i < moveList.length; i++) {
-                const m = moveList[i];
-                const moveBit = 1n << BigInt(m);
-                const flips = getFlips(moveBit, P, O);
-                const nP = P | moveBit | flips;
-                const nO = O & ~flips;
-
-                const val = -alphabeta(nO, nP, depth - 1, -beta, -alpha, false, isEndgame);
-                if (val > bestVal) bestVal = val;
+            let bestMove = moves[0].idx;
+            let first = true;
+            for (const mv of moves) {
+                let val;
+                if (first) {
+                    val = -alphabeta(mv.nO, mv.nP, depth - 1, -beta, -alpha, false, isEndgame);
+                    first = false;
+                } else {
+                    // PVS: まずゼロウィンドウで軽く探索し、alphaを上回った時だけ本探索
+                    val = -alphabeta(mv.nO, mv.nP, depth - 1, -alpha - 1, -alpha, false, isEndgame);
+                    if (val > alpha && val < beta) {
+                        val = -alphabeta(mv.nO, mv.nP, depth - 1, -beta, -alpha, false, isEndgame);
+                    }
+                }
+                if (val > bestVal) { bestVal = val; bestMove = mv.idx; }
                 if (val > alpha) alpha = val;
                 if (alpha >= beta) break;
+            }
+
+            let flag;
+            if (bestVal <= origAlpha) flag = TT_UPPER;
+            else if (bestVal >= beta) flag = TT_LOWER;
+            else flag = TT_EXACT;
+            if (!entry || entry.depth <= depth) {
+                TT.set(key, { depth, score: bestVal, flag, move: bestMove });
             }
             return bestVal;
         }
 
-        // 最善手決定（偶数深度6で相手の反撃まで読む）
-        function findBestMove(P, O) {
+        // 空きマスがこの数以下になったら完全読み切り（最善手が理論上の最適解と一致）
+        const ENDGAME_EXACT_THRESHOLD = 12;
+
+        // ルート局面を反復深化で探索し、最善手と全候補手の評価値をまとめて返す。
+        // CPUの着手決定にも、補助モードのヒント表示にも、この一つの関数を共用する。
+        function searchRoot(P, O, budgetMs) {
             const moves = getMobility(P, O);
-            if (moves === 0n) return null;
+            if (moves === 0n) return { bestMove: null, scores: new Map(), depth: 0, isEndgame: false };
 
             const moveList = [];
-            for (let i = 0; i < 64; i++) {
-                if ((moves >> BigInt(i)) & 1n) moveList.push(i);
-            }
-            if (moveList.length === 1) return moveList[0];
+            for (let i = 0; i < 64; i++) if ((moves >> BigInt(i)) & 1n) moveList.push(i);
+
+            TT.clear();
+            ttNodesSinceCheck = 0;
 
             const emptyCount = 64 - popCount(P | O);
-            let depth = 6;
-            let isEndgame = false;
+            const isEndgame = emptyCount <= ENDGAME_EXACT_THRESHOLD;
+            const maxDepth = isEndgame ? emptyCount : Math.min(emptyCount, 20);
 
-            if (emptyCount <= 10) {
-                depth = emptyCount;
-                isEndgame = true;
-            } else if (emptyCount <= 12) {
-                depth = 6;
+            if (moveList.length === 1) {
+                return { bestMove: moveList[0], scores: new Map([[moveList[0], 0]]), depth: maxDepth, isEndgame };
             }
 
-            moveList.sort((a, b) => {
-                const aCorner = (a === 0 || a === 7 || a === 56 || a === 63) ? 2000 : 0;
-                const bCorner = (b === 0 || b === 7 || b === 56 || b === 63) ? 2000 : 0;
-                return (WEIGHT_TABLE[b] + bCorner) - (WEIGHT_TABLE[a] + aCorner);
-            });
+            searchDeadline = performance.now() + budgetMs;
 
-            let bestMove = moveList[0];
-            let bestScore = -Infinity;
-            let alpha = -Infinity;
+            let lastScores = new Map();
+            let lastBest = moveList[0];
+            let lastDepth = 0;
+            let ttMoveHint = null;
 
-            for (let i = 0; i < moveList.length; i++) {
-                const m = moveList[i];
-                const moveBit = 1n << BigInt(m);
-                const flips = getFlips(moveBit, P, O);
-                const nP = P | moveBit | flips;
-                const nO = O & ~flips;
-
-                const score = -alphabeta(nO, nP, depth - 1, -Infinity, -alpha, false, isEndgame);
-                if (score > bestScore) {
-                    bestScore = score;
-                    bestMove = m;
+            for (let depth = 2; depth <= maxDepth; depth++) {
+                try {
+                    const ordered = generateOrderedMoves(P, O, ttMoveHint);
+                    let alpha = -Infinity;
+                    const beta = Infinity;
+                    let bestVal = -Infinity;
+                    let bestMove = ordered[0].idx;
+                    const scores = new Map();
+                    let first = true;
+                    for (const mv of ordered) {
+                        let val;
+                        if (first) {
+                            val = -alphabeta(mv.nO, mv.nP, depth - 1, -beta, -alpha, false, isEndgame);
+                            first = false;
+                        } else {
+                            val = -alphabeta(mv.nO, mv.nP, depth - 1, -alpha - 1, -alpha, false, isEndgame);
+                            if (val > alpha) {
+                                val = -alphabeta(mv.nO, mv.nP, depth - 1, -beta, -alpha, false, isEndgame);
+                            }
+                        }
+                        scores.set(mv.idx, val);
+                        if (val > bestVal) { bestVal = val; bestMove = mv.idx; }
+                        if (val > alpha) alpha = val;
+                    }
+                    lastScores = scores;
+                    lastBest = bestMove;
+                    lastDepth = depth;
+                    ttMoveHint = bestMove;
+                    if (isEndgame && depth === maxDepth) break; // 完全読み切り達成
+                    if (bestVal >= 39000) break; // 必勝が確定したので打ち切り
+                } catch (e) {
+                    if (e instanceof TimeUpError) break; // 時間切れ：直前に完了した深さの結果を採用
+                    throw e;
                 }
-                if (score > alpha) alpha = score;
             }
-            return bestMove;
+
+            return { bestMove: lastBest, scores: lastScores, depth: lastDepth, isEndgame };
+        }
+
+        // CPU用の持ち時間（ミリ秒）。反復深化なので、時間の許す限り深く読む「時間切れ安全」設計。
+        const CPU_THINK_BUDGET_MS = 1200;
+        const CPU_VS_CPU_BUDGET_MS = 800;
+        const ASSIST_BUDGET_MS = 1000;
+
+        // 最善手決定：反復深化探索のラッパー
+        function findBestMove(P, O, budgetMs) {
+            return searchRoot(P, O, budgetMs).bestMove;
         }
 
         // 勝率換算
@@ -851,10 +957,10 @@
             }
         }
 
-        // 全体の勝率予想バーを更新
+        // 全体の勝率予想バーを更新（軽量な固定深度3の即時探索。TTは他の探索と衝突しないようクリア）
         function updateWinRateBar() {
             const emptyCount = 64 - popCount(bitBlack | bitWhite);
-            const isEnd = emptyCount <= 10;
+            const isEnd = emptyCount <= ENDGAME_EXACT_THRESHOLD;
 
             if (emptyCount === 0 || (getMobility(bitBlack, bitWhite) === 0n && getMobility(bitWhite, bitBlack) === 0n)) {
                 const diff = popCount(bitBlack) - popCount(bitWhite);
@@ -865,7 +971,15 @@
 
             const P = currentPlayer === 'black' ? bitBlack : bitWhite;
             const O = currentPlayer === 'black' ? bitWhite : bitBlack;
-            const scoreFromCurrent = alphabeta(P, O, 3, -Infinity, Infinity, false, isEnd);
+            TT.clear();
+            searchDeadline = performance.now() + 200;
+            let scoreFromCurrent;
+            try {
+                scoreFromCurrent = alphabeta(P, O, 3, -Infinity, Infinity, false, isEnd);
+            } catch (e) {
+                if (e instanceof TimeUpError) { return; }
+                throw e;
+            }
 
             const blackScore = (currentPlayer === 'black') ? scoreFromCurrent : -scoreFromCurrent;
             const blackWinRate = scoreToWinRate(blackScore, isEnd);
@@ -882,57 +996,21 @@
         }
 
         // ==========================================================================
-        // 【完全統一】補助モード用計算：CPU本体と「全く同じ深さ6」で厳密に計算
-        // これにより、ヒントの最善手（ゴールド）はCPUが選ぶ絶対の手と100%一致します
+        // 補助モード用計算：CPU本体（searchRoot）と全く同じ探索エンジン・同じ持ち時間で
+        // 全候補手を評価する。反復深化なので、時間の許す限りCPU本番と同等の深さになる。
         // ==========================================================================
         function getCandidateEvaluations(P, O) {
-            const moves = getMobility(P, O);
             const candidateData = {};
-            if (moves === 0n) return candidateData;
+            const result = searchRoot(P, O, ASSIST_BUDGET_MS);
+            if (result.bestMove === null) return candidateData;
 
-            const moveList = [];
-            for (let i = 0; i < 64; i++) {
-                if ((moves >> BigInt(i)) & 1n) moveList.push(i);
-            }
-
-            const emptyCount = 64 - popCount(P | O);
-            // CPU本体（findBestMove）と完全に同一の深さ（深さ6＋終盤10手完全読み切り）
-            let searchDepth = 6;
-            let isEnd = false;
-
-            if (emptyCount <= 10) {
-                searchDepth = emptyCount;
-                isEnd = true;
-            } else if (emptyCount <= 12) {
-                searchDepth = 6;
-            }
-
-            let bestScore = -Infinity;
-            let bestMove = moveList[0];
-
-            for (let i = 0; i < moveList.length; i++) {
-                const m = moveList[i];
-                const moveBit = 1n << BigInt(m);
-                const flips = getFlips(moveBit, P, O);
-                const nP = P | moveBit | flips;
-                const nO = O & ~flips;
-
-                // CPUと完全に同一の読みで各候補手を評価
-                const score = -alphabeta(nO, nP, searchDepth - 1, -Infinity, Infinity, false, isEnd);
-                const winRate = scoreToWinRate(score, isEnd);
-
+            for (const [m, score] of result.scores.entries()) {
+                const winRate = scoreToWinRate(score, result.isEndgame);
                 candidateData[m] = { score, winRate };
-
-                if (score > bestScore) {
-                    bestScore = score;
-                    bestMove = m;
-                }
             }
-
-            if (candidateData[bestMove]) {
-                candidateData[bestMove].isBest = true;
+            if (candidateData[result.bestMove]) {
+                candidateData[result.bestMove].isBest = true;
             }
-
             return candidateData;
         }
 
@@ -1175,7 +1253,8 @@
             const P = currentPlayer === 'black' ? bitBlack : bitWhite;
             const O = currentPlayer === 'black' ? bitWhite : bitBlack;
 
-            const bestMove = findBestMove(P, O);
+            const budget = (gameMode === 'cpuvscpu') ? CPU_VS_CPU_BUDGET_MS : CPU_THINK_BUDGET_MS;
+            const bestMove = findBestMove(P, O, budget);
             if (bestMove !== null) {
                 const moveBit = 1n << BigInt(bestMove);
                 const flips = getFlips(moveBit, P, O);
