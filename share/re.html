@@ -1,0 +1,1326 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>オセロゲーム</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            touch-action: pan-x pan-y;
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+            margin: 0;
+            padding: 15px 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            background-color: #f0f0f0;
+            color: #333;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+        }
+
+        #main-layout {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 100%;
+            max-width: 400px;
+            margin: auto;
+        }
+
+        /* 1. 石数カウント表示（横幅固定・改行防止） */
+        #piece-count {
+            width: 360px;
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            font-size: 15px;
+            font-weight: bold;
+            margin-bottom: 8px;
+            overflow: hidden;
+        }
+
+        #piece-count table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        #piece-count td {
+            border: 2px solid #ccc;
+            text-align: center;
+            padding: 6px 12px;
+            white-space: nowrap;
+            width: 50%;
+        }
+
+        /* 2. 勝率予想バー */
+        #win-rate-container {
+            width: 360px;
+            background-color: #fff;
+            padding: 8px 12px;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            margin-bottom: 12px;
+        }
+
+        .win-rate-labels {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 13px;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .win-rate-title {
+            font-size: 12px;
+            color: #666;
+        }
+
+        .win-rate-bar-wrapper {
+            height: 12px;
+            background-color: #eee;
+            border-radius: 6px;
+            overflow: hidden;
+            display: flex;
+            border: 1px solid #ccc;
+        }
+
+        #win-rate-bar-black {
+            background-color: #111;
+            height: 100%;
+            width: 50%;
+            transition: width 0.3s ease;
+        }
+
+        #win-rate-bar-white {
+            background-color: #fdfdfd;
+            height: 100%;
+            width: 50%;
+            transition: width 0.3s ease;
+        }
+
+        /* 3. オセロ盤コンテナ */
+        #game-container {
+            background-color: #4CAF50;
+            padding: 15px;
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            perspective: 800px;
+        }
+
+        table#board {
+            border-collapse: collapse;
+            width: 360px;
+            height: 360px;
+            background-color: #4CAF50;
+        }
+
+        td {
+            width: 45px;
+            height: 45px;
+            padding: 0;
+            border: 1.5px solid #333;
+            position: relative;
+            cursor: pointer;
+        }
+
+        td:hover {
+            background-color: rgba(255, 255, 255, 0.2);
+        }
+
+        /* 直前の着手マスハイライト */
+        td.last-move {
+            background-color: rgba(255, 235, 59, 0.5) !important;
+            box-shadow: inset 0 0 0 2px #fbc02d;
+        }
+
+        /* 補助モード：CPUと完全に同一の最高深さで計算された最善手マス（ゴールド） */
+        td.assist-best-move {
+            background-color: rgba(255, 215, 0, 0.45) !important;
+            box-shadow: inset 0 0 0 2px #fbc02d;
+        }
+
+        /* 補助モード：良手マス（薄緑） */
+        td.assist-good-move {
+            background-color: rgba(76, 175, 80, 0.3) !important;
+        }
+
+        /* 補助モード：悪手マス（薄赤） */
+        td.assist-bad-move {
+            background-color: rgba(244, 67, 54, 0.25) !important;
+        }
+
+        /* 補助モード：予想勝率バッジ */
+        .assist-rate-label {
+            position: absolute;
+            bottom: 2px;
+            right: 2px;
+            font-size: 10px;
+            font-weight: bold;
+            color: #111;
+            background: rgba(255, 255, 255, 0.85);
+            padding: 0 3px;
+            border-radius: 3px;
+            pointer-events: none;
+            line-height: 1.2;
+            z-index: 2;
+        }
+
+        /* ==========================================
+         *  石のデザイン & 3D回転フリップアニメーション
+         * ========================================== */
+        .piece {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 1;
+            box-shadow: 1px 1px 3px rgba(0, 0, 0, 0.4);
+            backface-visibility: hidden;
+        }
+
+        .black {
+            background-color: #000;
+        }
+
+        .white {
+            background-color: #fff;
+        }
+
+        @keyframes place-pop {
+            0% {
+                transform: translate(-50%, -50%) scale(0);
+                opacity: 0;
+            }
+
+            70% {
+                transform: translate(-50%, -50%) scale(1.15);
+                opacity: 1;
+            }
+
+            100% {
+                transform: translate(-50%, -50%) scale(1);
+                opacity: 1;
+            }
+        }
+
+        .piece.placed {
+            animation: place-pop 0.22s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+        }
+
+        @keyframes flip-w-to-b {
+            0% {
+                transform: translate(-50%, -50%) rotateY(0deg);
+                background-color: #fff;
+            }
+
+            50% {
+                transform: translate(-50%, -50%) rotateY(90deg) scale(1.1);
+                background-color: #888;
+            }
+
+            100% {
+                transform: translate(-50%, -50%) rotateY(180deg);
+                background-color: #000;
+            }
+        }
+
+        @keyframes flip-b-to-w {
+            0% {
+                transform: translate(-50%, -50%) rotateY(0deg);
+                background-color: #000;
+            }
+
+            50% {
+                transform: translate(-50%, -50%) rotateY(90deg) scale(1.1);
+                background-color: #888;
+            }
+
+            100% {
+                transform: translate(-50%, -50%) rotateY(180deg);
+                background-color: #fff;
+            }
+        }
+
+        .piece.flipping-to-black {
+            animation: flip-w-to-b 0.35s ease-in-out forwards;
+        }
+
+        .piece.flipping-to-white {
+            animation: flip-b-to-w 0.35s ease-in-out forwards;
+        }
+
+        .valid-move-indicator {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background-color: #333;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            display: block;
+            z-index: 0;
+        }
+
+        /* 4. オセロ盤の【外部】に配置したステータスパネル */
+        #status-panel {
+            width: 360px;
+            margin-top: 14px;
+            min-height: 38px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+        }
+
+        #turn-display {
+            font-size: 22px;
+            font-weight: bold;
+            color: #000;
+        }
+
+        #result {
+            font-size: 23px;
+            font-weight: bold;
+            color: #d32f2f;
+            display: none;
+        }
+
+        /* 5. 補助モードコントロールパネル */
+        #assist-panel {
+            width: 360px;
+            margin-top: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 16px;
+            background: #fff;
+            padding: 7px 14px;
+            border-radius: 6px;
+            box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
+            font-size: 13px;
+            font-weight: bold;
+        }
+
+        .assist-toggle {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            cursor: pointer;
+        }
+
+        .assist-toggle input {
+            cursor: pointer;
+        }
+
+        /* 6. 操作ボタン */
+        #button-container {
+            margin-top: 14px;
+            display: flex;
+            gap: 12px;
+        }
+
+        .action-button {
+            padding: 10px 20px;
+            font-size: 16px;
+            background-color: #fff;
+            border: 2px solid #333;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: background-color 0.2s;
+        }
+
+        .action-button:hover {
+            background-color: #eee;
+        }
+
+        /* 初期画面（モード選択モーダル） */
+        #mode-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background-color: rgba(0, 0, 0, 0.65);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 100;
+        }
+
+        #mode-modal.hidden {
+            display: none;
+        }
+
+        #mode-modal-content {
+            background-color: #fff;
+            padding: 26px 22px;
+            border-radius: 10px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+            text-align: center;
+            width: 340px;
+        }
+
+        #mode-modal-content h2 {
+            margin: 0 0 6px 0;
+            color: #2e7d32;
+            font-size: 24px;
+        }
+
+        #mode-modal-content p {
+            margin: 0 0 18px 0;
+            font-size: 13px;
+            color: #666;
+        }
+
+        .mode-section-title {
+            font-size: 14px;
+            font-weight: bold;
+            color: #444;
+            text-align: left;
+            margin: 10px 0 6px 4px;
+        }
+
+        .mode-select-btn {
+            display: block;
+            width: 100%;
+            padding: 11px;
+            margin-bottom: 8px;
+            font-size: 15px;
+            font-weight: bold;
+            color: #333;
+            background-color: #e8f5e9;
+            border: 2px solid #4CAF50;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-align: center;
+        }
+
+        .mode-select-btn:hover {
+            background-color: #4CAF50;
+            color: #fff;
+            transform: translateY(-1px);
+        }
+
+        /* 通知トースト */
+        #toast-msg {
+            position: fixed;
+            top: 25px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(0, 0, 0, 0.85);
+            color: #fff;
+            padding: 10px 22px;
+            border-radius: 20px;
+            font-size: 15px;
+            font-weight: bold;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s;
+            z-index: 200;
+        }
+
+        #toast-msg.show {
+            opacity: 1;
+        }
+
+        .is-hidden {
+            display: none !important;
+        }
+
+        .is-visible {
+            display: block !important;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- 初期画面（モード＆手番選択画面） -->
+    <div id="mode-modal">
+        <div id="mode-modal-content">
+            <h2>オセロゲーム</h2>
+            <p>対戦モードと手番を選択してください</p>
+
+            <div class="mode-section-title">【1 vs CPU (AI対戦)】</div>
+            <button class="mode-select-btn" onclick="selectGame('1vcpu', 'black')">あなたが先攻 (黒) vs CPU</button>
+            <button class="mode-select-btn" onclick="selectGame('1vcpu', 'white')">あなたが後攻 (白) vs CPU</button>
+
+            <div class="mode-section-title">【その他のモード】</div>
+            <button class="mode-select-btn" onclick="selectGame('1v2', 'black')">1 vs 2 (2人対戦)</button>
+            <button class="mode-select-btn" onclick="selectGame('cpuvscpu', 'black')">CPU vs CPU (観戦モード)</button>
+        </div>
+    </div>
+
+    <!-- 通知用トースト -->
+    <div id="toast-msg"></div>
+
+    <div id="main-layout">
+        <!-- 1. 石数カウント表示 -->
+        <div id="piece-count"></div>
+
+        <!-- 2. 勝率予想表示バー -->
+        <div id="win-rate-container">
+            <div class="win-rate-labels">
+                <span id="black-win-rate-text">黒 50%</span>
+                <span class="win-rate-title">勝率予想</span>
+                <span id="white-win-rate-text">白 50%</span>
+            </div>
+            <div class="win-rate-bar-wrapper">
+                <div id="win-rate-bar-black"></div>
+                <div id="win-rate-bar-white"></div>
+            </div>
+        </div>
+
+        <!-- 3. オセロ盤 -->
+        <div id="game-container">
+            <table id="board"></table>
+        </div>
+
+        <!-- 4. オセロ盤の【外部】に配置したステータス表示 -->
+        <div id="status-panel">
+            <div id="turn-display">ターン: <span id="player-turn">黒</span></div>
+            <div id="result"></div>
+        </div>
+
+        <!-- 5. 補助モード（ヒント）コントロールパネル -->
+        <div id="assist-panel"></div>
+
+        <!-- 6. 下部操作ボタン -->
+        <div id="button-container">
+            <button class="action-button" onclick="retryGame()" id="play-button">リトライ</button>
+            <button class="action-button" onclick="openModeSelect()">モード選択</button>
+        </div>
+    </div>
+
+    <script>
+        const MASK64 = 0xFFFFFFFFFFFFFFFFn;
+        const MASK_SIDE = 0x7E7E7E7E7E7E7E7En;
+
+        let bitBlack = 0n;
+        let bitWhite = 0n;
+        let currentPlayer = 'black';
+        let gameMode = '1vcpu';
+        let humanPlayerColor = 'black';
+        let isThinking = false;
+        let isAnimating = false;
+        let lastMoveIdx = null;
+        let cpuTimeoutId = null;
+
+        let assistBlack = true;
+        let assistWhite = true;
+
+        function popCount(b) {
+            b = BigInt.asUintN(64, b);
+            let count = 0;
+            while (b > 0n) {
+                b &= b - 1n;
+                count++;
+            }
+            return count;
+        }
+
+        // 8方向並列ビットシフトによる合法手生成（6個挟み完全対応）
+        function getMobility(P, O) {
+            const mask = O & MASK_SIDE;
+            const blank = (~(P | O)) & MASK64;
+            let moves = 0n;
+
+            // 1. 右 (<< 1) : 相手石を計6回伝播させ、7マス目の空きマスへ到達
+            let f = (P << 1n) & mask;
+            f |= (f << 1n) & mask; f |= (f << 1n) & mask; f |= (f << 1n) & mask; f |= (f << 1n) & mask; f |= (f << 1n) & mask;
+            moves |= (f << 1n) & blank;
+
+            // 2. 左 (>> 1)
+            f = (P >> 1n) & mask;
+            f |= (f >> 1n) & mask; f |= (f >> 1n) & mask; f |= (f >> 1n) & mask; f |= (f >> 1n) & mask; f |= (f >> 1n) & mask;
+            moves |= (f >> 1n) & blank;
+
+            // 3. 下 (<< 8)
+            f = (P << 8n) & O;
+            f |= (f << 8n) & O; f |= (f << 8n) & O; f |= (f << 8n) & O; f |= (f << 8n) & O; f |= (f << 8n) & O;
+            moves |= (f << 8n) & blank;
+
+            // 4. 上 (>> 8)
+            f = (P >> 8n) & O;
+            f |= (f >> 8n) & O; f |= (f >> 8n) & O; f |= (f >> 8n) & O; f |= (f >> 8n) & O; f |= (f >> 8n) & O;
+            moves |= (f >> 8n) & blank;
+
+            // 5. 右下 (<< 9)
+            f = (P << 9n) & mask;
+            f |= (f << 9n) & mask; f |= (f << 9n) & mask; f |= (f << 9n) & mask; f |= (f << 9n) & mask; f |= (f << 9n) & mask;
+            moves |= (f << 9n) & blank;
+
+            // 6. 左上 (>> 9)
+            f = (P >> 9n) & mask;
+            f |= (f >> 9n) & mask; f |= (f >> 9n) & mask; f |= (f >> 9n) & mask; f |= (f >> 9n) & mask; f |= (f >> 9n) & mask;
+            moves |= (f >> 9n) & blank;
+
+            // 7. 左下 (<< 7)
+            f = (P << 7n) & mask;
+            f |= (f << 7n) & mask; f |= (f << 7n) & mask; f |= (f << 7n) & mask; f |= (f << 7n) & mask; f |= (f << 7n) & mask;
+            moves |= (f << 7n) & blank;
+
+            // 8. 右上 (>> 7)
+            f = (P >> 7n) & mask;
+            f |= (f >> 7n) & mask; f |= (f >> 7n) & mask; f |= (f >> 7n) & mask; f |= (f >> 7n) & mask; f |= (f >> 7n) & mask;
+            moves |= (f >> 7n) & blank;
+
+            return moves & MASK64;
+        }
+
+        // 6石挟み（端から端まで）を完全網羅した反転石マスク生成
+        function getFlips(moveBit, P, O) {
+            const mask = O & MASK_SIDE;
+            let flipped = 0n;
+
+            // 1. 右 (<< 1)
+            let cur = (moveBit << 1n) & mask;
+            cur |= (cur << 1n) & mask; cur |= (cur << 1n) & mask; cur |= (cur << 1n) & mask; cur |= (cur << 1n) & mask;
+            if ((cur << 1n) & P) flipped |= cur;
+
+            // 2. 左 (>> 1)
+            cur = (moveBit >> 1n) & mask;
+            cur |= (cur >> 1n) & mask; cur |= (cur >> 1n) & mask; cur |= (cur >> 1n) & mask; cur |= (cur >> 1n) & mask;
+            if ((cur >> 1n) & P) flipped |= cur;
+
+            // 3. 下 (<< 8)
+            cur = (moveBit << 8n) & O;
+            cur |= (cur << 8n) & O; cur |= (cur << 8n) & O; cur |= (cur << 8n) & O; cur |= (cur << 8n) & O;
+            if ((cur << 8n) & P) flipped |= cur;
+
+            // 4. 上 (>> 8)
+            cur = (moveBit >> 8n) & O;
+            cur |= (cur >> 8n) & O; cur |= (cur >> 8n) & O; cur |= (cur >> 8n) & O; cur |= (cur >> 8n) & O;
+            if ((cur >> 8n) & P) flipped |= cur;
+
+            // 5. 右下 (<< 9)
+            cur = (moveBit << 9n) & mask;
+            cur |= (cur << 9n) & mask; cur |= (cur << 9n) & mask; cur |= (cur << 9n) & mask; cur |= (cur << 9n) & mask;
+            if ((cur << 9n) & P) flipped |= cur;
+
+            // 6. 左上 (>> 9)
+            cur = (moveBit >> 9n) & mask;
+            cur |= (cur >> 9n) & mask; cur |= (cur >> 9n) & mask; cur |= (cur >> 9n) & mask; cur |= (cur >> 9n) & mask;
+            if ((cur >> 9n) & P) flipped |= cur;
+
+            // 7. 左下 (<< 7)
+            cur = (moveBit << 7n) & mask;
+            cur |= (cur << 7n) & mask; cur |= (cur << 7n) & mask; cur |= (cur << 7n) & mask; cur |= (cur << 7n) & mask;
+            if ((cur << 7n) & P) flipped |= cur;
+
+            // 8. 右上 (>> 7)
+            cur = (moveBit >> 7n) & mask;
+            cur |= (cur >> 7n) & mask; cur |= (cur >> 7n) & mask; cur |= (cur >> 7n) & mask; cur |= (cur >> 7n) & mask;
+            if ((cur >> 7n) & P) flipped |= cur;
+
+            return flipped & MASK64;
+        }
+
+        const WEIGHT_TABLE = [
+            120, -25, 20, 5, 5, 20, -25, 120,
+            -25, -45, -5, -5, -5, -5, -45, -25,
+            20, -5, 15, 3, 3, 15, -5, 20,
+            5, -5, 3, 3, 3, 3, -5, 5,
+            5, -5, 3, 3, 3, 3, -5, 5,
+            20, -5, 15, 3, 3, 15, -5, 20,
+            -25, -45, -5, -5, -5, -5, -45, -25,
+            120, -25, 20, 5, 5, 20, -25, 120
+        ];
+
+        const CORNER_DATA = [
+            { corner: 0, x: 9, c: [1, 8] },
+            { corner: 7, x: 14, c: [6, 15] },
+            { corner: 56, x: 49, c: [48, 57] },
+            { corner: 63, x: 54, c: [55, 62] }
+        ];
+
+        function getEdgeStability(P) {
+            let stable = 0n;
+            const edges = [
+                [0, 1, 2, 3, 4, 5, 6, 7],
+                [56, 57, 58, 59, 60, 61, 62, 63],
+                [0, 8, 16, 24, 32, 40, 48, 56],
+                [7, 15, 23, 31, 39, 47, 55, 63]
+            ];
+            for (let e = 0; e < 4; e++) {
+                const edge = edges[e];
+                for (let i = 0; i < 8; i++) {
+                    const m = 1n << BigInt(edge[i]);
+                    if (P & m) stable |= m;
+                    else break;
+                }
+                for (let i = 7; i >= 0; i--) {
+                    const m = 1n << BigInt(edge[i]);
+                    if (P & m) stable |= m;
+                    else break;
+                }
+            }
+            return stable;
+        }
+
+        function getFrontierCount(P, blank) {
+            let nb = 0n;
+            nb |= (blank << 1n) & MASK_SIDE;
+            nb |= (blank >> 1n) & MASK_SIDE;
+            nb |= (blank << 8n);
+            nb |= (blank >> 8n);
+            nb |= (blank << 9n) & MASK_SIDE;
+            nb |= (blank >> 9n) & MASK_SIDE;
+            nb |= (blank << 7n) & MASK_SIDE;
+            nb |= (blank >> 7n) & MASK_SIDE;
+            return popCount(P & nb);
+        }
+
+        function evaluate(P, O) {
+            const blank = (~(P | O)) & MASK64;
+            const emptyCount = popCount(blank);
+
+            let posScore = 0;
+            for (let i = 0; i < 64; i++) {
+                const m = 1n << BigInt(i);
+                if (P & m) posScore += WEIGHT_TABLE[i];
+                else if (O & m) posScore -= WEIGHT_TABLE[i];
+            }
+
+            for (let i = 0; i < 4; i++) {
+                const { corner, x, c } = CORNER_DATA[i];
+                const cm = 1n << BigInt(corner);
+                if (P & cm) {
+                    const xm = 1n << BigInt(x);
+                    if (P & xm) posScore += 55;
+                    for (let j = 0; j < 2; j++) {
+                        const c_m = 1n << BigInt(c[j]);
+                        if (P & c_m) posScore += 25;
+                    }
+                } else if (O & cm) {
+                    const xm = 1n << BigInt(x);
+                    if (O & xm) posScore -= 55;
+                    for (let j = 0; j < 2; j++) {
+                        const c_m = 1n << BigInt(c[j]);
+                        if (O & c_m) posScore -= 25;
+                    }
+                }
+            }
+
+            const myMob = popCount(getMobility(P, O));
+            const oppMob = popCount(getMobility(O, P));
+            let mobScore = 0;
+            if (myMob + oppMob > 0) {
+                mobScore = Math.floor(100 * (myMob - oppMob) / (myMob + oppMob));
+            }
+
+            const myStable = popCount(getEdgeStability(P));
+            const oppStable = popCount(getEdgeStability(O));
+            const stableScore = (myStable - oppStable) * 35;
+
+            const myFrontier = getFrontierCount(P, blank);
+            const oppFrontier = getFrontierCount(O, blank);
+            const frontierScore = (oppFrontier - myFrontier) * 5;
+
+            const discDiff = popCount(P) - popCount(O);
+            let discWeight = 0;
+            if (emptyCount >= 42) discWeight = -2;
+            else if (emptyCount <= 18) discWeight = 6;
+
+            return posScore + mobScore * 15 + stableScore + frontierScore + (discDiff * discWeight);
+        }
+
+        function alphabeta(P, O, depth, alpha, beta, passed, isEndgame) {
+            if (depth === 0) {
+                return isEndgame ? (popCount(P) - popCount(O)) : evaluate(P, O);
+            }
+
+            const moves = getMobility(P, O);
+            if (moves === 0n) {
+                if (passed) {
+                    const diff = popCount(P) - popCount(O);
+                    if (diff > 0) return 40000 + diff;
+                    if (diff < 0) return -40000 + diff;
+                    return 0;
+                }
+                return -alphabeta(O, P, depth - 1, -beta, -alpha, true, isEndgame);
+            }
+
+            const moveList = [];
+            for (let i = 0; i < 64; i++) {
+                if ((moves >> BigInt(i)) & 1n) moveList.push(i);
+            }
+
+            moveList.sort((a, b) => {
+                const aCorner = (a === 0 || a === 7 || a === 56 || a === 63) ? 2000 : 0;
+                const bCorner = (b === 0 || b === 7 || b === 56 || b === 63) ? 2000 : 0;
+                return (WEIGHT_TABLE[b] + bCorner) - (WEIGHT_TABLE[a] + aCorner);
+            });
+
+            let bestVal = -Infinity;
+            for (let i = 0; i < moveList.length; i++) {
+                const m = moveList[i];
+                const moveBit = 1n << BigInt(m);
+                const flips = getFlips(moveBit, P, O);
+                const nP = P | moveBit | flips;
+                const nO = O & ~flips;
+
+                const val = -alphabeta(nO, nP, depth - 1, -beta, -alpha, false, isEndgame);
+                if (val > bestVal) bestVal = val;
+                if (val > alpha) alpha = val;
+                if (alpha >= beta) break;
+            }
+            return bestVal;
+        }
+
+        // 最善手決定（偶数深度6で相手の反撃まで読む）
+        function findBestMove(P, O) {
+            const moves = getMobility(P, O);
+            if (moves === 0n) return null;
+
+            const moveList = [];
+            for (let i = 0; i < 64; i++) {
+                if ((moves >> BigInt(i)) & 1n) moveList.push(i);
+            }
+            if (moveList.length === 1) return moveList[0];
+
+            const emptyCount = 64 - popCount(P | O);
+            let depth = 6;
+            let isEndgame = false;
+
+            if (emptyCount <= 10) {
+                depth = emptyCount;
+                isEndgame = true;
+            } else if (emptyCount <= 12) {
+                depth = 6;
+            }
+
+            moveList.sort((a, b) => {
+                const aCorner = (a === 0 || a === 7 || a === 56 || a === 63) ? 2000 : 0;
+                const bCorner = (b === 0 || b === 7 || b === 56 || b === 63) ? 2000 : 0;
+                return (WEIGHT_TABLE[b] + bCorner) - (WEIGHT_TABLE[a] + aCorner);
+            });
+
+            let bestMove = moveList[0];
+            let bestScore = -Infinity;
+            let alpha = -Infinity;
+
+            for (let i = 0; i < moveList.length; i++) {
+                const m = moveList[i];
+                const moveBit = 1n << BigInt(m);
+                const flips = getFlips(moveBit, P, O);
+                const nP = P | moveBit | flips;
+                const nO = O & ~flips;
+
+                const score = -alphabeta(nO, nP, depth - 1, -Infinity, -alpha, false, isEndgame);
+                if (score > bestScore) {
+                    bestScore = score;
+                    bestMove = m;
+                }
+                if (score > alpha) alpha = score;
+            }
+            return bestMove;
+        }
+
+        // 勝率換算
+        function scoreToWinRate(score, isEndgame) {
+            if (isEndgame) {
+                if (score === 0) return 50;
+                if (score > 0) {
+                    const wr = 85 + 14 * (1 - Math.exp(-0.35 * score));
+                    return Math.min(99, Math.round(wr));
+                } else {
+                    const wr = 15 - 14 * (1 - Math.exp(0.35 * score));
+                    return Math.max(1, Math.round(wr));
+                }
+            } else {
+                if (score >= 30000) return 99;
+                if (score <= -30000) return 1;
+                const winRate = 1 / (1 + Math.exp(-0.005 * score)) * 100;
+                return Math.max(1, Math.min(99, Math.round(winRate)));
+            }
+        }
+
+        // 全体の勝率予想バーを更新
+        function updateWinRateBar() {
+            const emptyCount = 64 - popCount(bitBlack | bitWhite);
+            const isEnd = emptyCount <= 10;
+
+            if (emptyCount === 0 || (getMobility(bitBlack, bitWhite) === 0n && getMobility(bitWhite, bitBlack) === 0n)) {
+                const diff = popCount(bitBlack) - popCount(bitWhite);
+                const blackWinRate = diff > 0 ? 100 : (diff < 0 ? 0 : 50);
+                setWinRateUI(blackWinRate);
+                return;
+            }
+
+            const P = currentPlayer === 'black' ? bitBlack : bitWhite;
+            const O = currentPlayer === 'black' ? bitWhite : bitBlack;
+            const scoreFromCurrent = alphabeta(P, O, 3, -Infinity, Infinity, false, isEnd);
+
+            const blackScore = (currentPlayer === 'black') ? scoreFromCurrent : -scoreFromCurrent;
+            const blackWinRate = scoreToWinRate(blackScore, isEnd);
+
+            setWinRateUI(blackWinRate);
+        }
+
+        function setWinRateUI(blackWinRate) {
+            const whiteWinRate = 100 - blackWinRate;
+            document.getElementById('black-win-rate-text').textContent = `黒 ${blackWinRate}%`;
+            document.getElementById('white-win-rate-text').textContent = `白 ${whiteWinRate}%`;
+            document.getElementById('win-rate-bar-black').style.width = `${blackWinRate}%`;
+            document.getElementById('win-rate-bar-white').style.width = `${whiteWinRate}%`;
+        }
+
+        // ==========================================================================
+        // 【完全統一】補助モード用計算：CPU本体と「全く同じ深さ6」で厳密に計算
+        // これにより、ヒントの最善手（ゴールド）はCPUが選ぶ絶対の手と100%一致します
+        // ==========================================================================
+        function getCandidateEvaluations(P, O) {
+            const moves = getMobility(P, O);
+            const candidateData = {};
+            if (moves === 0n) return candidateData;
+
+            const moveList = [];
+            for (let i = 0; i < 64; i++) {
+                if ((moves >> BigInt(i)) & 1n) moveList.push(i);
+            }
+
+            const emptyCount = 64 - popCount(P | O);
+            // CPU本体（findBestMove）と完全に同一の深さ（深さ6＋終盤10手完全読み切り）
+            let searchDepth = 6;
+            let isEnd = false;
+
+            if (emptyCount <= 10) {
+                searchDepth = emptyCount;
+                isEnd = true;
+            } else if (emptyCount <= 12) {
+                searchDepth = 6;
+            }
+
+            let bestScore = -Infinity;
+            let bestMove = moveList[0];
+
+            for (let i = 0; i < moveList.length; i++) {
+                const m = moveList[i];
+                const moveBit = 1n << BigInt(m);
+                const flips = getFlips(moveBit, P, O);
+                const nP = P | moveBit | flips;
+                const nO = O & ~flips;
+
+                // CPUと完全に同一の読みで各候補手を評価
+                const score = -alphabeta(nO, nP, searchDepth - 1, -Infinity, Infinity, false, isEnd);
+                const winRate = scoreToWinRate(score, isEnd);
+
+                candidateData[m] = { score, winRate };
+
+                if (score > bestScore) {
+                    bestScore = score;
+                    bestMove = m;
+                }
+            }
+
+            if (candidateData[bestMove]) {
+                candidateData[bestMove].isBest = true;
+            }
+
+            return candidateData;
+        }
+
+        // ==========================================
+        // UI & 3D回転アニメーション付き着手処理
+        // ==========================================
+        function showToast(msg) {
+            const toast = document.getElementById('toast-msg');
+            toast.textContent = msg;
+            toast.classList.add('show');
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, 1800);
+        }
+
+        function openModeSelect() {
+            if (cpuTimeoutId) clearTimeout(cpuTimeoutId);
+            isThinking = false;
+            isAnimating = false;
+            document.getElementById('mode-modal').classList.remove('hidden');
+        }
+
+        function selectGame(mode, side) {
+            gameMode = mode;
+            humanPlayerColor = side;
+            document.getElementById('mode-modal').classList.add('hidden');
+            updateAssistUI();
+            retryGame();
+        }
+
+        function toggleAssist(color, enabled) {
+            if (color === 'black') assistBlack = enabled;
+            if (color === 'white') assistWhite = enabled;
+            renderBoard();
+        }
+
+        function updateAssistUI() {
+            const panel = document.getElementById('assist-panel');
+            if (gameMode === 'cpuvscpu') {
+                panel.classList.add('is-hidden');
+                return;
+            }
+            panel.classList.remove('is-hidden');
+
+            if (gameMode === '1vcpu') {
+                const sideText = humanPlayerColor === 'black' ? '黒・あなた' : '白・あなた';
+                const isChecked = humanPlayerColor === 'black' ? assistBlack : assistWhite;
+                panel.innerHTML = `
+                    <label class="assist-toggle">
+                        <input type="checkbox" id="assist-chk" ${isChecked ? 'checked' : ''} onchange="toggleAssist('${humanPlayerColor}', this.checked)">
+                        補助モード（${sideText}のヒント表示）
+                    </label>
+                `;
+            } else if (gameMode === '1v2') {
+                panel.innerHTML = `
+                    <span style="color: #666; font-size: 12px;">補助:</span>
+                    <label class="assist-toggle">
+                        <input type="checkbox" id="assist-black-chk" ${assistBlack ? 'checked' : ''} onchange="toggleAssist('black', this.checked)">
+                        黒の補助
+                    </label>
+                    <label class="assist-toggle">
+                        <input type="checkbox" id="assist-white-chk" ${assistWhite ? 'checked' : ''} onchange="toggleAssist('white', this.checked)">
+                        白の補助
+                    </label>
+                `;
+            }
+        }
+
+        function initializeBoard() {
+            if (cpuTimeoutId) clearTimeout(cpuTimeoutId);
+            bitBlack = (1n << 28n) | (1n << 35n);
+            bitWhite = (1n << 27n) | (1n << 36n);
+            currentPlayer = 'black';
+            isThinking = false;
+            isAnimating = false;
+            lastMoveIdx = null;
+
+            const turnDisplay = document.getElementById('turn-display');
+            const resultDisplay = document.getElementById('result');
+            turnDisplay.classList.remove('is-hidden');
+            resultDisplay.classList.remove('is-visible');
+
+            renderBoard();
+            renderPieceCount();
+            updateTurnDisplay();
+            updateWinRateBar();
+
+            if (gameMode === 'cpuvscpu') {
+                scheduleCpuMove(600);
+            } else if (gameMode === '1vcpu' && humanPlayerColor === 'white') {
+                scheduleCpuMove(500);
+            }
+        }
+
+        function isHumanTurn() {
+            if (gameMode === '1v2') return true;
+            if (gameMode === '1vcpu' && currentPlayer === humanPlayerColor) return true;
+            return false;
+        }
+
+        function renderBoard() {
+            const table = document.getElementById('board');
+            table.innerHTML = '';
+            const P = currentPlayer === 'black' ? bitBlack : bitWhite;
+            const O = currentPlayer === 'black' ? bitWhite : bitBlack;
+            const validMoves = (isHumanTurn() && !isThinking && !isAnimating) ? getMobility(P, O) : 0n;
+
+            const isAssistActive = isHumanTurn() && (
+                (currentPlayer === 'black' && assistBlack) ||
+                (currentPlayer === 'white' && assistWhite)
+            );
+
+            let candidateEvals = null;
+            if (isAssistActive && validMoves !== 0n) {
+                candidateEvals = getCandidateEvaluations(P, O);
+            }
+
+            for (let r = 0; r < 8; r++) {
+                const row = document.createElement('tr');
+                for (let c = 0; c < 8; c++) {
+                    const idx = r * 8 + c;
+                    const cell = document.createElement('td');
+                    cell.setAttribute('data-idx', idx);
+                    const mask = 1n << BigInt(idx);
+
+                    if (idx === lastMoveIdx) {
+                        cell.classList.add('last-move');
+                    }
+
+                    if (bitBlack & mask) {
+                        const piece = document.createElement('div');
+                        piece.className = 'piece black';
+                        cell.appendChild(piece);
+                    } else if (bitWhite & mask) {
+                        const piece = document.createElement('div');
+                        piece.className = 'piece white';
+                        cell.appendChild(piece);
+                    } else if (validMoves & mask) {
+                        const indicator = document.createElement('div');
+                        indicator.className = 'valid-move-indicator';
+                        cell.appendChild(indicator);
+                        cell.addEventListener('click', () => handleCellClick(r, c));
+
+                        if (isAssistActive && candidateEvals && candidateEvals[idx]) {
+                            const evalInfo = candidateEvals[idx];
+                            if (evalInfo.isBest) {
+                                cell.classList.add('assist-best-move');
+                            } else if (evalInfo.winRate >= 50) {
+                                cell.classList.add('assist-good-move');
+                            } else {
+                                cell.classList.add('assist-bad-move');
+                            }
+
+                            const rateBadge = document.createElement('span');
+                            rateBadge.className = 'assist-rate-label';
+                            rateBadge.textContent = evalInfo.winRate + '%';
+                            cell.appendChild(rateBadge);
+                        }
+                    }
+
+                    row.appendChild(cell);
+                }
+                table.appendChild(row);
+            }
+        }
+
+        function executeMoveWithAnimation(idx, moveBit, flips, moverColor, callback) {
+            isAnimating = true;
+            lastMoveIdx = idx;
+
+            const placedCell = document.querySelector(`#board td[data-idx="${idx}"]`);
+            if (placedCell) {
+                placedCell.innerHTML = '';
+                const piece = document.createElement('div');
+                piece.className = `piece ${moverColor} placed`;
+                placedCell.appendChild(piece);
+            }
+
+            const flipClass = (moverColor === 'black') ? 'flipping-to-black' : 'flipping-to-white';
+            for (let i = 0; i < 64; i++) {
+                if ((flips >> BigInt(i)) & 1n) {
+                    const cell = document.querySelector(`#board td[data-idx="${i}"]`);
+                    if (cell) {
+                        const piece = cell.querySelector('.piece');
+                        if (piece) {
+                            piece.className = `piece ${flipClass}`;
+                        }
+                    }
+                }
+            }
+
+            if (moverColor === 'black') {
+                bitBlack |= moveBit | flips;
+                bitWhite &= ~flips;
+            } else {
+                bitWhite |= moveBit | flips;
+                bitBlack &= ~flips;
+            }
+
+            setTimeout(() => {
+                isAnimating = false;
+                renderPieceCount();
+                renderBoard();
+                updateWinRateBar();
+                if (callback) callback();
+            }, 380);
+        }
+
+        function handleCellClick(row, col) {
+            if (!isHumanTurn() || isThinking || isAnimating) return;
+
+            const idx = row * 8 + col;
+            const moveBit = 1n << BigInt(idx);
+            const P = currentPlayer === 'black' ? bitBlack : bitWhite;
+            const O = currentPlayer === 'black' ? bitWhite : bitBlack;
+
+            const validMoves = getMobility(P, O);
+            if ((validMoves & moveBit) === 0n) return;
+
+            const flips = getFlips(moveBit, P, O);
+            const mover = currentPlayer;
+
+            currentPlayer = (currentPlayer === 'black') ? 'white' : 'black';
+            updateTurnDisplay();
+
+            executeMoveWithAnimation(idx, moveBit, flips, mover, () => {
+                checkNextTurn();
+            });
+        }
+
+        function scheduleCpuMove(delay) {
+            isThinking = true;
+            updateTurnDisplay();
+            cpuTimeoutId = setTimeout(() => {
+                makeCpuMove();
+            }, delay);
+        }
+
+        function makeCpuMove() {
+            const P = currentPlayer === 'black' ? bitBlack : bitWhite;
+            const O = currentPlayer === 'black' ? bitWhite : bitBlack;
+
+            const bestMove = findBestMove(P, O);
+            if (bestMove !== null) {
+                const moveBit = 1n << BigInt(bestMove);
+                const flips = getFlips(moveBit, P, O);
+                const mover = currentPlayer;
+
+                currentPlayer = (currentPlayer === 'black') ? 'white' : 'black';
+                isThinking = false;
+                updateTurnDisplay();
+
+                executeMoveWithAnimation(bestMove, moveBit, flips, mover, () => {
+                    checkNextTurn();
+                });
+            } else {
+                currentPlayer = (currentPlayer === 'black') ? 'white' : 'black';
+                isThinking = false;
+                updateTurnDisplay();
+                checkNextTurn();
+            }
+        }
+
+        function checkNextTurn() {
+            const P = currentPlayer === 'black' ? bitBlack : bitWhite;
+            const O = currentPlayer === 'black' ? bitWhite : bitBlack;
+
+            const currentMoves = getMobility(P, O);
+            const opponentMoves = getMobility(O, P);
+            const totalDiscs = popCount(bitBlack | bitWhite);
+
+            if ((currentMoves === 0n && opponentMoves === 0n) || totalDiscs === 64 || bitBlack === 0n || bitWhite === 0n) {
+                endGame();
+                return;
+            }
+
+            if (currentMoves === 0n) {
+                const passColorName = (currentPlayer === 'black') ? '黒' : '白';
+                showToast(`${passColorName}は打てる場所がないためパスしました`);
+                currentPlayer = (currentPlayer === 'black') ? 'white' : 'black';
+                renderBoard();
+                updateTurnDisplay();
+                updateWinRateBar();
+            }
+
+            if (!isHumanTurn()) {
+                const delay = (gameMode === 'cpuvscpu') ? 600 : 400;
+                scheduleCpuMove(delay);
+            }
+        }
+
+        function updateTurnDisplay() {
+            const playerTurnDisplay = document.getElementById('player-turn');
+            let text = currentPlayer === 'black' ? '黒' : '白';
+
+            if (gameMode === '1v2') {
+                text += 'の手番';
+            } else if (gameMode === '1vcpu') {
+                if (currentPlayer === humanPlayerColor) {
+                    text += ' (あなた)';
+                } else {
+                    text += isThinking ? ' (CPU思考中...)' : ' (CPU)';
+                }
+            } else if (gameMode === 'cpuvscpu') {
+                text += currentPlayer === 'black' ? ' (CPU 1)' : ' (CPU 2)';
+                if (isThinking) text += ' 思考中...';
+            }
+
+            playerTurnDisplay.textContent = text;
+        }
+
+        function renderPieceCount() {
+            const pieceCountContainer = document.getElementById('piece-count');
+            const blackCount = popCount(bitBlack);
+            const whiteCount = popCount(bitWhite);
+
+            let blackLabel = '黒';
+            let whiteLabel = '白';
+            if (gameMode === '1vcpu') {
+                blackLabel = humanPlayerColor === 'black' ? '黒(あなた)' : '黒(CPU)';
+                whiteLabel = humanPlayerColor === 'white' ? '白(あなた)' : '白(CPU)';
+            } else if (gameMode === 'cpuvscpu') {
+                blackLabel = '黒(CPU 1)';
+                whiteLabel = '白(CPU 2)';
+            }
+
+            pieceCountContainer.innerHTML = `
+                <table>
+                    <tr>
+                        <td>${blackLabel}：${blackCount}</td>
+                        <td>${whiteLabel}：${whiteCount}</td>
+                    </tr>
+                </table>
+            `;
+        }
+
+        function endGame() {
+            isThinking = false;
+            isAnimating = false;
+            renderBoard();
+            renderPieceCount();
+            updateWinRateBar();
+
+            const blackCount = popCount(bitBlack);
+            const whiteCount = popCount(bitWhite);
+            const resultDisplay = document.getElementById('result');
+            const turnDisplay = document.getElementById('turn-display');
+
+            let winnerText = '';
+            if (blackCount > whiteCount) {
+                if (gameMode === '1vcpu') {
+                    winnerText = humanPlayerColor === 'black'
+                        ? `黒（あなた）の勝利！ (${blackCount} 対 ${whiteCount})`
+                        : `黒（CPU）の勝利！ (${blackCount} 対 ${whiteCount})`;
+                } else if (gameMode === 'cpuvscpu') {
+                    winnerText = `黒（CPU 1）の勝利！ (${blackCount} 対 ${whiteCount})`;
+                } else {
+                    winnerText = `黒の勝利！ (${blackCount} 対 ${whiteCount})`;
+                }
+            } else if (whiteCount > blackCount) {
+                if (gameMode === '1vcpu') {
+                    winnerText = humanPlayerColor === 'white'
+                        ? `白（あなた）の勝利！ (${whiteCount} 対 ${blackCount})`
+                        : `白（CPU）の勝利！ (${whiteCount} 対 ${blackCount})`;
+                } else if (gameMode === 'cpuvscpu') {
+                    winnerText = `白（CPU 2）の勝利！ (${whiteCount} 対 ${blackCount})`;
+                } else {
+                    winnerText = `白の勝利！ (${whiteCount} 対 ${blackCount})`;
+                }
+            } else {
+                winnerText = `引き分けです！ (${blackCount} 対 ${whiteCount})`;
+            }
+
+            resultDisplay.textContent = winnerText;
+            turnDisplay.classList.add('is-hidden');
+            resultDisplay.classList.add('is-visible');
+        }
+
+        function retryGame() {
+            initializeBoard();
+        }
+
+        openModeSelect();
+    </script>
+</body>
+
+</html>
