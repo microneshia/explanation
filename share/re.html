@@ -33,13 +33,35 @@
             flex-direction: column;
             align-items: center;
             width: 100%;
-            max-width: 400px;
+            max-width: 760px;
             margin: auto;
+        }
+
+        #game-area {
+            width: 100%;
+            display: grid;
+            grid-template-columns: 390px minmax(300px, 1fr);
+            gap: 16px;
+            align-items: start;
+        }
+
+        #board-column {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        #info-column {
+            min-width: 0;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
         }
 
         /* 1. 石数カウント表示（横幅固定・改行防止） */
         #piece-count {
-            width: 360px;
+            width: 100%;
+            max-width: 760px;
             background-color: #fff;
             border-radius: 8px;
             box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
@@ -64,7 +86,8 @@
 
         /* 2. 勝率予想バー */
         #win-rate-container {
-            width: 360px;
+            width: 100%;
+            max-width: 760px;
             background-color: #fff;
             padding: 8px 12px;
             border-radius: 8px;
@@ -147,20 +170,20 @@
             box-shadow: inset 0 0 0 2px #fbc02d;
         }
 
-        /* 補助モード：CPUと完全に同一の最高深さで計算された最善手マス（ゴールド） */
-        td.assist-best-move {
-            background-color: rgba(255, 215, 0, 0.45) !important;
-            box-shadow: inset 0 0 0 2px #fbc02d;
+
+        td.coach-best-move {
+            background-color: rgba(255, 215, 0, 0.62) !important;
+            box-shadow: inset 0 0 0 3px rgba(160, 110, 0, 0.95);
         }
 
-        /* 補助モード：良手マス（薄緑） */
-        td.assist-good-move {
-            background-color: rgba(76, 175, 80, 0.3) !important;
+        td.coach-good-move {
+            background-color: rgba(255, 255, 255, 0.42) !important;
+            box-shadow: inset 0 0 0 2px rgba(255, 255, 255, 0.9);
         }
 
-        /* 補助モード：悪手マス（薄赤） */
-        td.assist-bad-move {
-            background-color: rgba(244, 67, 54, 0.25) !important;
+        td.coach-avoid-move {
+            background-color: rgba(244, 67, 54, 0.48) !important;
+            box-shadow: inset 0 0 0 3px rgba(198, 40, 40, 0.95);
         }
 
         /* 補助モード：予想勝率バッジ */
@@ -281,8 +304,8 @@
 
         /* 4. オセロ盤の【外部】に配置したステータスパネル */
         #status-panel {
-            width: 360px;
-            margin-top: 14px;
+            width: 100%;
+            margin-top: 0;
             min-height: 38px;
             display: flex;
             align-items: center;
@@ -305,8 +328,8 @@
 
         /* 5. 補助モードコントロールパネル */
         #assist-panel {
-            width: 360px;
-            margin-top: 8px;
+            width: 100%;
+            margin-top: 0;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -330,9 +353,142 @@
             cursor: pointer;
         }
 
+        #coach-advice {
+            width: 100%;
+            margin-top: 0;
+            min-height: 188px;
+            background: #fff;
+            border-radius: 8px;
+            box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
+            padding: 10px 14px;
+            font-size: 13px;
+            line-height: 1.55;
+            color: #333;
+        }
+
+        #coach-advice .coach-title {
+            font-weight: bold;
+            color: #2e7d32;
+            margin-bottom: 4px;
+        }
+
+        .coach-color-legend {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px 12px;
+            margin-top: 8px;
+            font-size: 12px;
+            color: #555;
+        }
+
+        .coach-legend-item {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .coach-legend-swatch {
+            width: 13px;
+            height: 13px;
+            border-radius: 3px;
+            border: 1px solid rgba(0,0,0,0.18);
+        }
+
+        .coach-legend-swatch.best { background: rgba(255, 215, 0, 0.58); }
+        .coach-legend-swatch.good { background: rgba(255, 255, 255, 0.72); border: 1px solid #aaa; }
+        .coach-legend-swatch.avoid { background: rgba(244, 67, 54, 0.34); }
+
+        #coach-advice .coach-main {
+            font-weight: bold;
+            margin-bottom: 4px;
+        }
+
+        #coach-advice .coach-detail {
+            color: #666;
+        }
+
+        .coach-intro {
+            color: #666;
+            margin-bottom: 8px;
+        }
+
+        .coach-advice-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 7px;
+        }
+
+        .coach-advice-item {
+            border: 1px solid #e0e0e0;
+            border-radius: 6px;
+            padding: 7px 9px;
+            background: #fafafa;
+        }
+
+        .coach-advice-label {
+            font-size: 11px;
+            font-weight: bold;
+            color: #2e7d32;
+            margin-bottom: 2px;
+        }
+
+        .coach-empty {
+            color: #777;
+            min-height: 120px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+        }
+
+        @media (max-width: 760px) {
+            body {
+                padding: 10px 8px;
+                align-items: flex-start;
+            }
+
+            #main-layout {
+                max-width: 400px;
+            }
+
+            #game-area {
+                grid-template-columns: 1fr;
+                gap: 8px;
+            }
+
+            #board-column, #info-column {
+                width: 100%;
+            }
+
+            #info-column {
+                gap: 8px;
+            }
+
+            #coach-advice {
+                min-height: 188px;
+            }
+        }
+
+        @media (max-width: 410px) {
+            #game-container {
+                padding: 8px;
+                width: 100%;
+            }
+
+            table#board {
+                width: min(360px, calc(100vw - 32px));
+                height: min(360px, calc(100vw - 32px));
+            }
+
+            td {
+                width: auto;
+                height: auto;
+            }
+        }
+
         /* 6. 操作ボタン */
         #button-container {
-            margin-top: 14px;
+            margin-top: 0;
             display: flex;
             gap: 12px;
         }
@@ -490,30 +646,38 @@
             </div>
         </div>
 
-        <!-- 3. オセロ盤 -->
-        <div id="game-container">
-            <table id="board"></table>
-        </div>
+        <!-- 3. 盤面と情報パネル -->
+        <div id="game-area">
+            <div id="board-column">
+                <div id="game-container">
+                    <table id="board"></table>
+                </div>
+            </div>
 
-        <!-- 4. オセロ盤の【外部】に配置したステータス表示 -->
-        <div id="status-panel">
-            <div id="turn-display">ターン: <span id="player-turn">黒</span></div>
-            <div id="result"></div>
-        </div>
+            <div id="info-column">
+                <!-- 4. ステータス表示 -->
+                <div id="status-panel">
+                    <div id="turn-display">ターン: <span id="player-turn">黒</span></div>
+                    <div id="result"></div>
+                </div>
 
-        <!-- 5. 補助モード（ヒント）コントロールパネル -->
-        <div id="assist-panel"></div>
+                <!-- 5. 補助モード設定 -->
+                <div id="assist-panel"></div>
+                <div id="coach-advice"></div>
 
-        <!-- 6. 下部操作ボタン -->
-        <div id="button-container">
-            <button class="action-button" onclick="retryGame()" id="play-button">リトライ</button>
-            <button class="action-button" onclick="openModeSelect()">モード選択</button>
+                <!-- 6. 操作ボタン -->
+                <div id="button-container">
+                    <button class="action-button" onclick="retryGame()" id="play-button">リトライ</button>
+                    <button class="action-button" onclick="openModeSelect()">モード選択</button>
+                </div>
+            </div>
         </div>
     </div>
 
     <script>
         const MASK64 = 0xFFFFFFFFFFFFFFFFn;
         const MASK_SIDE = 0x7E7E7E7E7E7E7E7En;
+        const DIRECTIONS = [[-1,-1],[-1,0],[-1,1],[0,-1],[0,1],[1,-1],[1,0],[1,1]];
 
         let bitBlack = 0n;
         let bitWhite = 0n;
@@ -525,115 +689,75 @@
         let lastMoveIdx = null;
         let cpuTimeoutId = null;
 
-        let assistBlack = true;
-        let assistWhite = true;
+        let assistBlack = false;
+        let assistWhite = false;
+        let lastCoachReport = null;
 
-        // SWAR法による定数時間ビットカウント（従来のループ方式より高速）
         function popCount(b) {
-            let x = BigInt.asUintN(64, b);
-            x = x - ((x >> 1n) & 0x5555555555555555n);
-            x = (x & 0x3333333333333333n) + ((x >> 2n) & 0x3333333333333333n);
-            x = (x + (x >> 4n)) & 0x0f0f0f0f0f0f0f0fn;
-            return Number(((x * 0x0101010101010101n) & MASK64) >> 56n);
+            b = BigInt.asUintN(64, b);
+            let count = 0;
+            while (b > 0n) {
+                b &= b - 1n;
+                count++;
+            }
+            return count;
         }
 
         // 8方向並列ビットシフトによる合法手生成（6個挟み完全対応）
         function getMobility(P, O) {
-            const mask = O & MASK_SIDE;
-            const blank = (~(P | O)) & MASK64;
             let moves = 0n;
-
-            // 1. 右 (<< 1) : 相手石を計6回伝播させ、7マス目の空きマスへ到達
-            let f = (P << 1n) & mask;
-            f |= (f << 1n) & mask; f |= (f << 1n) & mask; f |= (f << 1n) & mask; f |= (f << 1n) & mask; f |= (f << 1n) & mask;
-            moves |= (f << 1n) & blank;
-
-            // 2. 左 (>> 1)
-            f = (P >> 1n) & mask;
-            f |= (f >> 1n) & mask; f |= (f >> 1n) & mask; f |= (f >> 1n) & mask; f |= (f >> 1n) & mask; f |= (f >> 1n) & mask;
-            moves |= (f >> 1n) & blank;
-
-            // 3. 下 (<< 8)
-            f = (P << 8n) & O;
-            f |= (f << 8n) & O; f |= (f << 8n) & O; f |= (f << 8n) & O; f |= (f << 8n) & O; f |= (f << 8n) & O;
-            moves |= (f << 8n) & blank;
-
-            // 4. 上 (>> 8)
-            f = (P >> 8n) & O;
-            f |= (f >> 8n) & O; f |= (f >> 8n) & O; f |= (f >> 8n) & O; f |= (f >> 8n) & O; f |= (f >> 8n) & O;
-            moves |= (f >> 8n) & blank;
-
-            // 5. 右下 (<< 9)
-            f = (P << 9n) & mask;
-            f |= (f << 9n) & mask; f |= (f << 9n) & mask; f |= (f << 9n) & mask; f |= (f << 9n) & mask; f |= (f << 9n) & mask;
-            moves |= (f << 9n) & blank;
-
-            // 6. 左上 (>> 9)
-            f = (P >> 9n) & mask;
-            f |= (f >> 9n) & mask; f |= (f >> 9n) & mask; f |= (f >> 9n) & mask; f |= (f >> 9n) & mask; f |= (f >> 9n) & mask;
-            moves |= (f >> 9n) & blank;
-
-            // 7. 左下 (<< 7)
-            f = (P << 7n) & mask;
-            f |= (f << 7n) & mask; f |= (f << 7n) & mask; f |= (f << 7n) & mask; f |= (f << 7n) & mask; f |= (f << 7n) & mask;
-            moves |= (f << 7n) & blank;
-
-            // 8. 右上 (>> 7)
-            f = (P >> 7n) & mask;
-            f |= (f >> 7n) & mask; f |= (f >> 7n) & mask; f |= (f >> 7n) & mask; f |= (f >> 7n) & mask; f |= (f >> 7n) & mask;
-            moves |= (f >> 7n) & blank;
-
-            return moves & MASK64;
+            for (let idx = 0; idx < 64; idx++) {
+                const moveBit = 1n << BigInt(idx);
+                if ((P | O) & moveBit) continue;
+                const r = Math.floor(idx / 8), c = idx % 8;
+                let legal = false;
+                for (const [dr, dc] of DIRECTIONS) {
+                    let rr = r + dr, cc = c + dc;
+                    let seenOpponent = false;
+                    while (rr >= 0 && rr < 8 && cc >= 0 && cc < 8) {
+                        const b = 1n << BigInt(rr * 8 + cc);
+                        if (O & b) {
+                            seenOpponent = true;
+                        } else {
+                            if (seenOpponent && (P & b)) legal = true;
+                            break;
+                        }
+                        rr += dr;
+                        cc += dc;
+                    }
+                    if (legal) break;
+                }
+                if (legal) moves |= moveBit;
+            }
+            return moves;
         }
 
-        // 6石挟み（端から端まで）を完全網羅した反転石マスク生成
         function getFlips(moveBit, P, O) {
-            const mask = O & MASK_SIDE;
+            if ((P | O) & moveBit) return 0n;
+            let idx = -1;
+            for (let i = 0; i < 64; i++) {
+                if (moveBit === (1n << BigInt(i))) { idx = i; break; }
+            }
+            if (idx < 0) return 0n;
+            const r = Math.floor(idx / 8), c = idx % 8;
             let flipped = 0n;
-
-            // 1. 右 (<< 1)
-            let cur = (moveBit << 1n) & mask;
-            cur |= (cur << 1n) & mask; cur |= (cur << 1n) & mask; cur |= (cur << 1n) & mask; cur |= (cur << 1n) & mask; cur |= (cur << 1n) & mask;
-            if ((cur << 1n) & P) flipped |= cur;
-
-            // 2. 左 (>> 1)
-            cur = (moveBit >> 1n) & mask;
-            cur |= (cur >> 1n) & mask; cur |= (cur >> 1n) & mask; cur |= (cur >> 1n) & mask; cur |= (cur >> 1n) & mask; cur |= (cur >> 1n) & mask;
-            if ((cur >> 1n) & P) flipped |= cur;
-
-            // 3. 下 (<< 8)
-            cur = (moveBit << 8n) & O;
-            cur |= (cur << 8n) & O; cur |= (cur << 8n) & O; cur |= (cur << 8n) & O; cur |= (cur << 8n) & O; cur |= (cur << 8n) & O;
-            if ((cur << 8n) & P) flipped |= cur;
-
-            // 4. 上 (>> 8)
-            cur = (moveBit >> 8n) & O;
-            cur |= (cur >> 8n) & O; cur |= (cur >> 8n) & O; cur |= (cur >> 8n) & O; cur |= (cur >> 8n) & O; cur |= (cur >> 8n) & O;
-            if ((cur >> 8n) & P) flipped |= cur;
-
-            // 5. 右下 (<< 9)
-            cur = (moveBit << 9n) & mask;
-            cur |= (cur << 9n) & mask; cur |= (cur << 9n) & mask; cur |= (cur << 9n) & mask; cur |= (cur << 9n) & mask; cur |= (cur << 9n) & mask;
-            if ((cur << 9n) & P) flipped |= cur;
-
-            // 6. 左上 (>> 9)
-            cur = (moveBit >> 9n) & mask;
-            cur |= (cur >> 9n) & mask; cur |= (cur >> 9n) & mask; cur |= (cur >> 9n) & mask; cur |= (cur >> 9n) & mask; cur |= (cur >> 9n) & mask;
-            if ((cur >> 9n) & P) flipped |= cur;
-
-            // 7. 左下 (<< 7)
-            cur = (moveBit << 7n) & mask;
-            cur |= (cur << 7n) & mask; cur |= (cur << 7n) & mask; cur |= (cur << 7n) & mask; cur |= (cur << 7n) & mask; cur |= (cur << 7n) & mask;
-            if ((cur << 7n) & P) flipped |= cur;
-
-            // 8. 右上 (>> 7)
-            cur = (moveBit >> 7n) & mask;
-            cur |= (cur >> 7n) & mask; cur |= (cur >> 7n) & mask; cur |= (cur >> 7n) & mask; cur |= (cur >> 7n) & mask; cur |= (cur >> 7n) & mask;
-            if ((cur >> 7n) & P) flipped |= cur;
-
-            return flipped & MASK64;
+            for (const [dr, dc] of DIRECTIONS) {
+                let rr = r + dr, cc = c + dc;
+                let line = 0n;
+                while (rr >= 0 && rr < 8 && cc >= 0 && cc < 8) {
+                    const b = 1n << BigInt(rr * 8 + cc);
+                    if (O & b) {
+                        line |= b;
+                    } else {
+                        if (line !== 0n && (P & b)) flipped |= line;
+                        break;
+                    }
+                    rr += dr;
+                    cc += dc;
+                }
+            }
+            return flipped;
         }
-
         const WEIGHT_TABLE = [
             120, -25, 20, 5, 5, 20, -25, 120,
             -25, -45, -5, -5, -5, -5, -45, -25,
@@ -644,18 +768,6 @@
             -25, -45, -5, -5, -5, -5, -45, -25,
             120, -25, 20, 5, 5, 20, -25, 120
         ];
-
-        // WEIGHT_TABLEを同一の重み値ごとにグループ化（評価関数のposScore計算を64回ループから
-        // 少数回のpopCount演算に置き換えて高速化するための前処理）
-        const WEIGHT_GROUPS = (() => {
-            const map = new Map();
-            for (let i = 0; i < 64; i++) {
-                const w = WEIGHT_TABLE[i];
-                if (!map.has(w)) map.set(w, 0n);
-                map.set(w, map.get(w) | (1n << BigInt(i)));
-            }
-            return Array.from(map.entries());
-        })();
 
         const CORNER_DATA = [
             { corner: 0, x: 9, c: [1, 8] },
@@ -701,242 +813,205 @@
             return popCount(P & nb);
         }
 
+        const AI_CORNER_BITS = [1n << 0n, 1n << 7n, 1n << 56n, 1n << 63n];
+        const AI_X_MASKS = [1n << 9n, 1n << 14n, 1n << 49n, 1n << 54n];
+        const AI_C_MASKS = [
+            [1n << 1n, 1n << 8n], [1n << 6n, 1n << 15n],
+            [1n << 48n, 1n << 57n], [1n << 55n, 1n << 62n]
+        ];
+        const AI_TT = new Map();
+        const AI_TT_MAX = 60000;
+        let aiDeadline = 0;
+        let aiNodeCount = 0;
+        let aiRootBest = null;
+
+        function aiCheckTime() {
+            if (aiDeadline > 0 && (aiNodeCount & 1023) === 0 && performance.now() >= aiDeadline) throw new Error('AI_TIME');
+        }
+
+        function getPotentialMobility(P, O) {
+            const blank = (~(P | O)) & MASK64;
+            let adj = 0n;
+            adj |= (blank << 1n) & MASK_SIDE;
+            adj |= (blank >> 1n) & MASK_SIDE;
+            adj |= blank << 8n;
+            adj |= blank >> 8n;
+            adj |= (blank << 9n) & MASK_SIDE;
+            adj |= (blank >> 9n) & MASK_SIDE;
+            adj |= (blank << 7n) & MASK_SIDE;
+            adj |= (blank >> 7n) & MASK_SIDE;
+            return popCount(O & adj);
+        }
+
         function evaluate(P, O) {
             const blank = (~(P | O)) & MASK64;
             const emptyCount = popCount(blank);
-
-            let posScore = 0;
-            for (const [w, gmask] of WEIGHT_GROUPS) {
-                posScore += w * (popCount(P & gmask) - popCount(O & gmask));
+            let positional = 0;
+            for (let i = 0; i < 64; i++) {
+                const m = 1n << BigInt(i);
+                if (P & m) positional += WEIGHT_TABLE[i];
+                else if (O & m) positional -= WEIGHT_TABLE[i];
             }
 
+            let corners = 0;
+            let cornerDanger = 0;
             for (let i = 0; i < 4; i++) {
-                const { corner, x, c } = CORNER_DATA[i];
-                const cm = 1n << BigInt(corner);
-                if (P & cm) {
-                    const xm = 1n << BigInt(x);
-                    if (P & xm) posScore += 55;
-                    for (let j = 0; j < 2; j++) {
-                        const c_m = 1n << BigInt(c[j]);
-                        if (P & c_m) posScore += 25;
+                const cm = AI_CORNER_BITS[i];
+                if (P & cm) corners++;
+                else if (O & cm) corners--;
+                else {
+                    for (const m of AI_C_MASKS[i]) {
+                        if (P & m) cornerDanger--;
+                        else if (O & m) cornerDanger++;
                     }
-                } else if (O & cm) {
-                    const xm = 1n << BigInt(x);
-                    if (O & xm) posScore -= 55;
-                    for (let j = 0; j < 2; j++) {
-                        const c_m = 1n << BigInt(c[j]);
-                        if (O & c_m) posScore -= 25;
-                    }
+                    if (P & AI_X_MASKS[i]) cornerDanger -= 2;
+                    if (O & AI_X_MASKS[i]) cornerDanger += 2;
                 }
             }
 
             const myMob = popCount(getMobility(P, O));
-            const oppMob = popCount(getMobility(O, P));
-            let mobScore = 0;
-            if (myMob + oppMob > 0) {
-                mobScore = Math.floor(100 * (myMob - oppMob) / (myMob + oppMob));
+            const opMob = popCount(getMobility(O, P));
+            const mob = myMob + opMob ? Math.floor(100 * (myMob - opMob) / (myMob + opMob)) : 0;
+            const myPot = getPotentialMobility(P, O);
+            const opPot = getPotentialMobility(O, P);
+            const pot = myPot + opPot ? Math.floor(100 * (myPot - opPot) / (myPot + opPot)) : 0;
+            const myFront = getFrontierCount(P, blank);
+            const opFront = getFrontierCount(O, blank);
+            const front = myFront + opFront ? Math.floor(100 * (opFront - myFront) / (myFront + opFront)) : 0;
+            const stable = popCount(getEdgeStability(P)) - popCount(getEdgeStability(O));
+            const diff = popCount(P) - popCount(O);
+            const parity = (emptyCount & 1) ? -1 : 1;
+
+            if (emptyCount > 40) {
+                return Math.round(positional + mob * 20 + pot * 8 + front * 8 + corners * 520 + cornerDanger * 22 + stable * 14 + parity * 3 - diff);
             }
-
-            const myStable = popCount(getEdgeStability(P));
-            const oppStable = popCount(getEdgeStability(O));
-            const stableScore = (myStable - oppStable) * 35;
-
-            const myFrontier = getFrontierCount(P, blank);
-            const oppFrontier = getFrontierCount(O, blank);
-            const frontierScore = (oppFrontier - myFrontier) * 5;
-
-            const discDiff = popCount(P) - popCount(O);
-            let discWeight = 0;
-            if (emptyCount >= 42) discWeight = -2;
-            else if (emptyCount <= 18) discWeight = 6;
-
-            return posScore + mobScore * 15 + stableScore + frontierScore + (discDiff * discWeight);
-        }
-
-        // ==========================================================================
-        // 探索エンジン：置換表（Transposition Table）+ 反復深化 + PVS(NegaScout) +
-        // 動的move ordering（相手の応手数が少なくなる手を優先）による本格実装。
-        // 固定深度6だった旧版から、持ち時間の許す限り反復的に深く読む方式に変更。
-        // ==========================================================================
-        let TT = new Map();
-        const TT_EXACT = 0, TT_LOWER = 1, TT_UPPER = 2;
-        let ttNodesSinceCheck = 0;
-        let searchDeadline = Infinity;
-        class TimeUpError extends Error { }
-
-        function ttKey(P, O) {
-            return P.toString(36) + '_' + O.toString(36);
-        }
-
-        // 時間切れチェック（毎ノードだと重いので2048ノードに1回だけ確認）
-        function timeCheck() {
-            ttNodesSinceCheck++;
-            if ((ttNodesSinceCheck & 2047) === 0 && performance.now() > searchDeadline) {
-                throw new TimeUpError();
+            if (emptyCount > 20) {
+                return Math.round(positional * 0.85 + mob * 25 + pot * 10 + front * 11 + corners * 750 + cornerDanger * 24 + stable * 20 + parity * 6 + diff);
             }
+            return Math.round(positional * 0.45 + mob * 20 + front * 8 + corners * 1000 + cornerDanger * 12 + stable * 35 + parity * 20 + diff * (emptyCount <= 8 ? 25 : 10));
         }
 
-        // 候補手を生成し、その場で1手進めた局面もキャッシュしつつ、
-        // 「相手の着手可能数が少なくなる手」を優先する動的オーダリングでソートする
-        function generateOrderedMoves(P, O, ttMove) {
+        function aiMoveList(P, O) {
             const moves = getMobility(P, O);
-            if (moves === 0n) return [];
             const list = [];
-            for (let i = 0; i < 64; i++) {
-                if ((moves >> BigInt(i)) & 1n) {
-                    const moveBit = 1n << BigInt(i);
-                    const flips = getFlips(moveBit, P, O);
-                    const nP = P | moveBit | flips;
-                    const nO = O & ~flips;
-                    let score = WEIGHT_TABLE[i];
-                    if (i === 0 || i === 7 || i === 56 || i === 63) score += 3000;
-                    if (i === ttMove) score += 1000000;
-                    score -= popCount(getMobility(nO, nP)) * 12;
-                    list.push({ idx: i, nP, nO, score });
-                }
-            }
-            list.sort((a, b) => b.score - a.score);
+            for (let i = 0; i < 64; i++) if ((moves >> BigInt(i)) & 1n) list.push(i);
             return list;
         }
 
-        function alphabeta(P, O, depth, alpha, beta, passed, isEndgame) {
-            timeCheck();
-
-            const origAlpha = alpha;
-            const key = ttKey(P, O);
-            const entry = TT.get(key);
-            let ttMove = null;
-            if (entry && entry.depth >= depth) {
-                if (entry.flag === TT_EXACT) return entry.score;
-                if (entry.flag === TT_LOWER && entry.score > alpha) alpha = entry.score;
-                else if (entry.flag === TT_UPPER && entry.score < beta) beta = entry.score;
-                if (alpha >= beta) return entry.score;
+        function aiMovePriority(m, P, O, depth) {
+            const bit = 1n << BigInt(m);
+            let score = WEIGHT_TABLE[m] * 4;
+            if (m === 0 || m === 7 || m === 56 || m === 63) score += 50000;
+            const cornerLinks = [[0,1,8,9],[7,6,15,14],[56,48,57,49],[63,55,62,54]];
+            for (const [corner,c1,c2,x] of cornerLinks) {
+                const cm = 1n << BigInt(corner);
+                if (m === c1 || m === c2) score += (P | O) & cm ? 1800 : -2600;
+                if (m === x && !((P | O) & cm)) score -= 8000;
             }
-            if (entry) ttMove = entry.move;
-
-            if (depth === 0) {
-                return isEndgame ? (popCount(P) - popCount(O)) : evaluate(P, O);
-            }
-
-            const moves = generateOrderedMoves(P, O, ttMove);
-            if (moves.length === 0) {
-                if (passed) {
-                    const diff = popCount(P) - popCount(O);
-                    if (diff > 0) return 40000 + diff;
-                    if (diff < 0) return -40000 + diff;
-                    return 0;
-                }
-                return -alphabeta(O, P, depth - 1, -beta, -alpha, true, isEndgame);
-            }
-
-            let bestVal = -Infinity;
-            let bestMove = moves[0].idx;
-            let first = true;
-            for (const mv of moves) {
-                let val;
-                if (first) {
-                    val = -alphabeta(mv.nO, mv.nP, depth - 1, -beta, -alpha, false, isEndgame);
-                    first = false;
-                } else {
-                    // PVS: まずゼロウィンドウで軽く探索し、alphaを上回った時だけ本探索
-                    val = -alphabeta(mv.nO, mv.nP, depth - 1, -alpha - 1, -alpha, false, isEndgame);
-                    if (val > alpha && val < beta) {
-                        val = -alphabeta(mv.nO, mv.nP, depth - 1, -beta, -alpha, false, isEndgame);
-                    }
-                }
-                if (val > bestVal) { bestVal = val; bestMove = mv.idx; }
-                if (val > alpha) alpha = val;
-                if (alpha >= beta) break;
-            }
-
-            let flag;
-            if (bestVal <= origAlpha) flag = TT_UPPER;
-            else if (bestVal >= beta) flag = TT_LOWER;
-            else flag = TT_EXACT;
-            if (!entry || entry.depth <= depth) {
-                TT.set(key, { depth, score: bestVal, flag, move: bestMove });
-            }
-            return bestVal;
+            const flips = getFlips(bit, P, O);
+            score -= popCount(flips) * (depth >= 4 ? 10 : 2);
+            const nP = P | bit | flips;
+            const nO = O & ~flips;
+            score -= popCount(getMobility(nO, nP)) * 20;
+            return score;
         }
 
-        // 空きマスがこの数以下になったら完全読み切り（最善手が理論上の最適解と一致）
-        const ENDGAME_EXACT_THRESHOLD = 12;
+        function orderMoves(P, O, moves, depth) {
+            return moves.slice().sort((a,b) => aiMovePriority(b,P,O,depth) - aiMovePriority(a,P,O,depth));
+        }
 
-        // ルート局面を反復深化で探索し、最善手と全候補手の評価値をまとめて返す。
-        // CPUの着手決定にも、補助モードのヒント表示にも、この一つの関数を共用する。
-        function searchRoot(P, O, budgetMs) {
+        function aiTerminalScore(P, O) {
+            const d = popCount(P) - popCount(O);
+            return d > 0 ? 100000 + d : d < 0 ? -100000 + d : 0;
+        }
+
+        function ttGet(key, depth, alpha, beta) {
+            const e = AI_TT.get(key);
+            return e && e.depth >= depth && e.alpha <= alpha && e.beta >= beta ? e.value : null;
+        }
+
+        function ttPut(key, value, depth, alpha, beta) {
+            if (AI_TT.size >= AI_TT_MAX) AI_TT.clear();
+            AI_TT.set(key, { value, depth, alpha, beta });
+        }
+
+        function alphabeta(P, O, depth, alpha, beta, passed, isEndgame) {
+            aiNodeCount++;
+            aiCheckTime();
+            const key = `${P.toString(16)}:${O.toString(16)}:${depth}:${passed ? 1 : 0}:${isEndgame ? 1 : 0}`;
+            const hit = ttGet(key, depth, alpha, beta);
+            if (hit !== null) return hit;
+            if (depth <= 0) return isEndgame ? (popCount(P) - popCount(O)) : evaluate(P, O);
+
             const moves = getMobility(P, O);
-            if (moves === 0n) return { bestMove: null, scores: new Map(), depth: 0, isEndgame: false };
-
-            const moveList = [];
-            for (let i = 0; i < 64; i++) if ((moves >> BigInt(i)) & 1n) moveList.push(i);
-
-            TT.clear();
-            ttNodesSinceCheck = 0;
-
-            const emptyCount = 64 - popCount(P | O);
-            const isEndgame = emptyCount <= ENDGAME_EXACT_THRESHOLD;
-            const maxDepth = isEndgame ? emptyCount : Math.min(emptyCount, 20);
-
-            if (moveList.length === 1) {
-                return { bestMove: moveList[0], scores: new Map([[moveList[0], 0]]), depth: maxDepth, isEndgame };
+            if (moves === 0n) {
+                const value = passed ? (isEndgame ? aiTerminalScore(P,O) : evaluate(P,O)) : -alphabeta(O,P,depth-1,-beta,-alpha,true,isEndgame);
+                ttPut(key,value,depth,alpha,beta);
+                return value;
             }
 
-            searchDeadline = performance.now() + budgetMs;
+            let list = [];
+            for (let i=0;i<64;i++) if ((moves >> BigInt(i)) & 1n) list.push(i);
+            list = orderMoves(P,O,list,depth);
 
-            let lastScores = new Map();
-            let lastBest = moveList[0];
-            let lastDepth = 0;
-            let ttMoveHint = null;
+            let best = -Infinity;
+            let first = true;
+            for (const m of list) {
+                const bit = 1n << BigInt(m);
+                const flips = getFlips(bit,P,O);
+                const nP = P | bit | flips;
+                const nO = O & ~flips;
+                let value;
+                if (first) {
+                    value = -alphabeta(nO,nP,depth-1,-beta,-alpha,false,isEndgame);
+                    first = false;
+                } else {
+                    value = -alphabeta(nO,nP,depth-1,-alpha-1,-alpha,false,isEndgame);
+                    if (value > alpha && value < beta) value = -alphabeta(nO,nP,depth-1,-beta,-alpha,false,isEndgame);
+                }
+                if (value > best) best = value;
+                if (value > alpha) alpha = value;
+                if (alpha >= beta) break;
+            }
+            ttPut(key,best,depth,alpha,beta);
+            return best;
+        }
 
-            for (let depth = 2; depth <= maxDepth; depth++) {
+        function findBestMoveWithBudget(P,O,budgetMs=900) {
+            const moves = aiMoveList(P,O);
+            if (moves.length === 0) return null;
+            if (moves.length === 1) return moves[0];
+            const empty = 64 - popCount(P | O);
+            let maxDepth = empty <= 14 ? empty : (empty <= 20 ? 10 : 9);
+            const isEndgame = empty <= 14;
+            aiDeadline = performance.now() + budgetMs;
+            aiNodeCount = 0;
+            aiRootBest = orderMoves(P,O,moves,maxDepth)[0];
+            for (let depth=2; depth<=maxDepth; depth++) {
                 try {
-                    const ordered = generateOrderedMoves(P, O, ttMoveHint);
-                    let alpha = -Infinity;
-                    const beta = Infinity;
-                    let bestVal = -Infinity;
-                    let bestMove = ordered[0].idx;
-                    const scores = new Map();
-                    let first = true;
-                    for (const mv of ordered) {
-                        let val;
-                        if (first) {
-                            val = -alphabeta(mv.nO, mv.nP, depth - 1, -beta, -alpha, false, isEndgame);
-                            first = false;
-                        } else {
-                            val = -alphabeta(mv.nO, mv.nP, depth - 1, -alpha - 1, -alpha, false, isEndgame);
-                            if (val > alpha) {
-                                val = -alphabeta(mv.nO, mv.nP, depth - 1, -beta, -alpha, false, isEndgame);
-                            }
-                        }
-                        scores.set(mv.idx, val);
-                        if (val > bestVal) { bestVal = val; bestMove = mv.idx; }
-                        if (val > alpha) alpha = val;
+                    const ordered = orderMoves(P,O,moves,depth);
+                    let bestMove = ordered[0], bestScore = -Infinity, alpha = -Infinity;
+                    for (const m of ordered) {
+                        aiCheckTime();
+                        const bit = 1n << BigInt(m);
+                        const flips = getFlips(bit,P,O);
+                        const nP = P | bit | flips;
+                        const nO = O & ~flips;
+                        const score = -alphabeta(nO,nP,depth-1,-Infinity,-alpha,false,isEndgame);
+                        if (score > bestScore) { bestScore = score; bestMove = m; }
+                        if (score > alpha) alpha = score;
                     }
-                    lastScores = scores;
-                    lastBest = bestMove;
-                    lastDepth = depth;
-                    ttMoveHint = bestMove;
-                    if (isEndgame && depth === maxDepth) break; // 完全読み切り達成
-                    if (bestVal >= 39000) break; // 必勝が確定したので打ち切り
+                    aiRootBest = bestMove;
+                    if (isEndgame && depth === maxDepth) break;
                 } catch (e) {
-                    if (e instanceof TimeUpError) break; // 時間切れ：直前に完了した深さの結果を採用
+                    if (e && e.message === 'AI_TIME') break;
                     throw e;
                 }
             }
-
-            return { bestMove: lastBest, scores: lastScores, depth: lastDepth, isEndgame };
+            return aiRootBest;
         }
 
-        // CPU用の持ち時間（ミリ秒）。反復深化なので、時間の許す限り深く読む「時間切れ安全」設計。
-        const CPU_THINK_BUDGET_MS = 1200;
-        const CPU_VS_CPU_BUDGET_MS = 800;
-        const ASSIST_BUDGET_MS = 1000;
-
-        // 最善手決定：反復深化探索のラッパー
-        function findBestMove(P, O, budgetMs) {
-            return searchRoot(P, O, budgetMs).bestMove;
-        }
+        function findBestMove(P,O) { return findBestMoveWithBudget(P,O,900); }
 
         // 勝率換算
         function scoreToWinRate(score, isEndgame) {
@@ -957,10 +1032,428 @@
             }
         }
 
-        // 全体の勝率予想バーを更新（軽量な固定深度3の即時探索。TTは他の探索と衝突しないようクリア）
+        // ================================================================
+        // CPU Web Worker: 前の着手アニメーション中に次のCPU手を探索
+        // ================================================================
+        let cpuWorker = null;
+        let cpuRequestSeq = 0;
+        let pendingCpuResult = null;
+        const activeCpuRequests = new Map();
+
+        const CPU_WORKER_SOURCE = `
+        const MASK64 = 0xFFFFFFFFFFFFFFFFn;
+        const MASK_SIDE = 0x7E7E7E7E7E7E7E7En;
+        const DIRECTIONS = [[-1,-1],[-1,0],[-1,1],[0,-1],[0,1],[1,-1],[1,0],[1,1]];
+
+        let bitBlack = 0n;
+        let bitWhite = 0n;
+        let currentPlayer = 'black';
+        let gameMode = '1vcpu';
+        let humanPlayerColor = 'black';
+        let isThinking = false;
+        let isAnimating = false;
+        let lastMoveIdx = null;
+        let cpuTimeoutId = null;
+
+        let assistBlack = false;
+        let assistWhite = false;
+
+        function popCount(b) {
+            b = BigInt.asUintN(64, b);
+            let count = 0;
+            while (b > 0n) {
+                b &= b - 1n;
+                count++;
+            }
+            return count;
+        }
+
+        // 8方向並列ビットシフトによる合法手生成（6個挟み完全対応）
+        function getMobility(P, O) {
+            let moves = 0n;
+            for (let idx = 0; idx < 64; idx++) {
+                const moveBit = 1n << BigInt(idx);
+                if ((P | O) & moveBit) continue;
+                const r = Math.floor(idx / 8), c = idx % 8;
+                for (const [dr, dc] of DIRECTIONS) {
+                    let rr = r + dr, cc = c + dc, seenOpponent = false;
+                    while (rr >= 0 && rr < 8 && cc >= 0 && cc < 8) {
+                        const b = 1n << BigInt(rr * 8 + cc);
+                        if (O & b) seenOpponent = true;
+                        else { if (seenOpponent && (P & b)) { moves |= moveBit; } break; }
+                        rr += dr; cc += dc;
+                    }
+                    if (moves & moveBit) break;
+                }
+            }
+            return moves;
+        }
+
+            function getFlips(moveBit, P, O) {
+            if ((P | O) & moveBit) return 0n;
+            let idx = -1;
+            for (let i = 0; i < 64; i++) {
+                if (moveBit === (1n << BigInt(i))) { idx = i; break; }
+            }
+            if (idx < 0) return 0n;
+            const r = Math.floor(idx / 8), c = idx % 8;
+            let flipped = 0n;
+            for (const [dr, dc] of DIRECTIONS) {
+                let rr = r + dr, cc = c + dc, line = 0n;
+                while (rr >= 0 && rr < 8 && cc >= 0 && cc < 8) {
+                    const b = 1n << BigInt(rr * 8 + cc);
+                    if (O & b) line |= b;
+                    else { if (line !== 0n && (P & b)) flipped |= line; break; }
+                    rr += dr; cc += dc;
+                }
+            }
+            return flipped;
+        }
+        const WEIGHT_TABLE = [
+            120, -25, 20, 5, 5, 20, -25, 120,
+            -25, -45, -5, -5, -5, -5, -45, -25,
+            20, -5, 15, 3, 3, 15, -5, 20,
+            5, -5, 3, 3, 3, 3, -5, 5,
+            5, -5, 3, 3, 3, 3, -5, 5,
+            20, -5, 15, 3, 3, 15, -5, 20,
+            -25, -45, -5, -5, -5, -5, -45, -25,
+            120, -25, 20, 5, 5, 20, -25, 120
+        ];
+
+        const CORNER_DATA = [
+            { corner: 0, x: 9, c: [1, 8] },
+            { corner: 7, x: 14, c: [6, 15] },
+            { corner: 56, x: 49, c: [48, 57] },
+            { corner: 63, x: 54, c: [55, 62] }
+        ];
+
+        function getEdgeStability(P) {
+            let stable = 0n;
+            const edges = [
+                [0, 1, 2, 3, 4, 5, 6, 7],
+                [56, 57, 58, 59, 60, 61, 62, 63],
+                [0, 8, 16, 24, 32, 40, 48, 56],
+                [7, 15, 23, 31, 39, 47, 55, 63]
+            ];
+            for (let e = 0; e < 4; e++) {
+                const edge = edges[e];
+                for (let i = 0; i < 8; i++) {
+                    const m = 1n << BigInt(edge[i]);
+                    if (P & m) stable |= m;
+                    else break;
+                }
+                for (let i = 7; i >= 0; i--) {
+                    const m = 1n << BigInt(edge[i]);
+                    if (P & m) stable |= m;
+                    else break;
+                }
+            }
+            return stable;
+        }
+
+        function getFrontierCount(P, blank) {
+            let nb = 0n;
+            nb |= (blank << 1n) & MASK_SIDE;
+            nb |= (blank >> 1n) & MASK_SIDE;
+            nb |= (blank << 8n);
+            nb |= (blank >> 8n);
+            nb |= (blank << 9n) & MASK_SIDE;
+            nb |= (blank >> 9n) & MASK_SIDE;
+            nb |= (blank << 7n) & MASK_SIDE;
+            nb |= (blank >> 7n) & MASK_SIDE;
+            return popCount(P & nb);
+        }
+
+        const AI_CORNER_BITS = [1n << 0n, 1n << 7n, 1n << 56n, 1n << 63n];
+        const AI_X_MASKS = [1n << 9n, 1n << 14n, 1n << 49n, 1n << 54n];
+        const AI_C_MASKS = [
+            [1n << 1n, 1n << 8n], [1n << 6n, 1n << 15n],
+            [1n << 48n, 1n << 57n], [1n << 55n, 1n << 62n]
+        ];
+        const AI_TT = new Map();
+        const AI_TT_MAX = 60000;
+        let aiDeadline = 0;
+        let aiNodeCount = 0;
+        let aiRootBest = null;
+
+        function aiCheckTime() {
+            if (aiDeadline > 0 && (aiNodeCount & 1023) === 0 && performance.now() >= aiDeadline) throw new Error('AI_TIME');
+        }
+
+        function getPotentialMobility(P, O) {
+            const blank = (~(P | O)) & MASK64;
+            let adj = 0n;
+            adj |= (blank << 1n) & MASK_SIDE;
+            adj |= (blank >> 1n) & MASK_SIDE;
+            adj |= blank << 8n;
+            adj |= blank >> 8n;
+            adj |= (blank << 9n) & MASK_SIDE;
+            adj |= (blank >> 9n) & MASK_SIDE;
+            adj |= (blank << 7n) & MASK_SIDE;
+            adj |= (blank >> 7n) & MASK_SIDE;
+            return popCount(O & adj);
+        }
+
+        function evaluate(P, O) {
+            const blank = (~(P | O)) & MASK64;
+            const emptyCount = popCount(blank);
+            let positional = 0;
+            for (let i = 0; i < 64; i++) {
+                const m = 1n << BigInt(i);
+                if (P & m) positional += WEIGHT_TABLE[i];
+                else if (O & m) positional -= WEIGHT_TABLE[i];
+            }
+
+            let corners = 0;
+            let cornerDanger = 0;
+            for (let i = 0; i < 4; i++) {
+                const cm = AI_CORNER_BITS[i];
+                if (P & cm) corners++;
+                else if (O & cm) corners--;
+                else {
+                    for (const m of AI_C_MASKS[i]) {
+                        if (P & m) cornerDanger--;
+                        else if (O & m) cornerDanger++;
+                    }
+                    if (P & AI_X_MASKS[i]) cornerDanger -= 2;
+                    if (O & AI_X_MASKS[i]) cornerDanger += 2;
+                }
+            }
+
+            const myMob = popCount(getMobility(P, O));
+            const opMob = popCount(getMobility(O, P));
+            const mob = myMob + opMob ? Math.floor(100 * (myMob - opMob) / (myMob + opMob)) : 0;
+            const myPot = getPotentialMobility(P, O);
+            const opPot = getPotentialMobility(O, P);
+            const pot = myPot + opPot ? Math.floor(100 * (myPot - opPot) / (myPot + opPot)) : 0;
+            const myFront = getFrontierCount(P, blank);
+            const opFront = getFrontierCount(O, blank);
+            const front = myFront + opFront ? Math.floor(100 * (opFront - myFront) / (myFront + opFront)) : 0;
+            const stable = popCount(getEdgeStability(P)) - popCount(getEdgeStability(O));
+            const diff = popCount(P) - popCount(O);
+            const parity = (emptyCount & 1) ? -1 : 1;
+
+            if (emptyCount > 40) {
+                return Math.round(positional + mob * 20 + pot * 8 + front * 8 + corners * 520 + cornerDanger * 22 + stable * 14 + parity * 3 - diff);
+            }
+            if (emptyCount > 20) {
+                return Math.round(positional * 0.85 + mob * 25 + pot * 10 + front * 11 + corners * 750 + cornerDanger * 24 + stable * 20 + parity * 6 + diff);
+            }
+            return Math.round(positional * 0.45 + mob * 20 + front * 8 + corners * 1000 + cornerDanger * 12 + stable * 35 + parity * 20 + diff * (emptyCount <= 8 ? 25 : 10));
+        }
+
+        function aiMoveList(P, O) {
+            const moves = getMobility(P, O);
+            const list = [];
+            for (let i = 0; i < 64; i++) if ((moves >> BigInt(i)) & 1n) list.push(i);
+            return list;
+        }
+
+        function aiMovePriority(m, P, O, depth) {
+            const bit = 1n << BigInt(m);
+            let score = WEIGHT_TABLE[m] * 4;
+            if (m === 0 || m === 7 || m === 56 || m === 63) score += 50000;
+            const cornerLinks = [[0,1,8,9],[7,6,15,14],[56,48,57,49],[63,55,62,54]];
+            for (const [corner,c1,c2,x] of cornerLinks) {
+                const cm = 1n << BigInt(corner);
+                if (m === c1 || m === c2) score += (P | O) & cm ? 1800 : -2600;
+                if (m === x && !((P | O) & cm)) score -= 8000;
+            }
+            const flips = getFlips(bit, P, O);
+            score -= popCount(flips) * (depth >= 4 ? 10 : 2);
+            const nP = P | bit | flips;
+            const nO = O & ~flips;
+            score -= popCount(getMobility(nO, nP)) * 20;
+            return score;
+        }
+
+        function orderMoves(P, O, moves, depth) {
+            return moves.slice().sort((a,b) => aiMovePriority(b,P,O,depth) - aiMovePriority(a,P,O,depth));
+        }
+
+        function aiTerminalScore(P, O) {
+            const d = popCount(P) - popCount(O);
+            return d > 0 ? 100000 + d : d < 0 ? -100000 + d : 0;
+        }
+
+        function ttGet(key, depth, alpha, beta) {
+            const e = AI_TT.get(key);
+            return e && e.depth >= depth && e.alpha <= alpha && e.beta >= beta ? e.value : null;
+        }
+
+        function ttPut(key, value, depth, alpha, beta) {
+            if (AI_TT.size >= AI_TT_MAX) AI_TT.clear();
+            AI_TT.set(key, { value, depth, alpha, beta });
+        }
+
+        function alphabeta(P, O, depth, alpha, beta, passed, isEndgame) {
+            aiNodeCount++;
+            aiCheckTime();
+            const key = \`\${P.toString(16)}:\${O.toString(16)}:\${depth}:\${passed ? 1 : 0}:\${isEndgame ? 1 : 0}\`;
+            const hit = ttGet(key, depth, alpha, beta);
+            if (hit !== null) return hit;
+            if (depth <= 0) return isEndgame ? (popCount(P) - popCount(O)) : evaluate(P, O);
+
+            const moves = getMobility(P, O);
+            if (moves === 0n) {
+                const value = passed ? (isEndgame ? aiTerminalScore(P,O) : evaluate(P,O)) : -alphabeta(O,P,depth-1,-beta,-alpha,true,isEndgame);
+                ttPut(key,value,depth,alpha,beta);
+                return value;
+            }
+
+            let list = [];
+            for (let i=0;i<64;i++) if ((moves >> BigInt(i)) & 1n) list.push(i);
+            list = orderMoves(P,O,list,depth);
+
+            let best = -Infinity;
+            let first = true;
+            for (const m of list) {
+                const bit = 1n << BigInt(m);
+                const flips = getFlips(bit,P,O);
+                const nP = P | bit | flips;
+                const nO = O & ~flips;
+                let value;
+                if (first) {
+                    value = -alphabeta(nO,nP,depth-1,-beta,-alpha,false,isEndgame);
+                    first = false;
+                } else {
+                    value = -alphabeta(nO,nP,depth-1,-alpha-1,-alpha,false,isEndgame);
+                    if (value > alpha && value < beta) value = -alphabeta(nO,nP,depth-1,-beta,-alpha,false,isEndgame);
+                }
+                if (value > best) best = value;
+                if (value > alpha) alpha = value;
+                if (alpha >= beta) break;
+            }
+            ttPut(key,best,depth,alpha,beta);
+            return best;
+        }
+
+        function findBestMoveWithBudget(P,O,budgetMs=900) {
+            const moves = aiMoveList(P,O);
+            if (moves.length === 0) return null;
+            if (moves.length === 1) return moves[0];
+            const empty = 64 - popCount(P | O);
+            let maxDepth = empty <= 14 ? empty : (empty <= 20 ? 10 : 9);
+            const isEndgame = empty <= 14;
+            aiDeadline = performance.now() + budgetMs;
+            aiNodeCount = 0;
+            aiRootBest = orderMoves(P,O,moves,maxDepth)[0];
+            for (let depth=2; depth<=maxDepth; depth++) {
+                try {
+                    const ordered = orderMoves(P,O,moves,depth);
+                    let bestMove = ordered[0], bestScore = -Infinity, alpha = -Infinity;
+                    for (const m of ordered) {
+                        aiCheckTime();
+                        const bit = 1n << BigInt(m);
+                        const flips = getFlips(bit,P,O);
+                        const nP = P | bit | flips;
+                        const nO = O & ~flips;
+                        const score = -alphabeta(nO,nP,depth-1,-Infinity,-alpha,false,isEndgame);
+                        if (score > bestScore) { bestScore = score; bestMove = m; }
+                        if (score > alpha) alpha = score;
+                    }
+                    aiRootBest = bestMove;
+                    if (isEndgame && depth === maxDepth) break;
+                } catch (e) {
+                    if (e && e.message === 'AI_TIME') break;
+                    throw e;
+                }
+            }
+            return aiRootBest;
+        }
+
+        function findBestMove(P,O) { return findBestMoveWithBudget(P,O,900); }
+
+        // 勝率換算
+        function scoreToWinRate(score, isEndgame) {
+            if (isEndgame) {
+                if (score === 0) return 50;
+                if (score > 0) {
+                    const wr = 85 + 14 * (1 - Math.exp(-0.35 * score));
+                    return Math.min(99, Math.round(wr));
+                } else {
+                    const wr = 15 - 14 * (1 - Math.exp(0.35 * score));
+                    return Math.max(1, Math.round(wr));
+                }
+            } else {
+                if (score >= 30000) return 99;
+                if (score <= -30000) return 1;
+                const winRate = 1 / (1 + Math.exp(-0.005 * score)) * 100;
+                return Math.max(1, Math.min(99, Math.round(winRate)));
+            }
+        }
+
+
+        self.onmessage = function(event) {
+            const { id, black, white, player, budgetMs } = event.data;
+            try {
+                const P = BigInt(player === 'black' ? black : white);
+                const O = BigInt(player === 'black' ? white : black);
+                const started = performance.now();
+                const bestMove = findBestMoveWithBudget(P, O, budgetMs);
+                self.postMessage({ id, bestMove, nodes: aiNodeCount, elapsed: Math.round(performance.now() - started) });
+            } catch (e) {
+                self.postMessage({ id, error: String(e && e.message ? e.message : e) });
+            }
+        };
+        `;
+
+        function getCpuBoardSignature() {
+            return `${bitBlack.toString(16)}:${bitWhite.toString(16)}:${currentPlayer}`;
+        }
+
+        function ensureCpuWorker() {
+            if (cpuWorker) return true;
+            try {
+                const blob = new Blob([CPU_WORKER_SOURCE], { type: 'text/javascript' });
+                cpuWorker = new Worker(URL.createObjectURL(blob));
+                cpuWorker.onmessage = (event) => {
+                    const data = event.data || {};
+                    const req = activeCpuRequests.get(data.id);
+                    if (!req) return;
+                    activeCpuRequests.delete(data.id);
+                    if (data.error) req.reject(new Error(data.error));
+                    else req.resolve(data);
+                };
+                cpuWorker.onerror = () => {
+                    try { cpuWorker.terminate(); } catch (_) {}
+                    cpuWorker = null;
+                    for (const req of activeCpuRequests.values()) req.reject(new Error('CPU_WORKER_ERROR'));
+                    activeCpuRequests.clear();
+                };
+                return true;
+            } catch (_) {
+                cpuWorker = null;
+                return false;
+            }
+        }
+
+        function requestCpuMoveInWorker(budgetMs) {
+            if (!ensureCpuWorker()) return Promise.reject(new Error('CPU_WORKER_UNAVAILABLE'));
+            const id = ++cpuRequestSeq;
+            const signature = getCpuBoardSignature();
+            return new Promise((resolve, reject) => {
+                activeCpuRequests.set(id, { resolve, reject, signature });
+                cpuWorker.postMessage({ id, black: bitBlack.toString(), white: bitWhite.toString(), player: currentPlayer, budgetMs });
+            });
+        }
+
+        function prefetchCpuMove() {
+            if (gameMode === '1v2' || isHumanTurn()) return;
+            const P = currentPlayer === 'black' ? bitBlack : bitWhite;
+            const O = currentPlayer === 'black' ? bitWhite : bitBlack;
+            if (getMobility(P,O) === 0n) return;
+            const signature = getCpuBoardSignature();
+            pendingCpuResult = null;
+            requestCpuMoveInWorker(900).then(data => {
+                if (getCpuBoardSignature() === signature && !isHumanTurn()) pendingCpuResult = { ...data, signature };
+            }).catch(() => { pendingCpuResult = null; });
+        }
+
+        // 全体の勝率予想バーを更新
         function updateWinRateBar() {
             const emptyCount = 64 - popCount(bitBlack | bitWhite);
-            const isEnd = emptyCount <= ENDGAME_EXACT_THRESHOLD;
+            const isEnd = emptyCount <= 10;
 
             if (emptyCount === 0 || (getMobility(bitBlack, bitWhite) === 0n && getMobility(bitWhite, bitBlack) === 0n)) {
                 const diff = popCount(bitBlack) - popCount(bitWhite);
@@ -971,15 +1464,7 @@
 
             const P = currentPlayer === 'black' ? bitBlack : bitWhite;
             const O = currentPlayer === 'black' ? bitWhite : bitBlack;
-            TT.clear();
-            searchDeadline = performance.now() + 200;
-            let scoreFromCurrent;
-            try {
-                scoreFromCurrent = alphabeta(P, O, 3, -Infinity, Infinity, false, isEnd);
-            } catch (e) {
-                if (e instanceof TimeUpError) { return; }
-                throw e;
-            }
+            const scoreFromCurrent = alphabeta(P, O, 3, -Infinity, Infinity, false, isEnd);
 
             const blackScore = (currentPlayer === 'black') ? scoreFromCurrent : -scoreFromCurrent;
             const blackWinRate = scoreToWinRate(blackScore, isEnd);
@@ -993,25 +1478,6 @@
             document.getElementById('white-win-rate-text').textContent = `白 ${whiteWinRate}%`;
             document.getElementById('win-rate-bar-black').style.width = `${blackWinRate}%`;
             document.getElementById('win-rate-bar-white').style.width = `${whiteWinRate}%`;
-        }
-
-        // ==========================================================================
-        // 補助モード用計算：CPU本体（searchRoot）と全く同じ探索エンジン・同じ持ち時間で
-        // 全候補手を評価する。反復深化なので、時間の許す限りCPU本番と同等の深さになる。
-        // ==========================================================================
-        function getCandidateEvaluations(P, O) {
-            const candidateData = {};
-            const result = searchRoot(P, O, ASSIST_BUDGET_MS);
-            if (result.bestMove === null) return candidateData;
-
-            for (const [m, score] of result.scores.entries()) {
-                const winRate = scoreToWinRate(score, result.isEndgame);
-                candidateData[m] = { score, winRate };
-            }
-            if (candidateData[result.bestMove]) {
-                candidateData[result.bestMove].isBest = true;
-            }
-            return candidateData;
         }
 
         // ==========================================
@@ -1061,7 +1527,7 @@
                 panel.innerHTML = `
                     <label class="assist-toggle">
                         <input type="checkbox" id="assist-chk" ${isChecked ? 'checked' : ''} onchange="toggleAssist('${humanPlayerColor}', this.checked)">
-                        補助モード（${sideText}のヒント表示）
+                        補助モード：${sideText}
                     </label>
                 `;
             } else if (gameMode === '1v2') {
@@ -1087,6 +1553,7 @@
             isThinking = false;
             isAnimating = false;
             lastMoveIdx = null;
+            pendingCpuResult = null;
 
             const turnDisplay = document.getElementById('turn-display');
             const resultDisplay = document.getElementById('result');
@@ -1111,22 +1578,69 @@
             return false;
         }
 
+        function getCoachHighlights(P, O, validMoves) {
+            const active = isHumanTurn() && (
+                (currentPlayer === 'black' && assistBlack) ||
+                (currentPlayer === 'white' && assistWhite)
+            );
+            if (!active || validMoves === 0n) {
+                return { best: new Set(), good: new Set(), avoid: new Set(), all: [] };
+            }
+
+            const opponentMobility = popCount(getMobility(O, P));
+            const candidates = [];
+            for (let idx = 0; idx < 64; idx++) {
+                const bit = 1n << BigInt(idx);
+                if (!(validMoves & bit)) continue;
+                const flips = getFlips(bit, P, O);
+                const nP = P | bit | flips;
+                const nO = O & ~flips;
+                const nextOppMovesMask = getMobility(nO, nP);
+                const nextOppMoves = popCount(nextOppMovesMask);
+                const nextMyMoves = popCount(getMobility(nP, nO));
+                const oppCorners = [0, 7, 56, 63].filter(c => (nextOppMovesMask & (1n << BigInt(c))) !== 0n).length;
+                const myCorners = [0, 7, 56, 63].filter(c => (nP & (1n << BigInt(c))) !== 0n).length;
+                const onEdge = (idx < 8 || idx >= 56 || idx % 8 === 0 || idx % 8 === 7);
+                const flipCount = popCount(flips);
+
+                let score = 0;
+                if ([0,7,56,63].includes(idx)) score += 100000;
+                if (myCorners > popCount(P & (1n<<0n)) + popCount(P & (1n<<7n)) + popCount(P & (1n<<56n)) + popCount(P & (1n<<63n))) score += 5000;
+                score += (opponentMobility - nextOppMoves) * 120;
+                score += (nextMyMoves - popCount(getMobility(P,O))) * 35;
+                score -= oppCorners * 2400;
+                score += onEdge ? 180 : 0;
+                score -= flipCount * 8;
+                if (idx === 9 || idx === 14 || idx === 49 || idx === 54) score -= 900;
+                if ([1,6,8,15,48,55,57,62].includes(idx)) score -= 450;
+
+                candidates.push({ idx, score, flipCount, nextOppMoves, nextMyMoves, oppCorners, onEdge });
+            }
+
+            candidates.sort((a,b) => b.score - a.score);
+            const best = new Set(candidates.slice(0, Math.min(3, candidates.length)).map(x => x.idx));
+            const avoid = new Set();
+            const avoidPool = candidates.slice().sort((a,b) => a.score - b.score);
+            for (const c of avoidPool.slice(0, Math.min(3, avoidPool.length))) {
+                if (c.score < candidates[0].score - 250 || c.oppCorners > 0) avoid.add(c.idx);
+            }
+            // 同じマスを「有力」と「避けたい」の両方にはしない
+            for (const idx of best) avoid.delete(idx);
+
+            const good = new Set();
+            for (const c of candidates.slice(0, Math.min(5, candidates.length))) {
+                if (!best.has(c.idx) && !avoid.has(c.idx)) good.add(c.idx);
+            }
+            return { best, good, avoid, all: candidates };
+        }
+
         function renderBoard() {
             const table = document.getElementById('board');
             table.innerHTML = '';
             const P = currentPlayer === 'black' ? bitBlack : bitWhite;
             const O = currentPlayer === 'black' ? bitWhite : bitBlack;
             const validMoves = (isHumanTurn() && !isThinking && !isAnimating) ? getMobility(P, O) : 0n;
-
-            const isAssistActive = isHumanTurn() && (
-                (currentPlayer === 'black' && assistBlack) ||
-                (currentPlayer === 'white' && assistWhite)
-            );
-
-            let candidateEvals = null;
-            if (isAssistActive && validMoves !== 0n) {
-                candidateEvals = getCandidateEvaluations(P, O);
-            }
+            const highlights = getCoachHighlights(P, O, validMoves);
 
             for (let r = 0; r < 8; r++) {
                 const row = document.createElement('tr');
@@ -1136,9 +1650,7 @@
                     cell.setAttribute('data-idx', idx);
                     const mask = 1n << BigInt(idx);
 
-                    if (idx === lastMoveIdx) {
-                        cell.classList.add('last-move');
-                    }
+                    if (idx === lastMoveIdx) cell.classList.add('last-move');
 
                     if (bitBlack & mask) {
                         const piece = document.createElement('div');
@@ -1149,32 +1661,98 @@
                         piece.className = 'piece white';
                         cell.appendChild(piece);
                     } else if (validMoves & mask) {
+                        if (highlights.best.has(idx)) cell.classList.add('coach-best-move');
+                        else if (highlights.good.has(idx)) cell.classList.add('coach-good-move');
+                        else if (highlights.avoid.has(idx)) cell.classList.add('coach-avoid-move');
+
                         const indicator = document.createElement('div');
                         indicator.className = 'valid-move-indicator';
                         cell.appendChild(indicator);
                         cell.addEventListener('click', () => handleCellClick(r, c));
-
-                        if (isAssistActive && candidateEvals && candidateEvals[idx]) {
-                            const evalInfo = candidateEvals[idx];
-                            if (evalInfo.isBest) {
-                                cell.classList.add('assist-best-move');
-                            } else if (evalInfo.winRate >= 50) {
-                                cell.classList.add('assist-good-move');
-                            } else {
-                                cell.classList.add('assist-bad-move');
-                            }
-
-                            const rateBadge = document.createElement('span');
-                            rateBadge.className = 'assist-rate-label';
-                            rateBadge.textContent = evalInfo.winRate + '%';
-                            cell.appendChild(rateBadge);
-                        }
                     }
 
                     row.appendChild(cell);
                 }
                 table.appendChild(row);
             }
+
+            updateCoachAdvice();
+        }
+
+        function updateCoachAdvice() {
+            const panel = document.getElementById('coach-advice');
+            const active = isHumanTurn() && (
+                (currentPlayer === 'black' && assistBlack) ||
+                (currentPlayer === 'white' && assistWhite)
+            );
+
+            if (!active) {
+                panel.innerHTML = '';
+                panel.classList.add('coach-disabled');
+                return;
+            }
+
+            panel.classList.remove('coach-disabled');
+            const P = currentPlayer === 'black' ? bitBlack : bitWhite;
+            const O = currentPlayer === 'black' ? bitWhite : bitBlack;
+            const validMoves = getMobility(P, O);
+
+            if (validMoves === 0n) {
+                panel.innerHTML = `
+                    <div class="coach-title">考えるポイント</div>
+                    <div class="coach-empty">今は置ける場所がありません。</div>
+                `;
+                return;
+            }
+
+            const highlights = getCoachHighlights(P, O, validMoves);
+            const opponentMoveCount = popCount(getMobility(O, P));
+            const cornerMoves = [0,7,56,63].filter(i => (validMoves & (1n << BigInt(i))) !== 0n);
+            const emptyCount = 64 - popCount(P | O);
+            const advice = [];
+
+            if (cornerMoves.length > 0) {
+                advice.push('角に置ける手があります。まずそこを確認しましょう。');
+            } else {
+                const risky = [...highlights.avoid].length;
+                if (risky > 0) advice.push('赤いマスは後で相手を有利にしやすいので、まず別の候補と比べてみましょう。');
+            }
+
+            const top = highlights.all[0];
+            if (top) {
+                if (top.nextOppMoves < opponentMoveCount) {
+                    advice.push(`黄色や緑の候補の中から、相手が次に置ける場所を減らせる手を探してみましょう。`);
+                } else {
+                    advice.push('今は相手の次の手が大きく減りにくい局面です。次の次まで形を比べてみましょう。');
+                }
+            }
+
+            const smallFlip = highlights.all.filter(x => x.flipCount <= 2).length;
+            if (smallFlip > 0) {
+                advice.push('少ない枚数だけ返す手も候補にあります。たくさん返せる手だけで決めないようにしましょう。');
+            } else {
+                advice.push('一度に多く返せる手が目立ちます。返した後の相手の手も確認しましょう。');
+            }
+
+            if (emptyCount <= 12) {
+                advice.push('残りが少ないので、今の石数より「最後にどちらが置けるか」を優先して考えましょう。');
+            } else if (highlights.all.some(x => x.onEdge)) {
+                advice.push('端に置ける候補があります。端を取った後に相手がどこへ置けるかまで比べましょう。');
+            }
+
+            panel.innerHTML = `
+                <div class="coach-title">考えるポイント</div>
+                <div class="coach-advice-grid">
+                    ${advice.slice(0, 4).map(text => `
+                        <div class="coach-advice-item"><div class="coach-detail">${text}</div></div>
+                    `).join('')}
+                </div>
+                <div class="coach-color-legend">
+                    <span class="coach-legend-item"><span class="coach-legend-swatch best"></span>特に比べたい候補</span>
+                    <span class="coach-legend-item"><span class="coach-legend-swatch good"></span>有力な候補</span>
+                    <span class="coach-legend-item"><span class="coach-legend-swatch avoid"></span>慎重に考えたい候補</span>
+                </div>
+            `;
         }
 
         function executeMoveWithAnimation(idx, moveBit, flips, moverColor, callback) {
@@ -1210,6 +1788,9 @@
                 bitBlack &= ~flips;
             }
 
+            // 盤面状態は確定済み。380msの反転アニメーション中に次のCPU手を計算する。
+            prefetchCpuMove();
+
             setTimeout(() => {
                 isAnimating = false;
                 renderPieceCount();
@@ -1244,35 +1825,53 @@
         function scheduleCpuMove(delay) {
             isThinking = true;
             updateTurnDisplay();
+            if (cpuTimeoutId) clearTimeout(cpuTimeoutId);
             cpuTimeoutId = setTimeout(() => {
-                makeCpuMove();
+                cpuTimeoutId = null;
+                consumeOrRequestCpuMove();
             }, delay);
         }
 
-        function makeCpuMove() {
+        function applyCpuMove(bestMove) {
             const P = currentPlayer === 'black' ? bitBlack : bitWhite;
             const O = currentPlayer === 'black' ? bitWhite : bitBlack;
-
-            const budget = (gameMode === 'cpuvscpu') ? CPU_VS_CPU_BUDGET_MS : CPU_THINK_BUDGET_MS;
-            const bestMove = findBestMove(P, O, budget);
-            if (bestMove !== null) {
-                const moveBit = 1n << BigInt(bestMove);
-                const flips = getFlips(moveBit, P, O);
-                const mover = currentPlayer;
-
-                currentPlayer = (currentPlayer === 'black') ? 'white' : 'black';
-                isThinking = false;
-                updateTurnDisplay();
-
-                executeMoveWithAnimation(bestMove, moveBit, flips, mover, () => {
-                    checkNextTurn();
-                });
-            } else {
-                currentPlayer = (currentPlayer === 'black') ? 'white' : 'black';
+            const moves = getMobility(P,O);
+            if (bestMove === null || bestMove === undefined || ((moves >> BigInt(bestMove)) & 1n) === 0n) {
                 isThinking = false;
                 updateTurnDisplay();
                 checkNextTurn();
+                return;
             }
+            const moveBit = 1n << BigInt(bestMove);
+            const flips = getFlips(moveBit,P,O);
+            const mover = currentPlayer;
+            currentPlayer = currentPlayer === 'black' ? 'white' : 'black';
+            isThinking = false;
+            updateTurnDisplay();
+            executeMoveWithAnimation(bestMove,moveBit,flips,mover,()=>checkNextTurn());
+        }
+
+        function consumeOrRequestCpuMove() {
+            const signature = getCpuBoardSignature();
+            if (pendingCpuResult && pendingCpuResult.signature === signature) {
+                const result = pendingCpuResult;
+                pendingCpuResult = null;
+                applyCpuMove(result.bestMove);
+                return;
+            }
+            requestCpuMoveInWorker(900).then(data => {
+                if (getCpuBoardSignature() === signature && !isHumanTurn()) applyCpuMove(data.bestMove);
+            }).catch(() => {
+                try {
+                    const P = currentPlayer === 'black' ? bitBlack : bitWhite;
+                    const O = currentPlayer === 'black' ? bitWhite : bitBlack;
+                    applyCpuMove(findBestMove(P,O));
+                } catch (_) {
+                    isThinking = false;
+                    updateTurnDisplay();
+                    checkNextTurn();
+                }
+            });
         }
 
         function checkNextTurn() {
